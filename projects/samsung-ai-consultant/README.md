@@ -39,7 +39,7 @@ for the full reasoning behind that split.
 
 ```text
 Phase 1 — Database Schema & Migrations: COMPLETE
-Phase 2 — Product Ingestion:            IMPLEMENTED, PENDING REVIEW (full catalog crawl not yet run)
+Phase 2 — Product Ingestion:            COMPLETE (full catalog crawled and retained; n8n orchestration still pending)
 Phase 3 — RAG Indexing:                 PLANNED
 Phase 4 — AI Consultant:                PLANNED
 Phase 5 — Evaluation / Observability:   PLANNED
@@ -54,11 +54,14 @@ Phase 2 shipped a standalone, tested ingestion pipeline
 scrapes the GalaxyStore Samsung TV catalog and persists it into the
 Phase 1 schema, with a fixture-backed unit test suite, a
 disposable-container repository/idempotency test suite
-(`tests/run_db_tests.sh`), a live-site dry-run, and a small controlled
-integration test against `samsung_rag` (rows removed afterward — see the
-Phase 2 final report). **The full catalog has not yet been crawled** —
-that (and any n8n orchestration around this pipeline) waits on human
-review of this phase. There is no RAG indexing and no AI agent yet.
+(`tests/run_db_tests.sh`), and a live full-catalog production run. The
+complete configured catalog (3 pages, 75 products) was crawled twice
+against the real `samsung_rag` database — 75/75 succeeded both times,
+0 failures, confirmed idempotent (see "Full-catalog production run" in
+[ingestion/README.md](ingestion/README.md) for counts, distributions, and
+QA findings) — and **the resulting 75 products / 4151 spec rows are
+retained as production data**, not test rows. RAG indexing, the AI
+Agent, and n8n orchestration of this pipeline are still not started.
 
 ## Legacy
 

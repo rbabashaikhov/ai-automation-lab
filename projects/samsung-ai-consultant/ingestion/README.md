@@ -172,30 +172,131 @@ dry-run doesn't execute one. `discover` and `fetch-product` never require
 (not for `discover`/`fetch-product`, and not for `run --dry-run`). Never
 commit the real `.env` (git-ignored at the repo root).
 
+## Full-catalog production run (2026-09-28)
+
+The complete configured catalog (3 pages, 75 listing entries) was crawled
+twice against the real `samsung_rag` database, via the `samsung_ingestion`
+role over an SSH tunnel, at the default conservative settings (2s delay,
+up to 4 retries). Both runs: **75 discovered, 75 processed, 0 failed, 0
+ingestion_errors, status `success`**. Run 1: 75 inserted / 0 updated. Run
+2 (idempotency check, no fixes applied in between — nothing needed
+fixing): 0 inserted / 75 updated, confirming:
+
+- `products` row count stayed at 75 (no duplication).
+- `product_specs` row count stayed at 4151 (no duplication); zero
+  products have a duplicate `spec_key`.
+- `first_seen_at` was byte-identical before/after run 2 for every product.
+- `last_seen_at` advanced for every product after run 2.
+- `ingestion_runs` recorded both executions independently with correct
+  per-run counters.
+
+Final `samsung_rag` state: **75 `products` rows, 4151 `product_specs`
+rows** — these are real, successfully-parsed, currently-retained
+production data (not cleaned up, per the production-run authorization).
+
+### Distributions (75 products)
+
+- **`year`**: all 75 → `2026`. See "The `QE32LS03CBUXRU` name/year
+  mismatch" below for why this is correct, not a bug.
+- **`panel_technology`**: Mini LED 17, Neo QLED 16, OLED 15, LED 11,
+  Micro RGB 9, QLED 6, Micro LED 1.
+- **`screen_size_inches`**: spans 27"–115" across 17 distinct sizes (most
+  common: 65" ×13, 55" ×12, 75" ×10).
+- **`resolution`**: `3840x2160` (4K) 68, `1920x1080` (FHD) 4,
+  `2560x1440` 1, `4968x2808` 1, `1366x768` 1 — see "Non-4K/FHD resolution
+  outliers" below.
+- **`refresh_rate_hz`**: 120 Hz ×41, 60 Hz ×27, 50 Hz ×7.
+- **`is_available`**: `true` 66, `false` 9 (all from `SM_PARAMS`
+  `canBuy`/stock signals — see `normalize_availability`, no manual
+  overrides).
+- **spec-row count per product**: ranges 36–75, median ~54; no product
+  fell anywhere near the validation floor of 3.
+
+### Null/missing rates
+
+Every typed field populated on 75/75 products **except**: `sku` (75/75
+`NULL` — deliberate, see "`sku` is deliberately left `NULL`" above) and
+`sale_price` (44/75 `NULL` — no active discount on those products, not a
+gap: `price`/`sale_price` extraction only ever fills `sale_price` when
+the source gives a real, lower discounted price).
+
+### Duplicate checks (all clean, 75/75)
+
+`(source, external_id)`: 0 duplicates. `model_code`: 0 duplicates, 0
+`NULL`s. `product_url`: 0 duplicates.
+
+### Full-catalog MPN/model-code analysis
+
+Checked cross-source consistency for all 75 products by comparing
+`digitalData.mpnCode`, JSON-LD `offers` block's `sku`, and
+`SM_PARAMS.product.main.serialCode` (all three stored independently in
+`raw_payload`): **0 mismatches, 0 missing values, out of 75.**
+`model_code` is 100% non-null and 100% unique across the complete
+catalog. This is strong, now full-catalog evidence that `model_code`
+could become a secondary uniqueness guarantee — **but, per explicit
+instruction, this phase does not change the canonical identity or the
+`UNIQUE (source, external_id)` constraint.** That remains a decision for
+the schema owner to make deliberately, with this evidence in hand, not
+something ingestion code changes unilaterally.
+
+### The `QE32LS03CBUXRU` name/year mismatch
+
+Flagged during discovery as an apparent "non-2026 product under the
+`year=2026` filter": its product **name** literally contains the
+substring `(2023)` (`Телевизор Samsung 32" серия The Frame QLED Full HD
+(2023) LS03C`) — a stale marketing-copy artifact GalaxyStore itself never
+updated. Investigated directly against the live page: its structured
+`SM_PARAMS.product.specifications` spec **"Год выпуска" (year of
+release) explicitly says `2026`**, not 2023. The pipeline already does
+the right thing here by design — `year` is read only from that structured
+spec field (`normalize.normalize_year`), never parsed out of the name
+string or assumed from the catalog URL — so `products.year = 2026` for
+this row is a faithful reproduction of what the source site's own
+structured data asserts, not a forced/hardcoded value. The name/year
+mismatch is the *source's* inconsistency, documented here rather than
+silently "corrected" in either direction.
+
+### Non-4K/FHD resolution outliers (investigated, not bugs)
+
+- `UE32H5000FUXRU` (`1366x768`) — genuinely a budget "HD" category TV
+  (`category = "HD"`), not a 4K model.
+- `MNA114MS1CCXRU` (`4968x2808`) — a 114" **"Дисплей" (professional
+  Micro LED display)**, not a consumer TV; the catalog listing under
+  `/catalog/televizory/` includes some non-TV Samsung display products.
+- `UE27LSM7FAXXPY` (`2560x1440`) — a 27" portable "Дисплей" (The
+  Movingstyle), same non-TV-display note as above.
+
+None of these are extraction defects — each value was independently
+cross-checked against the live product page's own spec table.
+
 ## Known limitations / open questions
 
 - **Automatic deactivation deferred.** No "mark unseen products
   unavailable" step exists yet — see "Persistence" above. A future phase
   should implement it only after a *complete, successful* full-catalog
   crawl can be distinguished from a partial one (`ingestion_runs.status`
-  already supports this).
+  already supports this). Both full-catalog runs above were complete
+  successes (`status = success`, 0 failed), so this would have been a
+  valid trigger point if the function existed — it deliberately doesn't
+  yet.
 - **`series` model-code fallback is a heuristic**, not verified against
   Samsung's full official model-code specification — see
   `normalize.normalize_series` docstring. Prefer the catalog's
   `articleMain` hint whenever available (i.e. ingest via `run`, not
   standalone `fetch-product`, when `series` matters).
-- **MPN/model-code reliability**: on every product fetched during
-  discovery and the integration test, `digitalData.mpnCode`, JSON-LD
-  `sku`, and `SM_PARAMS.serialCode` were identical, and the model code is
-  literally embedded in the product URL (`/product/{mpnCode}/`), which
-  strongly suggests `model_code` is reliable enough to become a secondary
-  uniqueness guarantee — but this was only confirmed on a handful of
-  products, not the full ~75-product catalog. Canonical identity remains
-  `(source, external_id)` per the Phase 1 ADR pending a full-catalog
-  confirmation.
+- **MPN/model-code reliability is now confirmed across the full 75-product
+  catalog** (see "Full-catalog MPN/model-code analysis" above): 100%
+  non-null, 100% unique, 100% cross-source consistent. Canonical identity
+  deliberately remains `(source, external_id)` regardless — see that
+  section for why this evidence doesn't by itself justify changing it.
+- **Catalog scope includes some non-TV "Дисплей" (display) products**
+  (professional Micro LED display, portable display) alongside actual
+  TVs — see "Non-4K/FHD resolution outliers" above. Validation doesn't
+  exclude them (nothing in the task brief asked it to), so they're
+  ingested like any other Samsung product from this source.
 - **`resolution` known-label fallback** covers only common labels (8K,
   4K, Full HD, HD Ready/HD); an unrecognized label with no explicit `WxH`
   pattern yields `NULL` rather than a guess.
 - No handling yet for products that redirect or 410/discontinue mid-crawl
-  beyond the existing `ingestion_errors` recording — acceptable for
-  Phase 2's scope (crawl not yet run at full scale).
+  beyond the existing `ingestion_errors` recording — not exercised by
+  either full-catalog run (0 fetch failures in both).
