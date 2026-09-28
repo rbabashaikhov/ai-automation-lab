@@ -173,23 +173,40 @@ grounded in already-discovered real-data quirks: the
 gaming specs at all, and "Variable Refresh Rate" appearing only inside
 another spec's multi-value text rather than as its own spec_name.
 
+## Persistence / re-indexing contract (Phase 3B.1)
+
+`repository.py`'s `sync_chunks` replaced the original Phase 3A
+delete-then-reinsert strategy once Phase 3B gave chunks real embeddings
+to lose — see [docs/adr/003-embedding-aware-chunk-sync.md](../docs/adr/003-embedding-aware-chunk-sync.md)
+for the full root-cause and design writeup. The contract every caller
+(the CLI, a future n8n rebuild trigger, etc.) can now rely on:
+
+```
+same content_hash   -> embedding/embedding_model preserved untouched
+different content_hash -> content/hash/metadata updated, embedding
+                           and embedding_model cleared (eligible for
+                           re-embedding by the n8n indexing workflow)
+new logical section -> inserted, embedding NULL
+section no longer produced -> deleted
+```
+
+Logical chunk identity is `metadata->>'section'` within a document — not
+row id, not `chunk_index`, not array position (`chunk_index` itself is
+still reassigned deterministically by walking the fixed `SECTION_ORDER`,
+same as ADR 002, but is no longer what sync matches on). Verified against
+the real production `QE65S95HAUXPY` row (7/7 real embeddings preserved
+byte-for-byte across a live rebuild) and against a disposable database
+for the changed/new/removed-chunk cases — see
+`tests/test_indexing_embedding_sync.py`.
+
+`IndexingRepository.save_document_with_chunks` returns an `UpsertResult`
+with a `chunk_sync: ChunkSyncResult` (`preserved` / `invalidated` /
+`inserted` / `deleted` counts), surfaced through
+`service.IndexingOutcome.chunk_sync` and printed by
+`python -m indexing build`.
+
 ## Known limitations / open questions
 
-- **`replace_chunks` is not embedding-aware (discovered in Phase 3B).**
-  Rebuilding a product's chunks via `python -m indexing build` always
-  deletes and re-inserts every one of that product's `chunks` rows (new
-  `id`s, `embedding` reset to `NULL`), even if the rebuilt content is
-  byte-identical to what's already stored — see `repository.py`'s
-  `replace_chunks` and ADR "Decision 2." This directly conflicts with
-  Phase 3B's incremental-indexing goal ("unchanged chunk hash → existing
-  embedding reused"). Not fixed as of Phase 3B's single-product
-  acceptance test (which never exercised this path — the builder was run
-  exactly once per product before any embedding existed). A future phase
-  needs a rebuild strategy that matches old vs. new chunks by
-  `metadata.section` + `content_hash` and only replaces rows that
-  actually changed, before incremental full-catalog indexing can safely
-  rely on this for cost savings. See `workflows/README.md` "Known
-  limitations" for the full discovery writeup.
 - **No `specifications` or `comparison_context` documents yet** — see
   ADR "Decision 1." Revisit `specifications` if Phase 3B evaluation shows
   the combined `product_overview` document under/over-retrieves;

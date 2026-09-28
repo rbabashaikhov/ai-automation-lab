@@ -16,11 +16,13 @@ a shortcut to skip rebuilding, since that would need to assume
 `source_hash`'s exact field set stays in permanent lockstep with the
 document text (see the Phase 3A ADR for why this module treats that as
 merely a strong correlation, not a substitute to skip on). Each chunk's
-own `content_hash` covers just that chunk's own text, so a future embedder
-can tell *which specific chunks* changed, not just "the document changed
-somewhere" -- e.g. a price update only changes the `overview` chunk, and
-the `gaming`/`audio`/... chunks keep their prior hash and never need
-re-embedding.
+own `content_hash` covers just that chunk's own text, so
+`repository.py`'s `sync_chunks` (Phase 3B.1) can tell *which specific
+chunks* actually changed, not just "the document changed somewhere" --
+e.g. a price update only changes the `overview` chunk's hash, and the
+`gaming`/`audio`/... chunks keep their existing embedding untouched. See
+`repository.py` module docstring for the persistence-side algorithm this
+enables.
 """
 
 from __future__ import annotations
@@ -30,7 +32,7 @@ from dataclasses import dataclass, field
 from .builder import DocumentDraft, build_document
 from .chunker import ChunkDraft, build_chunks
 from .models import Product, Spec
-from .repository import IndexingRepository, ProductReader
+from .repository import ChunkSyncResult, IndexingRepository, ProductReader
 
 
 @dataclass
@@ -46,6 +48,7 @@ class IndexingOutcome:
     chunk_sections: list[str]
     persisted: bool
     document_inserted: bool | None = None
+    chunk_sync: ChunkSyncResult | None = None
 
 
 def build_for_product(product: Product, specs: list[Spec]) -> tuple[DocumentDraft, list[ChunkDraft]]:
@@ -71,11 +74,13 @@ def index_product(
     changed = previous_hash != document.content_hash
 
     document_inserted: bool | None = None
+    chunk_sync: ChunkSyncResult | None = None
     persisted = False
     if not dry_run:
         assert repository is not None
         result = repository.save_document_with_chunks(product_id, document, chunks)
         document_inserted = result.inserted
+        chunk_sync = result.chunk_sync
         persisted = True
 
     return IndexingOutcome(
@@ -90,6 +95,7 @@ def index_product(
         chunk_sections=[c.section for c in chunks],
         persisted=persisted,
         document_inserted=document_inserted,
+        chunk_sync=chunk_sync,
     )
 
 

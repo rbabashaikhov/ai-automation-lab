@@ -50,10 +50,17 @@ def _cmd_inspect(args: argparse.Namespace) -> int:
 def _print_outcome(outcome: IndexingOutcome, *, verbose: bool = False) -> None:
     change = "CHANGED" if outcome.document_changed else "unchanged"
     persisted = "persisted" if outcome.persisted else "dry-run"
-    print(
+    line = (
         f"[{persisted}] product_id={outcome.product_id} model_code={outcome.model_code} "
         f"chunks={outcome.chunk_count} doc_hash={outcome.content_hash[:12]}... {change}"
     )
+    if outcome.chunk_sync is not None:
+        cs = outcome.chunk_sync
+        line += (
+            f" | chunks preserved={cs.preserved} invalidated={cs.invalidated} "
+            f"inserted={cs.inserted} deleted={cs.deleted}"
+        )
+    print(line)
     if verbose:
         print(f"    sections: {outcome.chunk_sections}")
 

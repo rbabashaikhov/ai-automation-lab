@@ -112,25 +112,27 @@ grants (`SELECT` on `products`/`product_specs`, full CRUD on
   number`) on the very first post-fix test run. Fixed with an explicit
   `::int` cast in the `Count pending chunks` query rather than loosening
   the IF node's type validation.
-- **Phase 3A's `replace_chunks` (delete-then-reinsert) is not
-  embedding-aware.** This is the most significant finding for Phase 3B's
-  stated incremental-indexing goal ("unchanged chunk hash → existing
-  embedding reused"): if `python -m indexing build` is re-run on a product
-  whose content is genuinely unchanged, it still deletes and re-inserts
-  every one of that product's chunks (new row `id`s, `embedding` reset to
-  `NULL`), because Phase 3A's replace-wholesale strategy (see
-  `docs/adr/002-rag-document-chunking-design.md`, Decision 2) predates
-  Phase 3B and was never designed to preserve embeddings across a rebuild.
-  **Not fixed in this phase** — doing so safely (e.g. matching old vs.
-  new chunks by `metadata.section` + `content_hash` before deciding what
-  to delete/keep/insert) is itself a real design decision that deserves
-  its own review, not a rushed edit inside an already-large phase. Until
-  it is: re-running the Python builder on an unchanged product currently
-  *does* discard existing embeddings, even though this workflow's own
-  `embedding IS NULL` check is correctly idempotent for the case that
-  actually occurred in the acceptance test (embeddings were never wiped
-  during this phase's testing, since the Python builder was run exactly
-  once per product before any embedding existed).
+- **Phase 3A's `replace_chunks` (delete-then-reinsert) was not
+  embedding-aware — fixed in Phase 3B.1.** Once Phase 3B gave chunks real
+  embeddings, re-running `python -m indexing build` on an unchanged
+  product was silently discarding them (new row `id`s, `embedding` reset
+  to `NULL`) on every rebuild, directly defeating Phase 3B's own stated
+  incremental-indexing goal. `indexing/repository.py`'s `sync_chunks`
+  replaces that: it matches chunks by logical section
+  (`metadata->>'section'`) and only clears `embedding`/`embedding_model`
+  when `content_hash` actually differs — see
+  [`docs/adr/003-embedding-aware-chunk-sync.md`](../docs/adr/003-embedding-aware-chunk-sync.md)
+  and `indexing/README.md` "Persistence / re-indexing contract" for the
+  full fix. Verified against the real production `QE65S95HAUXPY` row: a
+  live rebuild preserved all 7 chunks' embeddings byte-for-byte (SHA-256
+  fingerprint match on Postgres's own vector text rendering), and a
+  follow-up run of this workflow correctly found zero pending chunks and
+  never executed the `OpenAI: Create Embeddings` node at all (confirmed
+  via `GET /executions/{id}?includeData=true`, not assumed from timing).
+  This workflow's own contract and nodes were **not changed** by that fix
+  — `embedding IS NULL` was always the correct thing for `Count/Get
+  chunks pending embedding` to check; it was the Python side that needed
+  to stop clearing that column unnecessarily.
 - **No webhook/API trigger was added.** Considered (to let this agent
   trigger executions programmatically) and deliberately not done — it
   would require activating the workflow on the shared, production n8n

@@ -89,6 +89,18 @@ against `match_product_chunks()` returned sensible, correctly-ranked
 results. **The full catalog has not been indexed and the AI Agent has
 not started** — this phase stopped at its review gate by design.
 
+Phase 3B.1 fixed a real regression discovered from that acceptance test:
+Phase 3A's chunk persistence deleted and re-inserted every chunk on
+every rebuild, silently discarding real embeddings the moment they
+existed. `indexing/repository.py`'s `sync_chunks` (see
+[docs/adr/003-embedding-aware-chunk-sync.md](docs/adr/003-embedding-aware-chunk-sync.md))
+now matches chunks by logical section and only clears an embedding when
+its `content_hash` actually changed. Verified against the real
+`QE65S95HAUXPY` production row (rebuilt live — all 7 embeddings preserved
+byte-for-byte) and against a disposable database for the changed/new/
+removed-chunk cases. Still only one product indexed; full catalog and
+the 21-case benchmark remain not run.
+
 ## Legacy
 
 This project evolves two earlier n8n prototypes, preserved here as
@@ -139,17 +151,23 @@ one pipeline's role for another:
   behind the n8n credential **`Samsung RAG PostgreSQL`**, created
   manually by the project owner for Phase 3B's n8n workflows — its
   password was never requested, read, or reset by this codebase.
-- **`samsung_indexing_cli`** (Phase 3B, agent-side only): identical
-  grants to `samsung_indexing`, but a separate role/credential used only
-  for this agent's own local `python -m indexing` CLI runs and
-  verification queries, so local tooling never needs to know or touch
-  the password behind the n8n-linked `samsung_indexing` credential.
 
-Both `samsung_ingestion` and `samsung_indexing`/`samsung_indexing_cli`
-are **not** superusers and have **no** `CREATEDB`/`CREATEROLE`, and none
-has any grant on `finance_tracker`. See `ingestion/README.md` /
-`indexing/README.md` / `workflows/README.md` and the Phase 2/3A/3B final
-reports for how each was created and verified (role attributes +
+A third, temporary role (`samsung_indexing_cli`) existed briefly during
+Phase 3B for this codebase's own local CLI verification, so local tooling
+never had to know or touch the password behind the n8n-linked
+`samsung_indexing` credential. It has since been **dropped** (Phase
+3B.1, after confirming it owned no objects and had no dependents) once
+it was confirmed nothing else referenced it — see the Phase 3B.1 final
+report. Local CLI/test verification against a real database now uses
+either a disposable Docker container (`tests/run_db_tests.sh`) or a
+similarly-scoped role created fresh for the occasion, not a standing
+credential.
+
+Both `samsung_ingestion` and `samsung_indexing` are **not** superusers
+and have **no** `CREATEDB`/`CREATEROLE`, and neither has any grant on
+`finance_tracker`. See `ingestion/README.md` / `indexing/README.md` /
+`workflows/README.md` and the Phase 2/3A/3B final reports for how each
+was created and verified (role attributes +
 `information_schema.role_table_grants` checked directly, not assumed).
 `DATABASE_URL` / `INDEXING_DATABASE_URL` live only in a git-ignored local
 `.env` (see `.env.example`), reached via

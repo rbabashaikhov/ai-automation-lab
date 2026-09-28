@@ -1,43 +1,83 @@
 """PostgreSQL persistence against the existing Phase 1 `documents`/`chunks`
 schema -- no schema changes.
 
-## Upsert / re-indexing strategy
+## Upsert strategy: documents
 
-`INSERT ... ON CONFLICT (product_id, document_type) DO UPDATE` for
-`documents` (the schema's own enforced identity: at most one *current*
-row per product per type -- see db/migrations/004_rag.sql and
-db/README.md "Re-indexing", read directly rather than assumed). Chunks
-are replaced wholesale per document per rebuild (delete-then-bulk-insert
-in one transaction) -- see `chunker.py` module docstring "Stable chunk
-identity" for why this is the safest strategy the current schema
-supports.
+`INSERT ... ON CONFLICT (product_id, document_type) DO UPDATE` (the
+schema's own enforced identity: at most one *current* row per product per
+type -- see db/migrations/004_rag.sql and db/README.md "Re-indexing",
+read directly rather than assumed) always preserves the document's `id`.
+The `DO UPDATE ... WHERE` clause additionally skips the write entirely
+when neither `content_hash` nor `metadata` actually changed, so rebuilding
+an unchanged product doesn't even bump `updated_at` (`set_updated_at()`'s
+trigger only fires on rows an `UPDATE` statement actually touches).
 
-## `embedding` / `embedding_model` for Phase 3A rows
+## Upsert strategy: chunks (Phase 3B.1 -- embedding-aware sync)
 
-`embedding` is left `NULL` by omitting it from the INSERT column list --
-the column has no default and allows NULL, so this is unambiguous: every
-chunk this module writes has `embedding IS NULL` until Phase 3B.
+Phase 3A originally deleted and re-inserted every one of a document's
+chunks on every rebuild, unconditionally discarding any embedding a
+chunk already had -- safe for "no embeddings exist yet" but wrong the
+moment embeddings do exist (see `docs/adr/003-embedding-aware-chunk-sync.md`
+for the full root-cause writeup and the alternatives considered).
+`sync_chunks` replaces that: it matches each newly-built chunk against
+the document's *existing* chunks by **logical section**
+(`metadata->>'section'`, e.g. `"gaming"` -- already a stable, deterministic
+identity per chunk per document by construction, see `chunker.py`
+`SECTION_ORDER`; never array position), then per matched pair:
 
-`embedding_model` is a different story: the schema declares it
-`NOT NULL DEFAULT 'text-embedding-3-small'` (see
-db/migrations/004_rag.sql) -- there is no legal way to store NULL there.
-This module does not fight that constraint by inserting a placeholder
-value of its own; it simply omits the column too, so the schema's own
-default applies. That default string is **not** a claim that an
-embedding exists for that model -- `embedding IS NULL` is the only
-authoritative "no embedding yet" signal, and every query/report in this
-phase checks `embedding`, never `embedding_model`, to determine that.
+- **same `content_hash`** -> the existing row is updated in place
+  (`chunk_index`, `metadata` only) and its `embedding`/`embedding_model`
+  are **never referenced in the SQL at all** -- there is no way for this
+  code to clear a value it never touches, which is the actual guarantee,
+  not just an intention.
+- **different `content_hash`** -> the existing row is updated
+  (`content`, `content_hash`, `metadata`, `chunk_index`) *and*
+  `embedding` is explicitly reset to `NULL` (`embedding_model` reset to
+  its schema default -- see "`embedding_model` caveat" below), so the
+  n8n indexing workflow picks it back up on its next run.
+- **no existing row for that section** -> a fresh row is inserted,
+  `embedding` absent (`NULL` by omission).
+- **an existing row's section no longer appears in the new build** -> that
+  row is deleted (a stale logical chunk).
+
+`content_hash` is the sole authority for "does the existing embedding
+still represent this content" -- never `embedding IS NOT NULL` (an
+already-cleared or never-embedded chunk must still go through the exact
+same content-hash comparison, not be special-cased).
+
+### Avoiding `UNIQUE (document_id, chunk_index)` collisions mid-sync
+
+If the *set* of sections present changes (a section is added or removed
+somewhere before the end of `SECTION_ORDER`), later sections' target
+`chunk_index` shifts. Applying those shifts as naive per-row `UPDATE`s in
+arbitrary order can transiently collide with another still-live row's
+current `chunk_index` and violate the unique constraint. `sync_chunks`
+avoids this without touching the schema (no deferrable constraint) by
+first moving every surviving row whose index will change to a guaranteed-
+unique negative placeholder (`-id`; real `chunk_index` values are always
+`>= 0`), then assigning final positions in a second pass -- so no two live
+rows ever simultaneously hold the same `chunk_index`.
+
+## `embedding_model` caveat (carried over from Phase 3A)
+
+The schema declares `embedding_model` `NOT NULL DEFAULT
+'text-embedding-3-small'` (db/migrations/004_rag.sql) -- there is no
+legal way to store NULL there. A newly-inserted or invalidated chunk gets
+that default (via column omission on INSERT, `= DEFAULT` on UPDATE), which
+is **not** a claim that an embedding of that model exists for it --
+`embedding IS NULL` remains the only authoritative "no embedding yet"
+signal, exactly as documented in Phase 3A; nothing about this phase's fix
+changes that.
 """
 
 from __future__ import annotations
 
 import json
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Iterator
 
 import psycopg2
-import psycopg2.extras
 
 from .builder import DocumentDraft
 from .chunker import ChunkDraft
@@ -64,14 +104,47 @@ ON CONFLICT (product_id, document_type) DO UPDATE SET
     content = EXCLUDED.content,
     content_hash = EXCLUDED.content_hash,
     metadata = EXCLUDED.metadata
+WHERE documents.content_hash IS DISTINCT FROM EXCLUDED.content_hash
+   OR documents.metadata IS DISTINCT FROM EXCLUDED.metadata
 RETURNING id, (xmax = 0) AS inserted;
 """
 
-_DELETE_CHUNKS_SQL = "DELETE FROM chunks WHERE document_id = %s;"
+# Fallback used only when the WHERE-guarded upsert above finds nothing to
+# insert or update (a true no-op rebuild) -- ON CONFLICT DO UPDATE ... WHERE
+# returns no row at all when the WHERE condition is false, so the caller
+# still needs the existing row's id.
+_SELECT_DOCUMENT_ID_SQL = """
+SELECT id FROM documents WHERE product_id = %(product_id)s AND document_type = %(document_type)s;
+"""
 
-_INSERT_CHUNKS_SQL = """
+_SELECT_EXISTING_CHUNKS_SQL = """
+SELECT id, metadata->>'section' AS section, content_hash, chunk_index
+FROM chunks WHERE document_id = %s;
+"""
+
+_DELETE_CHUNKS_BY_ID_SQL = "DELETE FROM chunks WHERE id = ANY(%s);"
+
+_PARK_CHUNK_INDEX_SQL = "UPDATE chunks SET chunk_index = -id WHERE id = ANY(%s);"
+
+_UPDATE_UNCHANGED_CHUNK_SQL = """
+UPDATE chunks SET chunk_index = %(chunk_index)s, metadata = %(metadata)s
+WHERE id = %(id)s;
+"""
+
+_UPDATE_CHANGED_CHUNK_SQL = """
+UPDATE chunks SET
+    chunk_index = %(chunk_index)s,
+    content = %(content)s,
+    content_hash = %(content_hash)s,
+    metadata = %(metadata)s,
+    embedding = NULL,
+    embedding_model = DEFAULT
+WHERE id = %(id)s;
+"""
+
+_INSERT_CHUNK_SQL = """
 INSERT INTO chunks (document_id, chunk_index, content, content_hash, metadata)
-VALUES %s
+VALUES (%(document_id)s, %(chunk_index)s, %(content)s, %(content_hash)s, %(metadata)s);
 """
 
 
@@ -90,10 +163,23 @@ def transaction(conn) -> Iterator[None]:
 
 
 @dataclass
+class ChunkSyncResult:
+    preserved: int = 0  # unchanged content_hash: row kept, embedding untouched
+    invalidated: int = 0  # changed content_hash: row updated, embedding cleared
+    inserted: int = 0  # new logical section: fresh row, embedding NULL
+    deleted: int = 0  # stale logical section: row removed
+
+    @property
+    def total(self) -> int:
+        return self.preserved + self.invalidated + self.inserted
+
+
+@dataclass
 class UpsertResult:
     document_id: int
     inserted: bool
     chunk_count: int
+    chunk_sync: ChunkSyncResult = field(default_factory=ChunkSyncResult)
 
 
 class IndexingRepository:
@@ -111,33 +197,100 @@ class IndexingRepository:
         }
         with self._conn.cursor() as cur:
             cur.execute(_UPSERT_DOCUMENT_SQL, params)
-            document_id, inserted = cur.fetchone()
-        return document_id, inserted
+            row = cur.fetchone()
+            if row is not None:
+                return row[0], row[1]
+            # WHERE guard found nothing to change -- true no-op rebuild.
+            # The row (and its id) already exists; just look it up.
+            cur.execute(
+                _SELECT_DOCUMENT_ID_SQL,
+                {"product_id": product_id, "document_type": draft.document_type},
+            )
+            document_id = cur.fetchone()[0]
+        return document_id, False
 
-    def replace_chunks(self, document_id: int, chunks: list[ChunkDraft]) -> None:
+    def sync_chunks(self, document_id: int, chunks: list[ChunkDraft]) -> ChunkSyncResult:
+        """Embedding-aware chunk sync -- see module docstring "Upsert
+        strategy: chunks" for the full algorithm and why."""
         with self._conn.cursor() as cur:
-            cur.execute(_DELETE_CHUNKS_SQL, (document_id,))
-            if not chunks:
-                return
-            values = [
-                (
-                    document_id,
-                    chunk.chunk_index,
-                    chunk.content,
-                    chunk.content_hash,
-                    json.dumps(chunk.metadata, ensure_ascii=False),
-                )
+            cur.execute(_SELECT_EXISTING_CHUNKS_SQL, (document_id,))
+            existing_by_section = {
+                section: {"id": row_id, "content_hash": content_hash, "chunk_index": chunk_index}
+                for row_id, section, content_hash, chunk_index in cur.fetchall()
+            }
+
+        new_sections = {chunk.section for chunk in chunks}
+        stale_ids = [
+            row["id"]
+            for section, row in existing_by_section.items()
+            if section not in new_sections
+        ]
+
+        result = ChunkSyncResult(deleted=len(stale_ids))
+
+        with self._conn.cursor() as cur:
+            if stale_ids:
+                cur.execute(_DELETE_CHUNKS_BY_ID_SQL, (stale_ids,))
+
+            # Park every surviving row whose target chunk_index differs from
+            # its current one at a guaranteed-unique negative placeholder
+            # first, so the second pass below can never collide with a
+            # still-live row on UNIQUE (document_id, chunk_index).
+            to_park = [
+                existing["id"]
                 for chunk in chunks
+                if (existing := existing_by_section.get(chunk.section)) is not None
+                and existing["chunk_index"] != chunk.chunk_index
             ]
-            psycopg2.extras.execute_values(cur, _INSERT_CHUNKS_SQL, values)
+            if to_park:
+                cur.execute(_PARK_CHUNK_INDEX_SQL, (to_park,))
+
+            for chunk in chunks:
+                metadata_json = json.dumps(chunk.metadata, ensure_ascii=False)
+                existing = existing_by_section.get(chunk.section)
+
+                if existing is None:
+                    cur.execute(
+                        _INSERT_CHUNK_SQL,
+                        {
+                            "document_id": document_id,
+                            "chunk_index": chunk.chunk_index,
+                            "content": chunk.content,
+                            "content_hash": chunk.content_hash,
+                            "metadata": metadata_json,
+                        },
+                    )
+                    result.inserted += 1
+                elif existing["content_hash"] == chunk.content_hash:
+                    cur.execute(
+                        _UPDATE_UNCHANGED_CHUNK_SQL,
+                        {"chunk_index": chunk.chunk_index, "metadata": metadata_json, "id": existing["id"]},
+                    )
+                    result.preserved += 1
+                else:
+                    cur.execute(
+                        _UPDATE_CHANGED_CHUNK_SQL,
+                        {
+                            "chunk_index": chunk.chunk_index,
+                            "content": chunk.content,
+                            "content_hash": chunk.content_hash,
+                            "metadata": metadata_json,
+                            "id": existing["id"],
+                        },
+                    )
+                    result.invalidated += 1
+
+        return result
 
     def save_document_with_chunks(
         self, product_id: int, document: DocumentDraft, chunks: list[ChunkDraft]
     ) -> UpsertResult:
         with transaction(self._conn):
             document_id, inserted = self.upsert_document(product_id, document)
-            self.replace_chunks(document_id, chunks)
-        return UpsertResult(document_id=document_id, inserted=inserted, chunk_count=len(chunks))
+            chunk_sync = self.sync_chunks(document_id, chunks)
+        return UpsertResult(
+            document_id=document_id, inserted=inserted, chunk_count=chunk_sync.total, chunk_sync=chunk_sync
+        )
 
 
 class ProductReader:
