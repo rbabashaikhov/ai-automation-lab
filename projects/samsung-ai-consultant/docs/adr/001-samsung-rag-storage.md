@@ -11,11 +11,11 @@ legacy n8n artifacts exist and were inspected directly (via the read-only
 `n8n_tool` CLI in this repository) as part of this decision, rather than
 assumed from memory:
 
-- **`Parsing`** (`exports/parsing/sanitized.json`) — scrapes a Samsung TV
+- **`Parsing`** (`workflows/legacy/parsing.sanitized.json`) — scrapes a Samsung TV
   catalog site, extracting per-product `id`, `mpn`, `sku`, `name`, `brand`,
   `category`, `price`, `salePrice`, `currency`, `stock`, `url`, `image`,
   and a free-text `specs_text`, and writes them to Google Sheets.
-- **`SuperRAG Agent`** (`exports/superrag-agent/sanitized.json`) — the
+- **`SuperRAG Agent`** (`workflows/legacy/superrag-agent.sanitized.json`) — the
   generic n8n "chat with your Google Drive files" community template,
   adapted with a Samsung-persona system prompt. It ingests arbitrary
   PDF/CSV/Excel/Docs files from Google Drive into Supabase Postgres:

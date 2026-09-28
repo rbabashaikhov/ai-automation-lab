@@ -14,7 +14,7 @@ for the architecture decision and what is deliberately deferred.
 ## Why not the legacy SuperRAG schema
 
 The legacy `SuperRAG Agent` n8n workflow (exported for reference at
-`exports/superrag-agent/sanitized.json`) is the generic n8n "chat with your
+`workflows/legacy/superrag-agent.sanitized.json`) is the generic n8n "chat with your
 Google Drive files" community template: it ingests arbitrary PDF/CSV/Excel
 files and stores everything as either full-text chunks in a `documents`
 table or, for tabular files, one row per spreadsheet row in
@@ -126,7 +126,7 @@ erDiagram
 **Decision: `UNIQUE (source, external_id)`, where `external_id` is the
 source site's own internal product id.**
 
-The legacy `Parsing` workflow (`exports/parsing/sanitized.json`) extracts,
+The legacy `Parsing` workflow (`workflows/legacy/parsing.sanitized.json`) extracts,
 per product: `id`, `mpn`, `sku`, `name`, `brand`, `category`, `price`,
 `salePrice`, `currency`, `stock`, `url`, `image`, `specs_text`. Its Google
 Sheets "Append or update row" nodes use **`id`** — the site's own internal

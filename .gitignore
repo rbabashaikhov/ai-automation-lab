@@ -19,7 +19,7 @@ dist/
 
 # Raw exports may contain sensitive data before sanitization is verified.
 # Only sanitized.json files are meant for Git; raw.json stays local.
-exports/**/raw.json
+tools/n8n-tool/exports/**/raw.json
 
 # OS
 .DS_Store
