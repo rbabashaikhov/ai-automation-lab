@@ -13,10 +13,13 @@ dependencies = [
 dev = [
     "pytest>=7.4",
 ]
+indexing = [
+    "tiktoken>=0.7",
+]
 
 [build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["ingestion", "ingestion.extractors"]
+packages = ["ingestion", "ingestion.extractors", "indexing"]

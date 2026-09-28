@@ -28,6 +28,9 @@ def db_conn():
     yield conn
     conn.rollback()
     with conn.cursor() as cur:
-        cur.execute("TRUNCATE products, product_specs, ingestion_runs, ingestion_errors RESTART IDENTITY CASCADE;")
+        cur.execute(
+            "TRUNCATE products, product_specs, ingestion_runs, ingestion_errors, "
+            "documents, chunks RESTART IDENTITY CASCADE;"
+        )
     conn.commit()
     conn.close()

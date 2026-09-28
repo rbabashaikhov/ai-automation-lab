@@ -61,6 +61,9 @@ export SAMSUNG_TEST_DATABASE_URL="postgresql://${DB_USER}:${DB_PASSWORD}@127.0.0
 
 echo "==> Running repository/idempotency tests"
 cd "${PROJECT_DIR}"
-python3 -m pytest tests/test_repository.py tests/test_idempotency.py -v
+python3 -m pytest \
+    tests/test_repository.py tests/test_idempotency.py \
+    tests/test_indexing_repository.py tests/test_indexing_service.py \
+    -v
 
 echo "==> All DB-backed tests passed"

@@ -38,11 +38,12 @@ for the full reasoning behind that split.
 ## Current status
 
 ```text
-Phase 1 — Database Schema & Migrations: COMPLETE
-Phase 2 — Product Ingestion:            COMPLETE (full catalog crawled and retained; n8n orchestration still pending)
-Phase 3 — RAG Indexing:                 PLANNED
-Phase 4 — AI Consultant:                PLANNED
-Phase 5 — Evaluation / Observability:   PLANNED
+Phase 1 — Database Schema & Migrations:        COMPLETE
+Phase 2 — Product Ingestion:                   COMPLETE (full catalog crawled and retained; n8n orchestration still pending)
+Phase 3A — Document & Retrieval Design:        COMPLETE (no embeddings yet)
+Phase 3B — Embeddings & Vector Retrieval:      NEXT
+Phase 4 — AI Consultant:                       PLANNED
+Phase 5 — Evaluation / Observability:          PLANNED
 ```
 
 Phase 1 shipped the PostgreSQL + pgvector schema and migrations — see
@@ -60,8 +61,19 @@ against the real `samsung_rag` database — 75/75 succeeded both times,
 0 failures, confirmed idempotent (see "Full-catalog production run" in
 [ingestion/README.md](ingestion/README.md) for counts, distributions, and
 QA findings) — and **the resulting 75 products / 4151 spec rows are
-retained as production data**, not test rows. RAG indexing, the AI
-Agent, and n8n orchestration of this pipeline are still not started.
+retained as production data**, not test rows.
+
+Phase 3A shipped a deterministic `documents`/`chunks` builder
+(`indexing/`, see [indexing/README.md](indexing/README.md) and
+[docs/adr/002-rag-document-chunking-design.md](docs/adr/002-rag-document-chunking-design.md))
+that turns `products`/`product_specs` into RAG-ready document/chunk text
+and metadata — **no embeddings API calls, `embedding` stays `NULL`**.
+Verified against the full real 75-product corpus and a small production
+integration test (persisted, verified, then cleaned back to
+`documents: 0 / chunks: 0`). A 21-case retrieval evaluation dataset
+(`evaluation/retrieval_cases.json`) grounded entirely in real catalog
+data is the baseline for Phase 3B. The AI Agent and n8n orchestration of
+either pipeline are still not started.
 
 ## Legacy
 
@@ -87,23 +99,34 @@ assumed from memory.
 projects/samsung-ai-consultant/
 ├── db/                 # PostgreSQL + pgvector schema, migrations, local tests
 ├── docs/adr/           # architecture decision records
+├── evaluation/          # retrieval_cases.json -- Phase 3B evaluation baseline
 ├── ingestion/          # Phase 2: GalaxyStore catalog ingestion pipeline (Python)
-├── tests/              # ingestion unit tests + fixtures + disposable-DB test runner
+├── indexing/            # Phase 3A: documents/chunks builder (no embeddings) (Python)
+├── tests/              # unit tests + fixtures + disposable-DB test runner (both pipelines)
 └── workflows/legacy/   # sanitized reference exports of prior n8n prototypes
 ```
 
-## Database access for ingestion
+## Database access
 
-The ingestion pipeline connects to `samsung_rag` as its own least-privilege
-Postgres role, `samsung_ingestion` — created directly via `docker exec psql`
-on the VPS (never by extracting the `n8n` role's own credential). It is
-**not** a superuser and has **no** `CREATEDB`/`CREATEROLE`, and its grants
-are scoped to exactly `SELECT/INSERT/UPDATE` on `products` and
-`ingestion_runs`, `SELECT/INSERT/UPDATE/DELETE` on `product_specs`,
-`SELECT/INSERT` on `ingestion_errors`, plus `USAGE`/`SELECT` on those four
-tables' sequences — nothing on `documents`/`chunks` (Phase 3) and nothing
-on `finance_tracker`. See `ingestion/README.md` and the Phase 2 final
-report for how this was created and verified. `DATABASE_URL` for this role
-lives only in a git-ignored local `.env` (see `.env.example`), reached via
+Each pipeline connects to `samsung_rag` as its own least-privilege
+Postgres role — created directly via `docker exec psql` on the VPS,
+**never** by extracting the `n8n` role's own credential, and never reusing
+one pipeline's role for another:
+
+- **`samsung_ingestion`** (Phase 2): `SELECT/INSERT/UPDATE` on `products`
+  and `ingestion_runs`, `SELECT/INSERT/UPDATE/DELETE` on `product_specs`,
+  `SELECT/INSERT` on `ingestion_errors`, plus `USAGE`/`SELECT` on those
+  four tables' sequences. No access to `documents`/`chunks`.
+- **`samsung_indexing`** (Phase 3A): `SELECT` only on `products` and
+  `product_specs` (read-only — this pipeline never writes ingestion's
+  tables), full `SELECT/INSERT/UPDATE/DELETE` on `documents` and
+  `chunks`, plus `USAGE`/`SELECT` on their sequences.
+
+Both roles are **not** superusers and have **no** `CREATEDB`/`CREATEROLE`,
+and neither has any grant on `finance_tracker`. See `ingestion/README.md`
+/ `indexing/README.md` and the Phase 2/3A final reports for how each was
+created and verified (role attributes + `information_schema.role_table_grants`
+checked directly, not assumed). `DATABASE_URL` / `INDEXING_DATABASE_URL`
+live only in a git-ignored local `.env` (see `.env.example`), reached via
 an SSH tunnel to the VPS's Postgres port (published to `127.0.0.1:5432`
 on the VPS host only, not public).

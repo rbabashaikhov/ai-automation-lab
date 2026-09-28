@@ -1,0 +1,201 @@
+{
+  "_meta": {
+    "description": "Phase 3A retrieval evaluation dataset for the Samsung AI Consultant. Baseline for Phase 3B retrieval evaluation once embeddings exist -- see projects/samsung-ai-consultant/indexing/README.md 'Evaluation dataset'. All product_ids/model_codes are real rows from the production samsung_rag catalog (75 products) as of 2026-09-28; none are fabricated. 'expected_mechanism' states, per the evaluation philosophy in the task brief, whether structured SQL filtering alone is sufficient, whether semantic/vector search is what actually does the work, or whether both are needed -- this is a design prediction to test against, not a claim that retrieval has already been evaluated (no embeddings exist yet in Phase 3A).",
+    "catalog_snapshot": {"products": 75, "product_specs": 4151, "source": "galaxystore"},
+    "expected_mechanism_values": ["sql_sufficient", "vector_primary", "sql_plus_vector", "aggregate_not_retrieval"]
+  },
+  "cases": [
+    {
+      "id": "exact-model-code",
+      "query": "QE65S95HAUXPY",
+      "intent": "exact_lookup",
+      "expected_mechanism": "sql_sufficient",
+      "filters": {"model_code": "QE65S95HAUXPY"},
+      "relevant_product_ids": ["QE65S95HAUXPY"],
+      "notes": "Bare model code. A direct WHERE model_code = ... lookup already solves this; embeddings add nothing here."
+    },
+    {
+      "id": "exact-model-code-with-brand",
+      "query": "Samsung QE85QN70HAUXPY",
+      "intent": "exact_lookup",
+      "expected_mechanism": "sql_sufficient",
+      "filters": {"model_code": "QE85QN70HAUXPY"},
+      "relevant_product_ids": ["QE85QN70HAUXPY"],
+      "notes": "Brand + model code. Still a trivial exact match once the model code is parsed out of the query text."
+    },
+    {
+      "id": "exact-lookup-conversational",
+      "query": "расскажи про модель UE27LSM7FAXXPY",
+      "intent": "exact_lookup",
+      "expected_mechanism": "sql_sufficient",
+      "filters": {"model_code": "UE27LSM7FAXXPY"},
+      "relevant_product_ids": ["UE27LSM7FAXXPY"],
+      "notes": "Conversational phrasing around an exact model code -- tests that the model code is extracted correctly, not embedding quality."
+    },
+    {
+      "id": "structured-oled-65",
+      "query": "OLED 65 дюймов",
+      "intent": "structured_selection",
+      "expected_mechanism": "sql_sufficient",
+      "filters": {"panel_technology": "OLED", "screen_size_inches": 65},
+      "relevant_product_ids": ["QE65S95HAUXPY", "QE65S85HAEXPY", "QE65S90HAEXPY"],
+      "notes": "Pure typed-attribute filter (panel_technology + screen_size_inches). All 3 real 65\" OLED products in the catalog; ranking among them, if needed, is a secondary concern, not what makes this query answerable at all."
+    },
+    {
+      "id": "structured-neo-qled-75-120hz",
+      "query": "Neo QLED 75 дюймов 120 Гц",
+      "intent": "structured_selection",
+      "expected_mechanism": "sql_sufficient",
+      "filters": {"panel_technology": "Neo QLED", "screen_size_inches": 75, "refresh_rate_hz": 120},
+      "relevant_product_ids": ["QE75QN80HAUXPY", "QE75LS03HWUXPY"],
+      "notes": "Three typed filters combined. QE75QN70HAUXPY and QE75QN1EHAUXPY are also 75\"/Neo QLED but only 60Hz, so they must NOT match -- tests that refresh_rate_hz is actually enforced, not just panel+size."
+    },
+    {
+      "id": "structured-budget-under-30k",
+      "query": "телевизор до 30000 рублей",
+      "intent": "structured_selection",
+      "expected_mechanism": "sql_sufficient",
+      "filters": {"max_effective_price": 30000},
+      "relevant_product_ids": ["UE32F6000FUXRU", "UE32H5000FUXRU", "UE43F6000FUXRU"],
+      "notes": "Price ceiling. 'до 30000' should use the effective (discounted, i.e. COALESCE(sale_price, price)) price, not the undiscounted list price -- none of these 3 happen to have an active sale_price, but a future case/product with one would need this handled correctly."
+    },
+    {
+      "id": "structured-largest-oled",
+      "query": "самый большой OLED телевизор",
+      "intent": "structured_selection",
+      "expected_mechanism": "aggregate_not_retrieval",
+      "filters": {"panel_technology": "OLED", "order_by": "screen_size_inches DESC", "limit": 1},
+      "relevant_product_ids": ["QE83S85HAEXPY", "QE83S95HAEXPY", "QE83S90HAEXPY"],
+      "notes": "Superlative ('самый большой') is a MAX()/ORDER BY...LIMIT aggregate question, not a similarity-ranked retrieval question -- chunk/vector retrieval is the wrong tool entirely here. Three real 83\" OLED products tie for the maximum; a correct answer must surface all three or explicitly note the tie, not silently pick one."
+    },
+    {
+      "id": "semantic-gaming-console",
+      "query": "телевизор для игровой приставки",
+      "intent": "semantic_feature_intent",
+      "expected_mechanism": "vector_primary",
+      "filters": {},
+      "relevant_product_ids": ["QE65S95HAUXPY", "QE65QN80HAUXPY", "MRE55R85HAUXPY"],
+      "notes": "No typed column captures 'good for consoles' -- it depends on free-text gaming specs (Game Bar, FreeSync Premium Pro, ALLM, ultra-wide game view) that only exist in product_specs / the gaming chunk. 11/75 products (all budget LED/HD/FHD models, the 114\" Micro LED display, the portable Movingstyle, and the entire M1E Mini LED sub-line) have NO gaming-section specs at all and must be ranked low/excluded -- verified directly against the corpus, not assumed."
+    },
+    {
+      "id": "semantic-bright-room",
+      "query": "для светлой комнаты",
+      "intent": "semantic_feature_intent",
+      "expected_mechanism": "vector_primary",
+      "filters": {},
+      "relevant_product_ids": ["QE65QN80HAUXPY", "MRE65R85HAUXPY", "UE65M80HAUXPY"],
+      "notes": "There is no 'peak brightness' or 'anti-glare' typed column at all -- this is entirely a semantic-text question over spec values like 'Антибликовое покрытие' and contrast/brightness technology names. OLED products are typically the WORSE match for this intent despite being the 'flagship' panel technology, which makes it a good test that ranking isn't just proxying panel-technology prestige."
+    },
+    {
+      "id": "semantic-movies",
+      "query": "телевизор для фильмов",
+      "intent": "semantic_feature_intent",
+      "expected_mechanism": "vector_primary",
+      "filters": {},
+      "relevant_product_ids": ["QE65S95HAUXPY", "QE77S90HAUXPY", "QE55S95HAUXPY"],
+      "notes": "Driven by 'Режим режиссера (Filmmaker Mode)' + Dolby Atmos + HDR spec text (62/75 products have Dolby Atmos; Filmmaker Mode is OLED-line specific in the observed corpus) -- no typed column encodes 'good for movies'."
+    },
+    {
+      "id": "semantic-sound-without-soundbar",
+      "query": "хочу хороший звук без отдельного саундбара",
+      "intent": "semantic_feature_intent",
+      "expected_mechanism": "vector_primary",
+      "filters": {},
+      "relevant_product_ids": ["QE65S95HAUXPY", "QE55S95HAUXPY"],
+      "notes": "'Мощность звука, Вт' is a real spec value (product_specs, not a typed column) -- the S95H OLED line's 70W is the highest observed in the sampled corpus vs. a common 20W baseline elsewhere, plus richer 'Технологии улучшения звука' text (360 Audio, Active Voice Amplifier Pro, Q-Symphony). Depends on comparing free-text spec content across candidates, not a single filterable number."
+    },
+    {
+      "id": "semantic-thin-wall-mount",
+      "query": "тонкий телевизор на стену",
+      "intent": "semantic_feature_intent",
+      "expected_mechanism": "vector_primary",
+      "filters": {},
+      "relevant_product_ids": ["QE65S95HAUXPY", "QE55S95HAUXPY", "QE77S95HAEXPY"],
+      "notes": "'Размер без подставки (ШxВxГ)' depth (QE65S95HAUXPY measures 2.64 cm deep without its stand, verified in its own spec row) is real signal for this intent but is embedded in a compound dimension string, not a standalone 'depth' column -- must be read from spec text."
+    },
+    {
+      "id": "hybrid-oled-65-ps5",
+      "query": "OLED 65 дюймов для PS5",
+      "intent": "hybrid",
+      "expected_mechanism": "sql_plus_vector",
+      "filters": {"panel_technology": "OLED", "screen_size_inches": 65},
+      "relevant_product_ids": ["QE65S95HAUXPY"],
+      "notes": "SQL narrows to exactly the 3 real 65\" OLED products (same set as 'structured-oled-65'); semantic ranking over their gaming specs should then prefer QE65S95HAUXPY, whose spec text explicitly names 'FreeSync Premium Pro' and 'Variable Refresh Rate', over the other two 65\" OLEDs which lack that specific spec text. Tests that hybrid retrieval actually re-ranks the SQL result set instead of just returning it unordered."
+    },
+    {
+      "id": "hybrid-neo-qled-budget-gaming",
+      "query": "Neo QLED до 200 тысяч для игр",
+      "intent": "hybrid",
+      "expected_mechanism": "sql_plus_vector",
+      "filters": {"panel_technology": "Neo QLED", "max_effective_price": 200000},
+      "relevant_product_ids": ["QE55QN80HAUXPY", "QE65QN80HAUXPY"],
+      "notes": "SQL filter (panel + price ceiling) admits 7 Neo QLED products under 200k; semantic gaming-intent ranking should favor the two 120Hz QN80H models over the cheaper-but-60Hz QN70H/QN1E models at the same panel technology -- refresh_rate_hz is a typed column here, but 'для игр' as free text is what should drive the actual preference, showing SQL alone under- or over-includes without the semantic signal."
+    },
+    {
+      "id": "hybrid-large-120hz-good-sound",
+      "query": "большой телевизор 120 Гц с хорошим звуком",
+      "intent": "hybrid",
+      "expected_mechanism": "sql_plus_vector",
+      "filters": {"min_screen_size_inches": 75, "refresh_rate_hz": 120},
+      "relevant_product_ids": ["QE77S95HAEXPY", "QE83S95HAEXPY"],
+      "notes": "SQL filter (size >= 75\" AND 120Hz) admits a wide field across every panel technology; 'хороший звук' should re-rank toward the S95H OLED sub-line on audio spec richness. Audio wattage/technology text should be read per-product from its own specs, not assumed uniform across a model line."
+    },
+    {
+      "id": "difficult-cheapest-superlative",
+      "query": "самый дешёвый телевизор",
+      "intent": "difficult_ambiguous",
+      "expected_mechanism": "aggregate_not_retrieval",
+      "filters": {"order_by": "effective_price ASC", "limit": 1},
+      "relevant_product_ids": ["UE32H5000FUXRU"],
+      "notes": "Another MIN()/ORDER BY...LIMIT aggregate, not similarity retrieval -- included specifically because 'cheapest' is ambiguous between list price and effective (discounted) price: by list price UE32H5000FUXRU (22990) is already cheapest, but a naive query ignoring sale_price could wrongly answer with a product whose discounted price is actually lower than its own list price yet higher than 22990. Tests whether the system computes effective price correctly, not chunk retrieval quality."
+    },
+    {
+      "id": "difficult-vrr-buried-in-spec-value",
+      "query": "телевизор с поддержкой VRR (Variable Refresh Rate)",
+      "intent": "difficult_ambiguous",
+      "expected_mechanism": "vector_primary",
+      "filters": {},
+      "relevant_product_ids": ["QE65S95HAUXPY", "QE55S95HAUXPY", "MRE55R85HAUXPY"],
+      "notes": "'Variable Refresh Rate' is not its own spec_name or typed column -- it appears as one item inside the multi-value 'Другие технологии оптимизации изображения' spec on 34/75 products (verified directly against the corpus). A keyword match on the literal spec_name would find nothing; this can only be answered from full spec-value text, making it a strong semantic-retrieval-only case."
+    },
+    {
+      "id": "difficult-budget-vs-large-tradeoff",
+      "query": "недорогой телевизор с большой диагональю",
+      "intent": "difficult_ambiguous",
+      "expected_mechanism": "sql_plus_vector",
+      "filters": {},
+      "relevant_product_ids": ["UE75U8000HUXPY", "UE65U8000HUXPY"],
+      "notes": "Inherently conflicting constraints (cheap AND large) with no single objectively correct answer -- Crystal UHD/LED products are the real 'large but relatively affordable' tier (65-75\" from ~74-95k RUB) versus premium OLED/Neo QLED/Micro RGB at the same size costing 3-10x more. A good system should surface the tradeoff, not silently pick one axis. UE70U8000HUXPY (70\") was deliberately excluded from relevant_product_ids despite fitting the size/price profile because it is currently is_available = false in production."
+    },
+    {
+      "id": "difficult-stale-year-in-name",
+      "query": "телевизор Samsung The Frame 2023 года",
+      "intent": "difficult_ambiguous",
+      "expected_mechanism": "sql_plus_vector",
+      "filters": {"category": "The Frame"},
+      "relevant_product_ids": ["QE32LS03CBUXRU"],
+      "notes": "Deliberately targets a real, already-documented data inconsistency (see Phase 2 final report and ingestion/README.md): QE32LS03CBUXRU's product NAME literally contains '(2023)', but its structured 'Год выпуска' spec -- and therefore products.year -- correctly says 2026 (the source site's own assertion, not a scraping error). A query trusting the user's stated year over the structured `year` column would wrongly exclude this product from a year=2026 filter, or wrongly match it if filtering on name text alone. Tests which signal the retrieval system actually trusts."
+    },
+    {
+      "id": "semantic-portable-kitchen",
+      "query": "компактный телевизор на кухню",
+      "intent": "semantic_feature_intent",
+      "expected_mechanism": "vector_primary",
+      "filters": {"max_screen_size_inches": 32},
+      "relevant_product_ids": ["UE27LSM7FAXXPY", "UE32H5000FUXRU", "UE32F6000FUXRU"],
+      "notes": "Deliberately ambiguous between two different real product categories: UE27LSM7FAXXPY is a portable battery-style 'Дисплей' (The Movingstyle), not a conventional wall/stand TV, while the 32\" HD/FHD models are ordinary small TVs. Both are plausible 'kitchen' answers for different reasons (portability vs. small footprint) -- a good system should distinguish or present both framings rather than conflating them."
+    },
+    {
+      "id": "structured-unavailable-models",
+      "query": "какие модели сейчас нет в наличии",
+      "intent": "structured_selection",
+      "expected_mechanism": "sql_sufficient",
+      "filters": {"is_available": false},
+      "relevant_product_ids": [
+        "QE55QN1EHAUXPY", "QE65QN1EHAUXPY", "QE75QN1EHAUXPY", "QE98LS03HEUXPY",
+        "UE100M90HUXPY", "UE43U8000HUXPY", "UE55M1EHAUXPY", "UE70U8000HUXPY", "UE85M1EHAUXPY"
+      ],
+      "notes": "Pure boolean typed-column filter (is_available = false) -- exactly the 9 real products currently unavailable in production, per direct query. No semantic content involved at all; included as a control case at the 'SQL alone is clearly sufficient and correct' end of the spectrum."
+    }
+  ]
+}
