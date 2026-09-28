@@ -1,0 +1,776 @@
+{
+  "updatedAt": "2026-09-28T10:41:23.633Z",
+  "createdAt": "2026-09-28T10:38:46.473Z",
+  "id": "ZO8DXsaYdRGvk3cL",
+  "name": "Parsing",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "90947bec-377a-4738-aa83-efa1f672fad3",
+              "leftValue": "={{ $json._meta.nextUrl }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        272,
+        -48
+      ],
+      "id": "9eaeb0c2-610e-4fe7-b44b-d564f79c728a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -304,
+        -48
+      ],
+      "id": "ab5af255-568e-495f-8146-daa5d06e8516",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1_D3jlAIHwsTusXW3r53_vrRsBdV1Gn6GLsFOnw5GfVo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "producturls",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18u3fKh3qt_fYucNkgxr9heePhaynlsYQJzp9R7XXvUY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "mpn": "={{ $json.mpn }}",
+            "name": "={{ $json.name }}",
+            "url": "={{ $json.url }}",
+            "category": "={{ $json.category }}",
+            "price": "={{ $json.price }}",
+            "salePrice": "={{ $json.salePrice }}",
+            "currency": "={{ $json.currency }}",
+            "stock": "={{ $json.stock }}",
+            "brand": "={{ $json.brand }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "mpn",
+              "displayName": "mpn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "price",
+              "displayName": "price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "salePrice",
+              "displayName": "salePrice",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "currency",
+              "displayName": "currency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "stock",
+              "displayName": "stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "brand",
+              "displayName": "brand",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        656,
+        -64
+      ],
+      "id": "2b88a736-9ee9-4882-b259-4731290eba4e",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "btHcLBs63bjpKoGU",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2882dcde-b5f1-4038-a1fb-5b22ea426053",
+              "name": "url",
+              "value": "https://galaxystore.ru/catalog/televizory/year=2026/",
+              "type": "string"
+            },
+            {
+              "id": "ecc5d997-7922-48af-88d4-cf6c5309cd24",
+              "name": "page",
+              "value": 1,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -640,
+        -48
+      ],
+      "id": "ba6720d4-1b41-48c1-b9b1-ffa5ca67d46b",
+      "name": "Start page"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1_D3jlAIHwsTusXW3r53_vrRsBdV1Gn6GLsFOnw5GfVo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "urls",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_D3jlAIHwsTusXW3r53_vrRsBdV1Gn6GLsFOnw5GfVo/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -720,
+        256
+      ],
+      "id": "6c200b1b-a4e6-4419-a3f5-7e808b42bab4",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "btHcLBs63bjpKoGU",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -512,
+        256
+      ],
+      "id": "5485cd2e-3bbb-46ea-89f8-f7c52345ff75",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -304,
+        352
+      ],
+      "id": "96c21e9b-3579-455a-874e-dc595d3b916c",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -96,
+        -48
+      ],
+      "id": "2799880c-ef53-48c6-8cc5-05908d86c591",
+      "name": "Запрос к данных с источника"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Вход: items[0].json.body (или .data) — HTML страницы каталога\nconst html = (items?.[0]?.json?.body ?? items?.[0]?.json?.data ?? '').toString();\n\n// Универсальный извлекатель JSON после window.SOMETHING = {...};\nfunction extractJsonByPrefix(fullHtml, regexWithGroup1Json) {\n  const m = fullHtml.match(regexWithGroup1Json);\n  if (!m) return null;\n  const raw = m[1].trim();\n  try {\n    return JSON.parse(raw);\n  } catch (e) {\n    // Попытка подчистить хвосты ; или пробелы\n    const cleaned = raw.replace(/;?\\s*$/, '');\n    try { return JSON.parse(cleaned); } catch (e2) { return null; }\n  }\n}\n\n// 1) digitalData (основной, \"чистый\" список)\nconst dd = extractJsonByPrefix(\n  html,\n  /window\\.digitalData\\s*=\\s*(\\{[\\s\\S]*?\\})\\s*;/\n);\n\nlet catalog = [];\nif (dd?.listing?.items?.length) {\n  catalog = dd.listing.items.map(p => ({\n    id: p.id ?? p.productId ?? null,\n    mpn: p.mpnCode ?? null,\n    name: p.name ?? null,\n    url: p.url ?? null,\n    category: p.category ?? null,\n    price: p.unitPrice ?? null,\n    salePrice: p.unitSalePrice ?? null,\n    currency: p.currency ?? null,\n    stock: p.stock ?? null,\n    brand: p.brand ?? null,\n  }));\n}\n\n// 2) SM_PARAMS.catalog.items (добавим картинки/альт.цены/детальную ссылку)\nlet smCatalog = null;\n\n// Специально берём только вложение \"catalog: {...}\"\nconst smCatalogObj = extractJsonByPrefix(\n  html,\n  /window\\.SM_PARAMS\\s*=\\s*\\{\\s*[^]*?catalog\\s*:\\s*(\\{[\\s\\S]*?\\})\\s*[,}][\\s\\S]*?;\\s*\\/\\/?/ // более устойчиво к разметке\n);\n\nif (smCatalogObj?.items?.length) smCatalog = smCatalogObj.items;\n\n// Смерджим по id, если есть, иначе — по имени/URL как fallback\nconst byKey = new Map();\nfor (const x of catalog) {\n  const k = String(x.id ?? x.url ?? x.name ?? Math.random());\n  byKey.set(k, x);\n}\n\nif (Array.isArray(smCatalog)) {\n  for (const c of smCatalog) {\n    const k = String(c?.id ?? c?.detailUrl ?? c?.name ?? Math.random());\n    const target = byKey.get(k) || {};\n    target.id = target.id ?? c.id ?? null;\n    target.name = target.name ?? c.name ?? null;\n    target.detailUrl = c.detailUrl ?? target.detailUrl ?? null;\n    target.images = c.images ?? target.images ?? [];\n    // цены\n    target.priceSpecial = (c.prices && c.prices.special != null) ? c.prices.special : (target.priceSpecial ?? null);\n    target.priceRecommended = (c.prices && c.prices.recommended != null) ? c.prices.recommended : (target.priceRecommended ?? null);\n    byKey.set(k, target);\n  }\n}\n\nlet itemsOut = Array.from(byKey.values());\n\n// 3) Пагинация: <link rel=\"next\" href=\"...\">\nlet nextUrl = null;\nconst nextMatch = html.match(/<link[^>]+rel=[\"']next[\"'][^>]+href=[\"']([^\"']+)[\"']/i);\nif (nextMatch) nextUrl = nextMatch[1];\n\n// 4) Метаданные листинга (если есть в digitalData)\nconst _meta = {\n  resultCount: dd?.listing?.resultCount ?? null,\n  pagesCount: dd?.listing?.pagesCount ?? null,\n  currentPage: dd?.listing?.currentPage ?? null,\n  nextUrl,\n};\n\n// Возвращаем: массив товаров + один служебный айтем с _meta\nconst out = itemsOut.map(p => ({ json: p }));\nout.push({ json: { _meta } });\nreturn out;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        64,
+        -48
+      ],
+      "id": "0c5e22c7-aae3-4000-830b-eb4394868b61",
+      "name": "Преобразование результатов в табличный вид"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "efad1655-dce6-4932-adbe-4a1e4f5f6273",
+              "name": "url",
+              "value": "={{ $('If').item.json._meta.nextUrl }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        -256
+      ],
+      "id": "04bb5bc3-9031-43b7-b30b-d6ca44392ba0",
+      "name": "Пагинация"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1_D3jlAIHwsTusXW3r53_vrRsBdV1Gn6GLsFOnw5GfVo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1215297823,
+          "mode": "list",
+          "cachedResultName": "products",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_D3jlAIHwsTusXW3r53_vrRsBdV1Gn6GLsFOnw5GfVo/edit#gid=1215297823"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "mpn",
+              "displayName": "mpn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sku",
+              "displayName": "sku",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "brand",
+              "displayName": "brand",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "price",
+              "displayName": "price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "salePrice",
+              "displayName": "salePrice",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "currency",
+              "displayName": "currency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "stock",
+              "displayName": "stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "image",
+              "displayName": "image",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "specs_text",
+              "displayName": "specs_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        112,
+        352
+      ],
+      "id": "a315e345-54ca-4b16-b5fc-a2a167327060",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "btHcLBs63bjpKoGU",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        352
+      ],
+      "id": "9dc6c066-c26e-4e3d-8ee1-590065afad8b",
+      "name": "Wait",
+      "webhookId": "76086e7f-ceb0-42ab-805f-b6f828740ced"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * INPUT:  items[0].json.body (или .data) — HTML карточки\n * OUTPUT: один айтем с базовыми полями + specs_text (чистый текст) + category\n */\n\nconst html = (items?.[0]?.json?.body ?? items?.[0]?.json?.data ?? '').toString();\n\n// ---------- helpers ----------\nfunction num(x){ if(x==null) return null; const v=Number(String(x).replace(/[^\\d.,-]/g,'').replace(',','.')); return Number.isFinite(v)?v:null; }\nfunction decodeHtml(s) {\n  if (!s) return '';\n  const map = { '&quot;':'\"', '&apos;':\"'\", '&amp;':'&', '&lt;':'<', '&gt;':'>', '&nbsp;':' ' };\n  s = s.replace(/&(?:quot|apos|amp|lt|gt|nbsp);/g, m => map[m] || m);\n  s = s.replace(/&#(\\d+);/g, (_, d) => String.fromCharCode(parseInt(d,10)));\n  s = s.replace(/&#x([\\da-fA-F]+);/g, (_, h) => String.fromCharCode(parseInt(h,16)));\n  return s;\n}\nfunction extractJsonByPrefix(fullHtml, re) {\n  const m = fullHtml.match(re);\n  if (!m) return null;\n  const raw = m[1].trim();\n  try { return JSON.parse(raw); }\n  catch {\n    const cleaned = raw.replace(/;?\\s*$/, '');\n    try { return JSON.parse(cleaned); } catch { return null; }\n  }\n}\n\n// ---------- базовые поля из digitalData ----------\nconst dd = extractJsonByPrefix(html, /window\\.digitalData\\s*=\\s*(\\{[\\s\\S]*?\\})\\s*;/);\nconst ddp = dd?.product || null;\n\nconst id   = ddp?.id ?? ddp?.productId ?? null;\nconst sku  = ddp?.id ?? null;\nconst mpn  = ddp?.mpnCode ?? null;\nconst name = decodeHtml(ddp?.name ?? '');\nconst brand = ddp?.brand ?? null;\nconst price = num(ddp?.unitPrice);\nconst salePrice = num(ddp?.unitSalePrice);\nconst currency = ddp?.currency ?? 'RUB';\nconst stock = (typeof ddp?.stock === 'number') ? ddp.stock : null;\nconst url  = ddp?.url ?? (items?.[0]?.json?.url ?? null);\n\n// ---------- CATEGORY: 3 источника ----------\nlet category = null;\n\n// 1) digitalData.product.category — строка с путём, возьмём последний сегмент\nif (typeof ddp?.category === 'string' && ddp.category.trim()) {\n  const parts = ddp.category.split('/').filter(Boolean);\n  if (parts.length) category = parts[parts.length - 1];\n}\n\n// 2) BreadcrumbList из ld+json — берём последний пункт\nif (!category) {\n  const ldBlocks = [];\n  const reLD = /<script[^>]+type=[\"']application\\/ld\\+json[\"'][^>]*>([\\s\\S]*?)<\\/script>/gi;\n  let m;\n  while ((m = reLD.exec(html)) !== null) {\n    try {\n      const obj = JSON.parse(m[1].trim());\n      if (Array.isArray(obj)) ldBlocks.push(...obj);\n      else ldBlocks.push(obj);\n    } catch {}\n  }\n  const breadcrumb = ldBlocks.find(x => x && x['@type'] === 'BreadcrumbList');\n  if (breadcrumb?.itemListElement?.length) {\n    const last = breadcrumb.itemListElement[breadcrumb.itemListElement.length - 1];\n    const nameCrumb = (last?.item?.name || last?.name || '').trim();\n    if (nameCrumb) category = nameCrumb;\n  }\n}\n\n// 3) если ничего — оставим null\n\n// ---------- главная картинка ----------\nlet image = null;\nconst og = html.match(/<meta[^>]+property=[\"']og:image[\"'][^>]+content=[\"']([^\"']+)[\"']/i);\nif (og) image = og[1];\n\n// ---------- SPECS: «бульдозер» по grouped ----------\nfunction extractGroupedArrayChunk(source) {\n  let pos = source.search(/specifications\\s*[\"']?\\s*:\\s*\\{/i);\n  if (pos === -1) pos = source.search(/[\"']grouped[\"']\\s*:\\s*\\[/i);\n  if (pos === -1) return null;\n  const startGrouped = source.indexOf('[', pos);\n  if (startGrouped === -1) return null;\n  let i = startGrouped, depth = 0, inStr = false, q = '';\n  for (; i < source.length; i++) {\n    const ch = source[i], prev = source[i-1];\n    if (inStr) { if (ch === q && prev !== '\\\\') inStr = false; }\n    else {\n      if (ch === '\"' || ch === \"'\") { inStr = true; q = ch; }\n      else if (ch === '[') depth++;\n      else if (ch === ']') { depth--; if (depth === 0) { i++; break; } }\n    }\n  }\n  return source.slice(startGrouped, i);\n}\n\nlet specs_text = '';\n(function buildSpecs() {\n  let grouped = null;\n  const chunk = extractGroupedArrayChunk(html);\n  if (chunk) {\n    try { grouped = JSON.parse(chunk); }\n    catch {\n      const sanitized = chunk.replace(/,\\s*]/g, ']').replace(/,\\s*}/g, '}');\n      try { grouped = JSON.parse(sanitized); } catch {}\n    }\n  }\n  if (Array.isArray(grouped) && grouped.length) {\n    const parts = [];\n    for (const grp of grouped) {\n      const title = decodeHtml((grp?.name || 'Характеристики').trim());\n      if (title) parts.push(title);\n      const items = Array.isArray(grp?.items) ? grp.items : [];\n      for (const r of items) {\n        const rn = decodeHtml((r?.name || '').trim());\n        let rv = '';\n        if (Array.isArray(r?.values) && r.values.length) {\n          rv = r.values.map(x => decodeHtml(String(x))).join(', ');\n        } else if (Array.isArray(r?.items) && r.items.length) {\n          rv = r.items.map(x => decodeHtml(x?.title || '')).filter(Boolean).join(', ');\n        } else if (typeof r?.value === 'string') {\n          rv = decodeHtml(r.value);\n        }\n        if (rn && rv) parts.push(`- ${rn}: ${rv}`);\n      }\n      parts.push('');\n    }\n    specs_text = parts.join('\\n').trim();\n    return;\n  }\n  // Fallback: если grouped не нашли — вытащим «Характеристики» куском HTML и очистим\n  function stripHtmlToText(s) {\n    return decodeHtml(String(s ?? '')\n      .replace(/<br\\s*\\/?>/gi, '\\n')\n      .replace(/<\\/p>/gi, '\\n')\n      .replace(/<\\/(li|div|tr)>/gi, '\\n')\n      .replace(/<th[^>]*>/gi, '')\n      .replace(/<td[^>]*>/gi, ' ')\n      .replace(/<[^>]*>/g, '')\n      .replace(/\\u00A0/g, ' '))\n      .replace(/[ \\t]+\\n/g, '\\n')\n      .replace(/\\n{3,}/g, '\\n\\n')\n      .replace(/[ \\t]{2,}/g, ' ')\n      .trim();\n  }\n  const m =\n    html.match(/<h2[^>]*>\\s*Характеристики\\s*<\\/h2>([\\s\\S]*?)(?:<h2\\b|<section\\b|<div\\b class=[\"'][^\"']*(?:tabs|reviews|accessories)[^\"']*[\"']|$)/i) ||\n    html.match(/<section[^>]*?(?:spec|char|характерист)[^>]*>([\\s\\S]*?)<\\/section>/i) ||\n    html.match(/<div[^>]*?(?:spec|char|характерист)[^>]*>([\\s\\S]*?)<\\/div>/i);\n  if (m) specs_text = stripHtmlToText(m[1]);\n})();\n\nconst MAX_LEN = 25000;\nif (specs_text.length > MAX_LEN) specs_text = specs_text.slice(0, MAX_LEN);\n\n// ---------- результат ----------\nreturn [{\n  json: {\n    id, sku, mpn, name, brand, category,\n    price, salePrice, currency, stock, url, image,\n    specs_text\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        352
+      ],
+      "id": "fe480f96-2b26-45ae-bde0-8ceca041ebbc",
+      "name": "Преобразование данных с карточки товара"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        160
+      ],
+      "id": "0658d745-2410-4685-8c5d-04c8ebfae6be",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        -48
+      ],
+      "id": "8bb3b997-f0bd-40a0-a464-148c33d062a9",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "connections": {
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Запрос к данных с источника",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Запрос к данных с источника",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Пагинация",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start page": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Преобразование данных с карточки товара",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Запрос к данных с источника": {
+      "main": [
+        [
+          {
+            "node": "Преобразование результатов в табличный вид",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Преобразование результатов в табличный вид": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Пагинация": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Преобразование данных с карточки товара": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Start page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "c7524474-1d2b-4eb8-a8a6-55c3f0a80331",
+  "activeVersionId": null,
+  "versionCounter": 6,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-09-28T10:38:46.476Z",
+      "createdAt": "2026-09-28T10:38:46.476Z",
+      "role": "workflow:owner",
+      "workflowId": "ZO8DXsaYdRGvk3cL",
+      "projectId": "xUaILlIzDg88e3kj",
+      "project": {
+        "updatedAt": "2026-04-26T16:00:06.646Z",
+        "createdAt": "2026-04-26T15:58:57.181Z",
+        "id": "xUaILlIzDg88e3kj",
+        "name": "Ruslan Babashaikhov <ruslan.babashaikhov@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "cdb0c10f-3865-4b0a-a902-6f2360d56858"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

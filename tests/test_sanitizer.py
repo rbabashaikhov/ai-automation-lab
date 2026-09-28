@@ -1,4 +1,10 @@
-from n8n_tool.sanitizer import REDACTED, find_sensitive_paths, sanitize_workflow
+from n8n_tool.sanitizer import (
+    REDACTED,
+    find_sensitive_paths,
+    sanitize_workflow,
+    scan_value_for_secret_patterns,
+    scan_workflow_for_secrets,
+)
 
 
 def test_sanitize_redacts_known_sensitive_keys():
@@ -90,3 +96,60 @@ def test_find_sensitive_paths_ignores_safe_credential_refs():
 def test_find_sensitive_paths_empty_for_clean_workflow():
     workflow = {"id": "1", "name": "Parsing", "active": True, "nodes": []}
     assert find_sensitive_paths(workflow) == []
+
+
+def test_scan_value_detects_openai_key():
+    assert "OpenAI API key" in scan_value_for_secret_patterns("sk-abcdEFGH12345678901234")
+
+
+def test_scan_value_detects_aws_access_key():
+    assert "AWS access key ID" in scan_value_for_secret_patterns("AKIAABCDEFGHIJKLMNOP")
+
+
+def test_scan_value_detects_jwt_supabase_style_key():
+    jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U"
+    assert "JWT / Supabase-style service key" in scan_value_for_secret_patterns(jwt)
+
+
+def test_scan_value_detects_bearer_token():
+    assert "Bearer token" in scan_value_for_secret_patterns("Authorization: Bearer abcdef0123456789")
+
+
+def test_scan_value_detects_url_embedded_credentials():
+    hits = scan_value_for_secret_patterns("postgres://myuser:hunter2@db.example.com:5432/mydb")
+    assert "credentials embedded in a URL" in hits
+
+
+def test_scan_value_no_false_positive_on_plain_text():
+    assert scan_value_for_secret_patterns("https://example.com/products?page=1") == []
+
+
+def test_scan_workflow_for_secrets_finds_key_and_value_hits():
+    workflow = {
+        "nodes": [
+            {
+                "name": "HTTP Request",
+                "parameters": {
+                    "apiKey": "irrelevant-because-key-name-already-flags-it",
+                    "url": "https://api.example.com/v1?token=sk-liveabcdEFGH123456789012",
+                },
+            }
+        ]
+    }
+    findings = scan_workflow_for_secrets(workflow)
+    paths = {f.path for f in findings}
+    assert "nodes[0].parameters.apiKey" in paths
+    assert "nodes[0].parameters.url" in paths
+
+
+def test_scan_workflow_for_secrets_ignores_credential_id_name_refs():
+    workflow = {"nodes": [{"credentials": {"postgres": {"id": "42", "name": "Prod Postgres"}}}]}
+    assert scan_workflow_for_secrets(workflow) == []
+
+
+def test_scan_workflow_for_secrets_does_not_expose_secret_text():
+    workflow = {"settings": {"password": "hunter2-super-secret"}}
+    findings = scan_workflow_for_secrets(workflow)
+    assert len(findings) == 1
+    assert "hunter2-super-secret" not in findings[0].reason
+    assert "hunter2-super-secret" not in findings[0].path

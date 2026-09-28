@@ -17,6 +17,14 @@ class ConfigError(Exception):
     """Raised when required configuration is missing or invalid."""
 
 
+# Workflows that write commands (update/deploy) refuse to touch unless the
+# caller passes --allow-protected. The legacy "Parsing" workflow is a
+# production-like asset that Phase 2 is explicitly not allowed to modify
+# (see task spec section 24) — this is a guard rail against fat-fingering
+# its ID while exercising create/update/deploy during integration testing.
+PROTECTED_WORKFLOW_IDS: frozenset[str] = frozenset({"ZO8DXsaYdRGvk3cL"})  # Parsing
+
+
 @dataclass(frozen=True)
 class Config:
     base_url: str

@@ -22,14 +22,16 @@ class FakeResponse:
 
 
 class FakeSession:
-    """A fake requests.Session whose .get() returns queued responses/exceptions."""
+    """A fake requests.Session whose .request() returns queued responses/exceptions."""
 
     def __init__(self, responses):
         self._responses = list(responses)
         self.calls = []
 
-    def get(self, url, headers=None, params=None, timeout=None):
-        self.calls.append({"url": url, "headers": headers, "params": params, "timeout": timeout})
+    def request(self, method, url, headers=None, params=None, json=None, timeout=None):
+        self.calls.append(
+            {"method": method, "url": url, "headers": headers, "params": params, "json": json, "timeout": timeout}
+        )
         item = self._responses.pop(0)
         if isinstance(item, Exception):
             raise item
@@ -53,6 +55,7 @@ def test_get_sends_api_key_header_and_builds_url():
     result = client.get("/api/v1/workflows")
     assert result == {"ok": True}
     call = session.calls[0]
+    assert call["method"] == "GET"
     assert call["url"] == "https://n8n.example.com/api/v1/workflows"
     assert call["headers"]["X-N8N-API-KEY"] == "test-key-123"
     assert "n8n-tool-automation" in call["headers"]["User-Agent"]
@@ -86,6 +89,12 @@ def test_get_raises_api_error_on_non_retryable_4xx():
     client, _ = make_client([FakeResponse(404)])
     with pytest.raises(N8nApiError):
         client.get("/api/v1/workflows/does-not-exist")
+
+
+def test_api_error_includes_server_message_detail():
+    client, _ = make_client([FakeResponse(400, {"message": "request/body must NOT have additional properties"})])
+    with pytest.raises(N8nApiError, match="additional properties"):
+        client.get("/api/v1/workflows")
 
 
 def test_get_retries_on_500_then_succeeds():
@@ -138,3 +147,45 @@ def test_get_workflow_rejects_non_dict_response():
     client, _ = make_client([FakeResponse(200, ["not", "a", "dict"])])
     with pytest.raises(N8nApiError):
         client.get_workflow("1")
+
+
+def test_create_workflow_sends_post_with_payload():
+    client, session = make_client([FakeResponse(200, {"id": "new-1", "name": "Test"})])
+    payload = {"name": "Test", "nodes": [], "connections": {}, "settings": {}}
+    result = client.create_workflow(payload)
+    assert result == {"id": "new-1", "name": "Test"}
+    call = session.calls[0]
+    assert call["method"] == "POST"
+    assert call["url"] == "https://n8n.example.com/api/v1/workflows"
+    assert call["json"] == payload
+
+
+def test_create_workflow_does_not_retry_on_5xx():
+    client, session = make_client([FakeResponse(500)], max_retries=3)
+    with pytest.raises(N8nApiError):
+        client.create_workflow({"name": "Test", "nodes": [], "connections": {}, "settings": {}})
+    assert len(session.calls) == 1  # no retry for a non-idempotent write
+
+
+def test_update_workflow_sends_put_with_payload():
+    client, session = make_client([FakeResponse(200, {"id": "wf-1", "name": "Updated"})])
+    payload = {"name": "Updated", "nodes": [], "connections": {}, "settings": {}}
+    result = client.update_workflow("wf-1", payload)
+    assert result == {"id": "wf-1", "name": "Updated"}
+    call = session.calls[0]
+    assert call["method"] == "PUT"
+    assert call["url"] == "https://n8n.example.com/api/v1/workflows/wf-1"
+    assert call["json"] == payload
+
+
+def test_update_workflow_does_not_retry_on_5xx():
+    client, session = make_client([FakeResponse(503)], max_retries=3)
+    with pytest.raises(N8nApiError):
+        client.update_workflow("wf-1", {"name": "X", "nodes": [], "connections": {}, "settings": {}})
+    assert len(session.calls) == 1
+
+
+def test_create_workflow_rejects_non_dict_response():
+    client, _ = make_client([FakeResponse(200, ["not", "a", "dict"])])
+    with pytest.raises(N8nApiError):
+        client.create_workflow({"name": "X", "nodes": [], "connections": {}, "settings": {}})

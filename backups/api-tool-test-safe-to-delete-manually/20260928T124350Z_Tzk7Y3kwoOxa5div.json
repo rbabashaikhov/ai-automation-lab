@@ -1,0 +1,87 @@
+{
+  "updatedAt": "2026-09-28T12:43:26.504Z",
+  "createdAt": "2026-09-28T12:43:26.504Z",
+  "id": "Tzk7Y3kwoOxa5div",
+  "name": "API Tool Test - Safe To Delete Manually",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "bcd70f43-8637-4ff0-bf68-a56305ec7a32",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "30b153c3-3806-4d90-93ab-eca54c13de7e",
+      "name": "Set",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        200,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "324a2633-57a3-4873-a24b-a5abc41a098e",
+              "name": "message",
+              "value": "n8n API deployment works",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "9e7f69b3-f78b-422f-9f8f-3a25b0f0f3f5",
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-09-28T12:43:26.508Z",
+      "createdAt": "2026-09-28T12:43:26.508Z",
+      "role": "workflow:owner",
+      "workflowId": "Tzk7Y3kwoOxa5div",
+      "projectId": "xUaILlIzDg88e3kj",
+      "project": {
+        "updatedAt": "2026-04-26T16:00:06.646Z",
+        "createdAt": "2026-04-26T15:58:57.181Z",
+        "id": "xUaILlIzDg88e3kj",
+        "name": "Ruslan Babashaikhov <ruslan.babashaikhov@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "cdb0c10f-3865-4b0a-a902-6f2360d56858"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}
