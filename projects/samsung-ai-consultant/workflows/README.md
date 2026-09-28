@@ -1,0 +1,139 @@
+# Samsung RAG n8n workflows (Phase 3B)
+
+Two workflows, both created/deployed via `tools/n8n-tool` from the sanitized
+JSON in this directory (never hand-edited only in the n8n UI):
+
+- **`rag-indexing.json`** — `Samsung — RAG Indexing` (remote id
+  `O0t1sOUHC7F5bD1B`) — embeds pending chunks and persists the vectors.
+- **`rag-retrieval-smoke-test.json`** — `Samsung — RAG Retrieval Smoke Test`
+  (remote id `AaOFPV2D982UkjoY`) — one-off query → embedding →
+  `match_product_chunks()` check, not the 21-case benchmark.
+
+Each has a `.meta.json` sidecar recording its `remoteWorkflowId` for
+`n8n_tool workflows deploy` to resolve create-vs-update against.
+
+## Why n8n doesn't call the Python `indexing` package directly
+
+Investigated before writing any workflow, not assumed:
+
+- `docker exec <n8n-container> which python3` → not found. The official
+  `docker.n8n.io/n8nio/n8n` image ships Node.js only.
+- `docker inspect <n8n-container>` → mounts are only `/files` (a local
+  bind mount unrelated to this repo) and the n8n data volume
+  (`/home/node/.n8n`). This git repository is not mounted into the
+  container at all.
+
+Making the Python package reachable from inside n8n would require adding
+a Python runtime and/or mounting this repo into the container — a
+Docker/compose change, explicitly out of scope for this phase (the task
+brief requires stopping and reporting the reason first, not just doing
+it). That's what's reported here instead: **the integration boundary is
+the database, not a process call.**
+
+`python -m indexing build --product-id <id>` (Phase 3A, unmodified) is
+run as a separate, out-of-band step and writes `documents`/`chunks` rows
+with `content`, `content_hash`, `metadata`, and `embedding = NULL`. Both
+n8n workflows here start from "chunks that already exist but have no
+embedding yet" — they never construct document/chunk text themselves.
+The one JavaScript Code node in `rag-indexing.json`
+(`Map embeddings to chunks`) only reshapes/validates the OpenAI API
+response; it is not a reimplementation of the deterministic builder.
+
+## `rag-indexing.json` — node-by-node
+
+| Node | Responsibility |
+|---|---|
+| `When clicking 'Execute workflow'` | Manual trigger (n8n's Public API has no execute-workflow endpoint — see "Known limitations") |
+| `Indexing scope` | Sets `target_model_code` — currently hardcoded to `QE65S95HAUXPY` (the Phase 3B safety gate) |
+| `Count pending chunks` | `SELECT count(*)::int` of chunks with `embedding IS NULL` for the scoped product — always returns exactly one row, so the next node can reliably branch even when the count is zero (see "Known limitations") |
+| `Any pending chunks?` | IF branch on that count |
+| `Get chunks pending embedding` (true branch) | Fetches the actual pending chunk rows (id, content) |
+| `Build embeddings request` | Aggregates all pending chunks into one item: parallel `chunk_id`/`content` arrays, for a single batched OpenAI call |
+| `OpenAI: Create Embeddings` | `POST https://api.openai.com/v1/embeddings`, `model: text-embedding-3-small`, `input:` the content array. Auth: predefined credential type, `OpenAI account` — the key is injected by n8n and never appears in this workflow's JSON |
+| `Map embeddings to chunks` | Pairs each returned embedding back to its `chunk_id` by response `index`; **throws** if any vector isn't exactly 1536-dimensional or if the model in the response doesn't match — refuses to persist a wrong-shape vector rather than silently writing one |
+| `Persist embedding` | `UPDATE chunks SET embedding = '...'::vector, embedding_model = '...' WHERE id = ...`, once per chunk |
+| `No pending chunks` (false branch) | Observable "nothing to do" status/message |
+| `Run summary` | `executeOnce: true` — always runs exactly once regardless of branch, reporting `total_chunks` / `embedded_chunks` / `pending_chunks` for the scoped product |
+
+## `rag-retrieval-smoke-test.json` — node-by-node
+
+`When clicking 'Execute workflow'` → `Query` (hardcoded Russian query
+text + `match_count`) → `OpenAI: Embed query` (same credential/model,
+single-string input) → `Extract query embedding` (validates 1536 dims,
+same pattern as the indexing workflow) → `match_product_chunks`
+(Postgres, calls the existing Phase 1 SQL function unmodified, `SELECT
+... FROM match_product_chunks('...'::vector, match_count)`).
+
+## Credential references used
+
+Discovered via `GET /api/v1/credentials` (n8n's own OpenAPI spec
+confirms this list endpoint never includes credential secret data —
+only available to the instance owner/admin, `data` is `writeOnly`).
+Never read/decrypted/printed/exported — only the `{id, name}` reference
+is stored in the workflow JSON, exactly as n8n's `node.credentials` schema
+expects.
+
+| Credential | Type | id | Used by |
+|---|---|---|---|
+| `Samsung RAG PostgreSQL` | `postgres` | `iw2nbgnnNfRax7qn` | All Postgres nodes in both workflows |
+| `OpenAI account` | `openAiApi` | `mcixQy0sFVXl7nU9` | Both `OpenAI: ...` HTTP Request nodes (predefined-credential-type auth) |
+
+`Samsung RAG PostgreSQL` connects as the `samsung_indexing` Postgres role
+(created by the project owner for this credential — not by this
+codebase, and its password was never requested, read, or reset by this
+work). See the top-level `README.md` "Database access" for that role's
+grants (`SELECT` on `products`/`product_specs`, full CRUD on
+`documents`/`chunks`).
+
+## Known limitations / architectural findings discovered this phase
+
+- **n8n's Public API cannot trigger a Manual Trigger execution.** Confirmed
+  against the instance's own OpenAPI spec: `/executions` only supports
+  list/get/retry/stop, no "run now." Both workflows here were executed by
+  the project owner clicking "Execute workflow" in the n8n editor; this
+  agent verified every run's outcome afterward via `GET /executions/{id}
+  ?includeData=true` and direct (read-only, least-privilege) database
+  queries — never by guessing.
+- **A zero-item IF branch doesn't fire the "false" branch either — nothing
+  downstream runs at all.** Discovered the hard way: the first version of
+  `rag-indexing.json` had `Any pending chunks?` branch directly off a
+  data-fetch query, and a genuinely-empty result set (0 rows) meant the IF
+  node itself never executed, so neither branch — including the intended
+  "No pending chunks" observability node — ever ran. Fixed by inserting
+  `Count pending chunks` (a `SELECT count(*)`, which *always* returns
+  exactly one row) ahead of the IF node, so there is always at least one
+  item for it to evaluate. Verified via three real executions: #486 (7
+  pending → real embeddings), #487 (pre-fix, 0 pending → silently
+  produced no observable output, confirming the bug), #489 (post-fix, 0
+  pending → `No pending chunks` → `Run summary` both correctly fired).
+- **Postgres `count(*)` returns `bigint`, which n8n's driver surfaces as a
+  string** — broke the IF node's strict-typed numeric comparison
+  (`NodeOperationError: Wrong type: '0' is a string but was expecting a
+  number`) on the very first post-fix test run. Fixed with an explicit
+  `::int` cast in the `Count pending chunks` query rather than loosening
+  the IF node's type validation.
+- **Phase 3A's `replace_chunks` (delete-then-reinsert) is not
+  embedding-aware.** This is the most significant finding for Phase 3B's
+  stated incremental-indexing goal ("unchanged chunk hash → existing
+  embedding reused"): if `python -m indexing build` is re-run on a product
+  whose content is genuinely unchanged, it still deletes and re-inserts
+  every one of that product's chunks (new row `id`s, `embedding` reset to
+  `NULL`), because Phase 3A's replace-wholesale strategy (see
+  `docs/adr/002-rag-document-chunking-design.md`, Decision 2) predates
+  Phase 3B and was never designed to preserve embeddings across a rebuild.
+  **Not fixed in this phase** — doing so safely (e.g. matching old vs.
+  new chunks by `metadata.section` + `content_hash` before deciding what
+  to delete/keep/insert) is itself a real design decision that deserves
+  its own review, not a rushed edit inside an already-large phase. Until
+  it is: re-running the Python builder on an unchanged product currently
+  *does* discard existing embeddings, even though this workflow's own
+  `embedding IS NULL` check is correctly idempotent for the case that
+  actually occurred in the acceptance test (embeddings were never wiped
+  during this phase's testing, since the Python builder was run exactly
+  once per product before any embedding existed).
+- **No webhook/API trigger was added.** Considered (to let this agent
+  trigger executions programmatically) and deliberately not done — it
+  would require activating the workflow on the shared, production n8n
+  instance, which is a bigger and more persistent state change than
+  asking for one manual click; see the conversation's own review of this
+  tradeoff. Manual Trigger only, workflow left **inactive**.

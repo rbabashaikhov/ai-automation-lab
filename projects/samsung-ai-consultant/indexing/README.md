@@ -175,6 +175,21 @@ another spec's multi-value text rather than as its own spec_name.
 
 ## Known limitations / open questions
 
+- **`replace_chunks` is not embedding-aware (discovered in Phase 3B).**
+  Rebuilding a product's chunks via `python -m indexing build` always
+  deletes and re-inserts every one of that product's `chunks` rows (new
+  `id`s, `embedding` reset to `NULL`), even if the rebuilt content is
+  byte-identical to what's already stored — see `repository.py`'s
+  `replace_chunks` and ADR "Decision 2." This directly conflicts with
+  Phase 3B's incremental-indexing goal ("unchanged chunk hash → existing
+  embedding reused"). Not fixed as of Phase 3B's single-product
+  acceptance test (which never exercised this path — the builder was run
+  exactly once per product before any embedding existed). A future phase
+  needs a rebuild strategy that matches old vs. new chunks by
+  `metadata.section` + `content_hash` and only replaces rows that
+  actually changed, before incremental full-catalog indexing can safely
+  rely on this for cost savings. See `workflows/README.md` "Known
+  limitations" for the full discovery writeup.
 - **No `specifications` or `comparison_context` documents yet** — see
   ADR "Decision 1." Revisit `specifications` if Phase 3B evaluation shows
   the combined `product_overview` document under/over-retrieves;

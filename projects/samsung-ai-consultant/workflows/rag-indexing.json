@@ -1,0 +1,280 @@
+{
+  "name": "Samsung — RAG Indexing",
+  "nodes": [
+    {
+      "id": "sticky-architecture",
+      "name": "Sticky Note: Architecture",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-640, -420],
+      "parameters": {
+        "width": 620,
+        "height": 380,
+        "content": "## Samsung — RAG Indexing (Phase 3B)\n\n**Document/chunk construction is NOT done in this workflow.** It is done by the already-tested, deterministic Python package `projects/samsung-ai-consultant/indexing/` (`python -m indexing build --product-id <id>`), run as a separate step before this workflow.\n\nWhy: the n8n container (`docker.n8n.io/n8nio/n8n`) has no Python runtime (confirmed via `docker exec ... which python3` → not found), and this repository is not mounted into it (confirmed via `docker inspect` — only `/files` and the n8n data volume are mounted). Making Python callable from inside n8n would require a Docker/compose image or mount change, which is explicitly out of scope for this phase (stop-and-report first, not just do it).\n\nSo the integration boundary is **the database**: Python writes `documents`/`chunks` rows with `content`, `content_hash`, `metadata`, and `embedding = NULL`. This workflow's job starts there — it finds chunks with `embedding IS NULL` and fills them in via a real OpenAI embeddings call. Nothing here reimplements the document/chunk text-building logic in JavaScript.\n\nSee `projects/samsung-ai-consultant/workflows/README.md` for the full design writeup."
+      }
+    },
+    {
+      "id": "sticky-safety-gate",
+      "name": "Sticky Note: Safety gate",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-640, 20],
+      "parameters": {
+        "width": 620,
+        "height": 260,
+        "content": "## Safety gate — single product only\n\n`Indexing scope` below is deliberately hardcoded to one real product (`QE65S95HAUXPY`) for the Phase 3B acceptance test.\n\n**Do not blank/remove this filter to run the full catalog** without explicit re-approval — that is a deliberate future step (Phase 3B full-catalog indexing), reviewed separately per the task brief's review gate. Widening scope is a one-line edit to `Indexing scope` and to the `p.model_code = '...'` filter in `Count pending chunks` / `Get chunks pending embedding` / `Run summary` — not a redesign."
+      }
+    },
+    {
+      "id": "manual-trigger",
+      "name": "When clicking ‘Execute workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-400, 200],
+      "parameters": {}
+    },
+    {
+      "id": "set-indexing-scope",
+      "name": "Indexing scope",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-160, 200],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "target-model-code",
+              "name": "target_model_code",
+              "type": "string",
+              "value": "QE65S95HAUXPY"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "postgres-count-pending-chunks",
+      "name": "Count pending chunks",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [80, 200],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT count(*)::int AS pending_count\nFROM chunks c\nJOIN products p ON p.id = c.product_id\nWHERE c.embedding IS NULL\n  AND p.model_code = '{{ $json.target_model_code }}';",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "iw2nbgnnNfRax7qn",
+          "name": "Samsung RAG PostgreSQL"
+        }
+      }
+    },
+    {
+      "id": "if-any-pending",
+      "name": "Any pending chunks?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [320, 200],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-pending",
+              "leftValue": "={{ $json.pending_count }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "postgres-get-pending-chunks",
+      "name": "Get chunks pending embedding",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [560, 60],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  c.id AS chunk_id,\n  c.document_id,\n  c.product_id,\n  c.content,\n  p.model_code\nFROM chunks c\nJOIN products p ON p.id = c.product_id\nWHERE c.embedding IS NULL\n  AND p.model_code = '{{ $('Indexing scope').item.json.target_model_code }}'\nORDER BY c.id;",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "iw2nbgnnNfRax7qn",
+          "name": "Samsung RAG PostgreSQL"
+        }
+      }
+    },
+    {
+      "id": "set-no-pending",
+      "name": "No pending chunks",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [560, 400],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "status",
+              "name": "status",
+              "type": "string",
+              "value": "no_pending_chunks"
+            },
+            {
+              "id": "target",
+              "name": "target_model_code",
+              "type": "string",
+              "value": "={{ $('Indexing scope').item.json.target_model_code }}"
+            },
+            {
+              "id": "note",
+              "name": "note",
+              "type": "string",
+              "value": "No chunks with embedding IS NULL for this product -- either already fully embedded, or documents/chunks haven't been built yet via `python -m indexing build`."
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "aggregate-build-request",
+      "name": "Build embeddings request",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [800, 60],
+      "parameters": {
+        "aggregate": "aggregateIndividualFields",
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            { "fieldToAggregate": "chunk_id" },
+            { "fieldToAggregate": "content" }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "http-openai-embeddings",
+      "name": "OpenAI: Create Embeddings",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1040, 60],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/embeddings",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: \"text-embedding-3-small\", input: $json.content }) }}",
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "mcixQy0sFVXl7nU9",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "id": "code-map-embeddings",
+      "name": "Map embeddings to chunks",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1280, 60],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "// Glue code only: reshapes/validates the OpenAI API response and pairs\n// each returned embedding back to the chunk_id it belongs to (by the\n// response's own `index` field, which OpenAI guarantees matches the\n// input array position). Does NOT build document/chunk text -- that is\n// entirely the Python `indexing` package's job (see Sticky Note: Architecture).\nconst EXPECTED_DIMENSIONS = 1536;\nconst EXPECTED_MODEL = 'text-embedding-3-small';\n\nconst chunkIds = $('Build embeddings request').item.json.chunk_id;\nconst response = $json;\n\nif (response.model && response.model !== EXPECTED_MODEL) {\n  throw new Error(`Unexpected embedding model in response: ${response.model} (expected ${EXPECTED_MODEL})`);\n}\n\nconst data = response.data;\nif (!Array.isArray(data)) {\n  throw new Error('OpenAI embeddings response is missing a \"data\" array');\n}\n\nconst results = [];\nfor (const entry of data) {\n  const vector = entry.embedding;\n  const chunkId = chunkIds[entry.index];\n  if (chunkId === undefined) {\n    throw new Error(`No chunk_id at response index ${entry.index}`);\n  }\n  if (!Array.isArray(vector) || vector.length !== EXPECTED_DIMENSIONS) {\n    throw new Error(\n      `Chunk ${chunkId}: unexpected embedding dimension ` +\n      `${vector ? vector.length : 'missing'} (expected ${EXPECTED_DIMENSIONS}) -- refusing to persist`\n    );\n  }\n  results.push({\n    json: {\n      chunk_id: chunkId,\n      embedding_literal: '[' + vector.join(',') + ']',\n      embedding_model: EXPECTED_MODEL,\n    },\n  });\n}\n\nif (results.length !== chunkIds.length) {\n  throw new Error(`Expected ${chunkIds.length} embeddings back, got ${results.length}`);\n}\n\nreturn results;"
+      }
+    },
+    {
+      "id": "postgres-persist-embedding",
+      "name": "Persist embedding",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1520, 60],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE chunks\nSET embedding = '{{ $json.embedding_literal }}'::vector,\n    embedding_model = '{{ $json.embedding_model }}'\nWHERE id = {{ $json.chunk_id }};",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "iw2nbgnnNfRax7qn",
+          "name": "Samsung RAG PostgreSQL"
+        }
+      }
+    },
+    {
+      "id": "postgres-run-summary",
+      "name": "Run summary",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1760, 200],
+      "executeOnce": true,
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  p.model_code,\n  count(*) AS total_chunks,\n  count(*) FILTER (WHERE c.embedding IS NOT NULL) AS embedded_chunks,\n  count(*) FILTER (WHERE c.embedding IS NULL) AS pending_chunks\nFROM chunks c\nJOIN documents d ON d.id = c.document_id\nJOIN products p ON p.id = c.product_id\nWHERE p.model_code = '{{ $('Indexing scope').item.json.target_model_code }}'\nGROUP BY p.model_code;",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "iw2nbgnnNfRax7qn",
+          "name": "Samsung RAG PostgreSQL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [[{ "node": "Indexing scope", "type": "main", "index": 0 }]]
+    },
+    "Indexing scope": {
+      "main": [[{ "node": "Count pending chunks", "type": "main", "index": 0 }]]
+    },
+    "Count pending chunks": {
+      "main": [[{ "node": "Any pending chunks?", "type": "main", "index": 0 }]]
+    },
+    "Any pending chunks?": {
+      "main": [
+        [{ "node": "Get chunks pending embedding", "type": "main", "index": 0 }],
+        [{ "node": "No pending chunks", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get chunks pending embedding": {
+      "main": [[{ "node": "Build embeddings request", "type": "main", "index": 0 }]]
+    },
+    "Build embeddings request": {
+      "main": [[{ "node": "OpenAI: Create Embeddings", "type": "main", "index": 0 }]]
+    },
+    "OpenAI: Create Embeddings": {
+      "main": [[{ "node": "Map embeddings to chunks", "type": "main", "index": 0 }]]
+    },
+    "Map embeddings to chunks": {
+      "main": [[{ "node": "Persist embedding", "type": "main", "index": 0 }]]
+    },
+    "Persist embedding": {
+      "main": [[{ "node": "Run summary", "type": "main", "index": 0 }]]
+    },
+    "No pending chunks": {
+      "main": [[{ "node": "Run summary", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

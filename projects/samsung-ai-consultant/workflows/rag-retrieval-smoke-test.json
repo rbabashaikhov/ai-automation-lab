@@ -1,0 +1,120 @@
+{
+  "name": "Samsung — RAG Retrieval Smoke Test",
+  "nodes": [
+    {
+      "id": "sticky-purpose",
+      "name": "Sticky Note: Purpose",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-640, -260],
+      "parameters": {
+        "width": 620,
+        "height": 300,
+        "content": "## Samsung — RAG Retrieval Smoke Test (Phase 3B)\n\nA **smoke test only**, not the 21-case evaluation dataset (`evaluation/retrieval_cases.json`) — that stays unrun until a future, explicitly approved phase.\n\nEmbeds one hand-written query via the same OpenAI credential as `Samsung — RAG Indexing`, then calls the existing `match_product_chunks()` Postgres function (db/migrations/005_functions.sql, unmodified) directly. Verifies only that a real text query, through a real embedding, retrieves the expected already-indexed product/chunks — not retrieval quality or ranking tuning."
+      }
+    },
+    {
+      "id": "manual-trigger",
+      "name": "When clicking ‘Execute workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-400, 0],
+      "parameters": {}
+    },
+    {
+      "id": "set-query",
+      "name": "Query",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-160, 0],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "query-text",
+              "name": "query_text",
+              "type": "string",
+              "value": "OLED телевизор с хорошим игровым режимом для PS5 и мощным звуком для фильмов, без отдельного саундбара"
+            },
+            {
+              "id": "match-count",
+              "name": "match_count",
+              "type": "number",
+              "value": 5
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "http-openai-embed-query",
+      "name": "OpenAI: Embed query",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [80, 0],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/embeddings",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: \"text-embedding-3-small\", input: $json.query_text }) }}",
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "mcixQy0sFVXl7nU9",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "id": "code-extract-query-embedding",
+      "name": "Extract query embedding",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [320, 0],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const EXPECTED_DIMENSIONS = 1536;\nconst response = $json;\nconst entry = (response.data || [])[0];\nconst vector = entry && entry.embedding;\n\nif (!Array.isArray(vector) || vector.length !== EXPECTED_DIMENSIONS) {\n  throw new Error(\n    `Query embedding: unexpected dimension ${vector ? vector.length : 'missing'} (expected ${EXPECTED_DIMENSIONS})`\n  );\n}\n\nreturn [{\n  json: {\n    query_text: $('Query').item.json.query_text,\n    match_count: $('Query').item.json.match_count,\n    embedding_literal: '[' + vector.join(',') + ']',\n  },\n}];"
+      }
+    },
+    {
+      "id": "postgres-match-chunks",
+      "name": "match_product_chunks",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [560, 0],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  chunk_id,\n  product_id,\n  document_id,\n  similarity,\n  left(content, 200) AS content_preview,\n  metadata->>'section' AS section,\n  metadata->>'model_code' AS model_code\nFROM match_product_chunks('{{ $json.embedding_literal }}'::vector, {{ $json.match_count }});",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "iw2nbgnnNfRax7qn",
+          "name": "Samsung RAG PostgreSQL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [[{ "node": "Query", "type": "main", "index": 0 }]]
+    },
+    "Query": {
+      "main": [[{ "node": "OpenAI: Embed query", "type": "main", "index": 0 }]]
+    },
+    "OpenAI: Embed query": {
+      "main": [[{ "node": "Extract query embedding", "type": "main", "index": 0 }]]
+    },
+    "Extract query embedding": {
+      "main": [[{ "node": "match_product_chunks", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
