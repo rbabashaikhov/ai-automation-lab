@@ -1,0 +1,22 @@
+[project]
+name = "samsung-product-ingestion"
+version = "0.1.0"
+description = "Samsung TV catalog ingestion pipeline (GalaxyStore -> PostgreSQL samsung_rag)"
+requires-python = ">=3.10"
+dependencies = [
+    "requests>=2.31",
+    "python-dotenv>=1.0",
+    "psycopg2-binary>=2.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["ingestion", "ingestion.extractors"]

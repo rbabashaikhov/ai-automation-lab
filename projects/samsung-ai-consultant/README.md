@@ -39,16 +39,26 @@ for the full reasoning behind that split.
 
 ```text
 Phase 1 — Database Schema & Migrations: COMPLETE
-Phase 2 — Product Ingestion:            NEXT
+Phase 2 — Product Ingestion:            IMPLEMENTED, PENDING REVIEW (full catalog crawl not yet run)
 Phase 3 — RAG Indexing:                 PLANNED
 Phase 4 — AI Consultant:                PLANNED
 Phase 5 — Evaluation / Observability:   PLANNED
 ```
 
-Phase 1 shipped the PostgreSQL + pgvector schema and migrations only —
-see [db/README.md](db/README.md) for the schema, design decisions, and
-how to run the local verification suite. There is no ingestion pipeline
-and no AI agent yet.
+Phase 1 shipped the PostgreSQL + pgvector schema and migrations — see
+[db/README.md](db/README.md) for the schema, design decisions, and how to
+run the local verification suite.
+
+Phase 2 shipped a standalone, tested ingestion pipeline
+(`ingestion/`, see [ingestion/README.md](ingestion/README.md)) that
+scrapes the GalaxyStore Samsung TV catalog and persists it into the
+Phase 1 schema, with a fixture-backed unit test suite, a
+disposable-container repository/idempotency test suite
+(`tests/run_db_tests.sh`), a live-site dry-run, and a small controlled
+integration test against `samsung_rag` (rows removed afterward — see the
+Phase 2 final report). **The full catalog has not yet been crawled** —
+that (and any n8n orchestration around this pipeline) waits on human
+review of this phase. There is no RAG indexing and no AI agent yet.
 
 ## Legacy
 
@@ -74,5 +84,23 @@ assumed from memory.
 projects/samsung-ai-consultant/
 ├── db/                 # PostgreSQL + pgvector schema, migrations, local tests
 ├── docs/adr/           # architecture decision records
+├── ingestion/          # Phase 2: GalaxyStore catalog ingestion pipeline (Python)
+├── tests/              # ingestion unit tests + fixtures + disposable-DB test runner
 └── workflows/legacy/   # sanitized reference exports of prior n8n prototypes
 ```
+
+## Database access for ingestion
+
+The ingestion pipeline connects to `samsung_rag` as its own least-privilege
+Postgres role, `samsung_ingestion` — created directly via `docker exec psql`
+on the VPS (never by extracting the `n8n` role's own credential). It is
+**not** a superuser and has **no** `CREATEDB`/`CREATEROLE`, and its grants
+are scoped to exactly `SELECT/INSERT/UPDATE` on `products` and
+`ingestion_runs`, `SELECT/INSERT/UPDATE/DELETE` on `product_specs`,
+`SELECT/INSERT` on `ingestion_errors`, plus `USAGE`/`SELECT` on those four
+tables' sequences — nothing on `documents`/`chunks` (Phase 3) and nothing
+on `finance_tracker`. See `ingestion/README.md` and the Phase 2 final
+report for how this was created and verified. `DATABASE_URL` for this role
+lives only in a git-ignored local `.env` (see `.env.example`), reached via
+an SSH tunnel to the VPS's Postgres port (published to `127.0.0.1:5432`
+on the VPS host only, not public).
