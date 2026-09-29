@@ -48,7 +48,7 @@ Phase 3D — Retrieval evaluation:               COMPLETE (baseline + consultant
 Phase 4A — AI Consultant architecture:         COMPLETE (docs/PHASE_4A_AI_CONSULTANT_ARCHITECTURE.md)
 Phase 4B — Structured Consultant core:         COMPLETE (no LLM/embeddings; docs/PHASE_4B_STRUCTURED_CORE.md)
 Phase 4C — Evidence & semantic retrieval:      COMPLETE (no LLM/new embeddings; docs/PHASE_4C_EVIDENCE_SEMANTIC.md)
-Phase 4D — Agent tools & n8n runtime:          4D.1 COMPLETE (offline); 4D.2 live test BLOCKED at infra gate (docs/PHASE_4D_AGENT_RUNTIME.md)
+Phase 4D — Agent tools & n8n runtime:          4D.1 + 4D.2A COMPLETE (internal MCP service deployed; live Agent eval pending approval)
 Phase 4E–4G — answers, conversation, channel:  PLANNED
 Phase 5 — Evaluation / Observability:          PLANNED
 ```

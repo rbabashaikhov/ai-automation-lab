@@ -1,9 +1,9 @@
 # Phase 4D — Agent Tools & n8n Runtime
 
-Status: **Gate 4D.1 complete (offline). Gate 4D.2 (live n8n Agent) is stopped at the
-infrastructure safety gate.** n8n cannot reach Python without a production change, which needs
-approval (§10). Nothing was deployed. Nothing was written to production, no OpenAI call was
-made, and no existing workflow was touched.
+Status: **Gate 4D.1 complete (offline). Gate 4D.2A complete: the Consultant runtime is deployed as
+an internal Docker service and the n8n workflow exists, inactive (§13).** The live Agent evaluation
+(4D.2 proper) has not run and awaits explicit approval. The 4D.1 record below is kept as written,
+except for the marked correction in §10.
 
 Baseline: branch `feature/samsung-ai-consultant-agent-runtime`, created from Phase 4C
 `b0de0f9443323c4e2751ea51b58a07cd1cf655ff`.
@@ -140,7 +140,7 @@ objects), not a new evidence model.
 | Samsung AI Consultant | agent 3.1 | system prompt v1, `maxIterations` 4, `returnIntermediateSteps` true |
 | OpenAI Chat Model | lmChatOpenAi 1.3 | **`gpt-4.1-mini`**, temperature 0. Credential `OpenAI account` (`mcixQy0sFVXl7nU9`), reference only |
 | Window memory (per session) | memoryBufferWindow 1.3 | key `{{$json.sessionId}}`, 6 turns, in n8n process memory, not durable |
-| catalog | mcpClientTool 1.2 | `http://172.18.0.1:8765/mcp`, `httpStreamable`, header auth, 5 selected tools, 30 s timeout. Tools appear to the model as `catalog_<tool>` |
+| catalog | mcpClientTool 1.2 | `http://samsung-consultant:8765/mcp` (4D.1 draft: `172.18.0.1`, corrected in 4D.2A), `httpStreamable`, header auth, 5 selected tools, 30 s timeout. Tools appear to the model as `catalog_<tool>` |
 
 - Not deployed: no workflow id, and it would be inactive.
 - The MCP credential id is a placeholder (`PENDING_GATE_4D2`). Creating that credential is part
@@ -391,3 +391,58 @@ testing. There is no durable conversation state, no `SessionState`, and no refer
 in Python. The 3-turn follow-up case ("Покажи OLED 65" → "Какой из них лучше для игр?" →
 "А подешевле?") is an exploratory spike for 4D.2, reported separately. **Phase 4F is not
 started.**
+
+## 13. Gate 4D.2A — internal runtime deployment (production)
+
+Deployed after the read-only network check (ADR 004 correction). Runbook and artifacts:
+[`deploy/consultant/`](../deploy/consultant/README.md).
+
+| Item | Result |
+|---|---|
+| Service | container `samsung-consultant`, from compose project `samsung-consultant` (`/root/samsung-consultant/compose.yml`, mode 700 directory) |
+| Image | `samsung-consultant:4d2a`, built locally from commit `a09a2e0` (label `org.opencontainers.image.revision`) and shipped with `docker save`/`load`: no registry, no repository on the VPS. `python:3.12-slim-bookworm`, uid 10001, 149 MB |
+| Network | existing `n8n-compose_default`, joined as an external network. DNS name `samsung-consultant` |
+| Endpoint | `http://samsung-consultant:8765/mcp` (internal only) |
+| Health | `healthy` (Dockerfile healthcheck on `/healthz`). The server connects to `postgres:5432` and verifies a read-only session before serving |
+| Existing containers | n8n, postgres, redis and traefik not recreated or restarted (identical `StartedAt`, `RestartCount` 0) |
+
+**Isolation (acceptance):**
+- no host listener on 8765 (`ss`);
+- `docker port` is empty and `PortBindings` is `{}`;
+- Docker added `raw PREROUTING -d <container IP>/32 ! -i br-40f1602189e9 -j DROP` for the new container;
+- there is no NAT or filter rule for 8765;
+- container settings: `read_only`, `cap_drop: ALL`, `no-new-privileges`, no mounts, not privileged;
+- Traefik: the live router list is `api`, `dashboard`, `n8n` and `web-to-websecure`, with no Consultant router. Only label: `traefik.enable=false`;
+- from n8n and from the host, `<public IP>:8765` and `172.18.0.1:8765` are refused, and the domain's `/healthz` is n8n's own.
+
+A direct Internet-vantage probe was **not** possible from the operator workstation, because a
+transparent proxy there answers every outbound TCP port, including `192.0.2.1`. External
+isolation therefore rests on the host configuration above, not on a third-party scan.
+
+**Authentication:** 401 without a token and with a wrong token; 200 with the valid token. The token
+is generated on the VPS into `consultant.env` (mode 600) and stored in the n8n Header Auth
+credential `Samsung Consultant MCP` (`9Ak6Ely4Wbp63RUn`). It was never displayed, logged or committed.
+
+**Database role `samsung_consultant`:**
+- Attributes: login only, no superuser/createdb/createrole/replication/bypassrls, no inheritance or memberships, connection limit 5. Role defaults: `default_transaction_read_only=on`, `statement_timeout=5s`, `idle_in_transaction_session_timeout=30s`.
+- Grants: `SELECT` on `products`, `product_specs`, `chunks`; `USAGE` on `public`; `CONNECT` on `samsung_rag`; `EXECUTE` on `match_product_chunks`.
+- The password reached PostgreSQL only as a SCRAM verifier.
+- Reads: 75 products, 4151 specs, 514 chunks.
+- Denied: `UPDATE` in the default session (`READ_ONLY_SQL_TRANSACTION`). Even after an explicit `READ WRITE`, these are all `INSUFFICIENT_PRIVILEGE`: `UPDATE products`, `DELETE chunks`, `INSERT documents`, `SELECT documents`, `CREATE TABLE public.*`.
+- Existing roles and their ACL entries are unchanged.
+- **Residual, PUBLIC defaults inherited by every login role, not granted:** `TEMP` on `samsung_rag` (a session-private `CREATE TEMP TABLE` succeeds), and `CONNECT`/`TEMP` on `finance_tracker` and `postgres`, with no table access there. Removing them means revoking from `PUBLIC`, which changes the existing roles. That needs a separate decision.
+
+**MCP boundary (probe from inside the n8n container, by service name, no OpenAI):**
+- `initialize` succeeded (protocol 2025-03-26);
+- the five tools were returned in order, with closed schemas, `required` fields intact, and `readOnlyHint`;
+- `get_catalog_stats {stat: cheapest}` returned `UE32H5000FUXRU`, 22990 RUB, available;
+- an injected `sql` argument returned `invalid_arguments`.
+
+**n8n:** workflow `Samsung — AI Consultant`, id `4d8mXFWGpS5P4t1L`, **inactive**, deployed with
+`n8n-tool` from the generated artifact. The 15 pre-existing workflows are unchanged (id, name,
+active, `updatedAt`). No Telegram, no public webhook, no Agent execution, no OpenAI call.
+
+**Not yet verified:** that n8n's own credential object reaches the tools. The probe used the same
+token from the same file, and the credential format is the one proven with n8n 2.17.7's MCP client
+in 4D.1. Without triggering OpenAI, the only in-n8n check is opening the `catalog` node in the
+editor, where "Tools to Include" lists the five tools.

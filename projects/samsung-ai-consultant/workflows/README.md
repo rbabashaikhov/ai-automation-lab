@@ -172,8 +172,7 @@ credential (reference only), in-process window memory, and one MCP Client Tool (
 reaches the Python tools over MCP Streamable HTTP. Entry points: editor chat (`public: false`) and
 an Execute Workflow Trigger for a controlled evaluation driver. No webhook, no Telegram.
 
-**Not deployed and no `.meta.json` yet:** the MCP endpoint `http://172.18.0.1:8765/mcp` (the
-`n8n-compose_default` bridge gateway) has no server behind it, and the header-auth credential id is
-a placeholder. Both are part of the Gate 4D.2 infrastructure approval — see
-[../docs/PHASE_4D_AGENT_RUNTIME.md](../docs/PHASE_4D_AGENT_RUNTIME.md) §10 and
-[../docs/adr/004-agent-runtime-and-tool-boundary.md](../docs/adr/004-agent-runtime-and-tool-boundary.md).
+**Deployed in Gate 4D.2A, inactive:** remote id `4d8mXFWGpS5P4t1L` (`ai-consultant.meta.json`). The MCP
+endpoint is the internal Docker service `http://samsung-consultant:8765/mcp` (no published port; see
+[../deploy/consultant/README.md](../deploy/consultant/README.md)). Credential references: `OpenAI account`
+and the Header Auth credential `Samsung Consultant MCP` (`9Ak6Ely4Wbp63RUn`), by id/name only.

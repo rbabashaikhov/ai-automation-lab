@@ -34,7 +34,7 @@ PROMPT_FILE = Path(__file__).parent / "prompts" / "agent_system_v1.md"
 WORKFLOW_NAME = "Samsung — AI Consultant"
 AGENT_MODEL = "gpt-4.1-mini"          # measured via this credential in Phase 3D; temperature 0
 OPENAI_CREDENTIAL = {"id": "mcixQy0sFVXl7nU9", "name": "OpenAI account"}
-MCP_CREDENTIAL = {"id": "PENDING_GATE_4D2", "name": "Samsung Consultant MCP"}
+MCP_CREDENTIAL = {"id": "9Ak6Ely4Wbp63RUn", "name": "Samsung Consultant MCP"}   # Header Auth; value only in n8n
 # Internal Docker service on n8n-compose_default (Phase 4D.2A; deploy/consultant/compose.yml), reached by
 # service name -- never a container IP and never the bridge gateway (see ADR 004 correction).
 MCP_ENDPOINT = "http://samsung-consultant:8765/mcp"
