@@ -348,6 +348,18 @@ def test_mcp_server_refuses_unsafe_configuration():
         build_server(StubTools(), "::", 0, "x" * 40)
     with pytest.raises(ValueError, match="at least"):
         build_server(StubTools(), "127.0.0.1", 0, "short")
+    with pytest.raises(ValueError, match="at least"):
+        build_server(StubTools(), "0.0.0.0", 0, "short", allow_wildcard=True)
+
+
+def test_container_mode_is_explicit_and_requires_docker(monkeypatch, capsys):
+    from consultant import mcp_server
+
+    server = build_server(StubTools(), "0.0.0.0", 0, "x" * 40, allow_wildcard=True)   # container mode only
+    server.server_close()
+    monkeypatch.setattr(mcp_server, "CONTAINER_MARKER", "/nonexistent/.dockerenv")
+    assert mcp_server.main(["--container", "--host", "0.0.0.0"]) == 2
+    assert "not running inside Docker" in capsys.readouterr().err
 
 
 @pytest.fixture
@@ -416,7 +428,7 @@ def test_committed_workflow_is_generated_and_safe():
     assert not [n for n in wf["nodes"] if n["type"] in ("n8n-nodes-base.webhook", "@n8n/n8n-nodes-langchain.mcpTrigger")]
     mcp = nodes["catalog"]["parameters"]
     assert mcp["includeTools"] == list(TOOL_NAMES) and mcp["serverTransport"] == "httpStreamable"
-    assert re.match(r"http://(127\.|10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.)", mcp["endpointUrl"])
+    assert mcp["endpointUrl"] == "http://samsung-consultant:8765/mcp"      # Docker service name, never an IP
     model = nodes["OpenAI Chat Model"]
     assert model["parameters"]["model"]["value"] == "gpt-4.1-mini" and model["parameters"]["options"]["temperature"] == 0
     for n in wf["nodes"]:

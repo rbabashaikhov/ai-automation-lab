@@ -1,0 +1,8 @@
+# Allowlist: only the runtime packages enter the build context.
+*
+!consultant/
+!indexing/__init__.py
+!indexing/metadata.py
+!indexing/models.py
+**/__pycache__
+**/*.pyc

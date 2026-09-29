@@ -94,12 +94,39 @@ The Python tool facade is **transport-agnostic** (`ConsultantTools.call(name, ar
 If MCP causes problems at 4D.2, a typed-HTTP adapter is a ~80-line change with no effect on
 the domain layer. Validation stays in Python either way.
 
+## Correction (Phase 4D.2 read-only network inspection)
+
+The 4D.1 text above and in PHASE_4D_AGENT_RUNTIME.md §10 treated a host process bound only to the
+bridge gateway (`172.18.0.1:8765`) as an internal-only boundary. **That conclusion was wrong for
+this VPS.** A later read-only inspection showed:
+
+- `172.18.0.1/16` is owned by `br-40f1602189e9`, the bridge of `n8n-compose_default`;
+- host `INPUT` policy is `ACCEPT`, and there is no rule for that address;
+- Docker's `raw PREROUTING` protects each *container* IP against non-bridge ingress, but not the
+  gateway address;
+- Linux delivers a packet for any local address whatever interface it arrives on (weak-host
+  model; a probe from n8n to the unrelated `docker0` address `172.17.0.1` also reached the host
+  stack);
+- the public interface is on a shared on-link `/24`.
+
+So hosts adjacent to the public interface could reach such a listener. Only upstream routing, not
+a control on the VPS, stops the wider Internet. A private address is not a boundary.
+
+**Accepted replacement: an internal Docker service on `n8n-compose_default` with no published
+port** (reachable as `samsung-consultant:8765`). Docker's per-container `raw PREROUTING` drop then
+applies to it, `FORWARD` is `DROP` for non-bridge ingress, and Traefik runs with
+`exposedByDefault=false`. The MCP bearer token stays mandatory: network isolation does not replace
+authentication. The MCP-versus-HTTP decision above is unaffected: the infrastructure need is
+still identical for both.
+
 ## Consequences
 
 - Nothing is deployed in Gate 4D.1. The MCP server has only run locally, against a disposable
   database and a disposable local n8n.
 - **Gate 4D.2 requires a production infrastructure change and is therefore stopped.**
-  PHASE_4D_AGENT_RUNTIME.md §10 lists the minimal change for approval: a
-  process bound only to `172.18.0.1`, a read-only role, a token credential, and one inactive workflow.
+  ~~PHASE_4D_AGENT_RUNTIME.md §10 lists the minimal change for approval: a process bound only to
+  `172.18.0.1`, a read-only role, a token credential, and one inactive workflow.~~ *Superseded by
+  the correction above:* the deployed boundary is the internal Docker service (Gate 4D.2A),
+  plus a read-only role, a token credential and one inactive workflow.
 - Phase 4E (answer validation against evidence) and 4F (durable conversation state) stay
   separate. 4D adds neither.

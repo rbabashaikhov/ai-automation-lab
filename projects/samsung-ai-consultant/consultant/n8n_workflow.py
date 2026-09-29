@@ -13,8 +13,8 @@ Runtime shape (Phase 4D, development only -- never activated, no public webhook)
                                                      ├──────── Window memory (in-process, per sessionId)
                                                      └──────── MCP Client Tool "catalog" -> Python MCP server
 
-Credentials are referenced by ``{id, name}`` only. The MCP header-auth credential does not exist
-yet: creating it is part of the Gate 4D.2 infrastructure change (see PHASE_4D_AGENT_RUNTIME.md).
+Credentials are referenced by ``{id, name}`` only (never values). The MCP Header Auth credential
+was created in n8n in Gate 4D.2A; its secret lives only in n8n and in the VPS env file.
 """
 
 from __future__ import annotations
@@ -35,9 +35,9 @@ WORKFLOW_NAME = "Samsung — AI Consultant"
 AGENT_MODEL = "gpt-4.1-mini"          # measured via this credential in Phase 3D; temperature 0
 OPENAI_CREDENTIAL = {"id": "mcixQy0sFVXl7nU9", "name": "OpenAI account"}
 MCP_CREDENTIAL = {"id": "PENDING_GATE_4D2", "name": "Samsung Consultant MCP"}
-# Docker bridge gateway of n8n-compose_default on the VPS (read-only inspection, Phase 4D). The
-# server does not run there yet: starting it is the Gate 4D.2 infrastructure change.
-MCP_ENDPOINT = "http://172.18.0.1:8765/mcp"
+# Internal Docker service on n8n-compose_default (Phase 4D.2A; deploy/consultant/compose.yml), reached by
+# service name -- never a container IP and never the bridge gateway (see ADR 004 correction).
+MCP_ENDPOINT = "http://samsung-consultant:8765/mcp"
 MCP_NODE_NAME = "catalog"              # n8n exposes tools as "<node name>_<tool>", e.g. catalog_search_tvs
 # One agent step per tool round plus the final answer; Python enforces the hard per-turn cap.
 AGENT_MAX_ITERATIONS = DEFAULT_MAX_TOOL_CALLS_PER_TURN + 1

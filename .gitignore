@@ -35,3 +35,6 @@ tools/n8n-tool/exports/samsung-rag-evaluation-*/
 # Generated, evaluation-only n8n workflows (Phase 3D): regenerate with `python -m evaluation.make_llm_workflow [fullcatalog]`
 projects/samsung-ai-consultant/workflows/evaluation-consultant-spike.json
 projects/samsung-ai-consultant/workflows/evaluation-fullcatalog-spike.json
+
+# Samsung Consultant runtime secrets (Phase 4D.2A): only consultant.env.example is tracked
+projects/samsung-ai-consultant/deploy/consultant/consultant.env

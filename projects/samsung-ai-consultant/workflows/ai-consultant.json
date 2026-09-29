@@ -111,7 +111,7 @@
         240
       ],
       "parameters": {
-        "endpointUrl": "http://172.18.0.1:8765/mcp",
+        "endpointUrl": "http://samsung-consultant:8765/mcp",
         "serverTransport": "httpStreamable",
         "authentication": "headerAuth",
         "include": "selected",

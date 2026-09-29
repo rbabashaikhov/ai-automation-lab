@@ -338,17 +338,19 @@ Proposed minimal change (nothing below has been done):
 1. **DB role** (owner action; 4A D5): `samsung_consultant` with `SELECT` on `products`,
    `product_specs`, `documents`, `chunks`, `EXECUTE` on `match_product_chunks`, no write grants,
    `default_transaction_read_only = on`. The server additionally verifies read-only on connect.
-2. **Code on the VPS:** a read-only checkout of this branch (e.g. `/opt/samsung-consultant`), a
-   venv with `psycopg2-binary` and `python-dotenv` (optionally `tiktoken`). No build step, no
-   ingestion or indexing command.
-3. **Process:** a systemd unit running `python -m consultant.mcp_server --host 172.18.0.1 --port
-   8765` as an unprivileged user, with `After=docker.service` and an `EnvironmentFile` (mode 600)
-   containing `CONSULTANT_DATABASE_URL` (the host's `127.0.0.1:5432`) and `CONSULTANT_MCP_TOKEN`.
-   - Binding only the Docker bridge gateway means **no public port** (the server refuses wildcard
-     binds, and the host INPUT policy is ACCEPT, so this matters). Verify afterwards with `ss -ltn`.
-   - Optional hardening: one iptables rule accepting 8765 only from `172.18.0.0/16`.
-   - Alternative: a sidecar container on `n8n-compose_default`. That is a compose change, but gives
-     cleaner isolation.
+2. ~~**Code on the VPS:** a read-only checkout of this branch and a venv …~~ *Superseded:* the code
+   ships as a container image (§13). No ingestion or indexing command either way.
+3. ~~**Process:** a systemd unit running `python -m consultant.mcp_server --host 172.18.0.1 --port
+   8765` …~~ **Superseded, see the correction below.** The 4D.1 claim "binding only the Docker
+   bridge gateway means no public port" was inaccurate.
+
+> **Correction (Phase 4D.2 read-only network inspection; details in ADR 004):** host `INPUT` is
+> permissive (policy `ACCEPT`, no rule for `172.18.0.1`). Docker's `raw PREROUTING` drop protects
+> container IPs but not the bridge gateway. The kernel accepts packets for any local address on
+> any interface, and the public interface is on a shared `/24`. A host service bound to
+> `172.18.0.1:8765` is therefore **not an adequate internal-only boundary** on this VPS without
+> an extra firewall rule. **Accepted replacement: an internal Docker service on the existing
+> `n8n-compose_default` network with no published port**, deployed in Gate 4D.2A (§13).
 4. **n8n:**
    - create a Header Auth credential `Samsung Consultant MCP` (`Authorization: Bearer <token>`).
      This is not an OpenAI credential;
@@ -360,8 +362,8 @@ Proposed minimal change (nothing below has been done):
      Trigger;
    - scored with `evaluation.agent_eval`.
    - Estimated cost with `gpt-4.1-mini`: about 1–2M tokens in total, around 1 USD.
-6. **Rollback:** stop and disable the unit, remove the checkout and venv, delete the credential and
-   workflow, drop the role.
+6. **Rollback:** ~~stop and disable the unit, remove the checkout and venv,~~ remove the Consultant
+   container/compose project and image (§13), delete the credential and workflow, drop the role.
 
 ## 11. Known limitations
 

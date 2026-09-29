@@ -1,0 +1,34 @@
+# Samsung Consultant MCP -- internal Docker service (Phase 4D.2A).
+#
+# A separate compose project attached to the existing n8n network as an external network, so
+# deploying it never touches or recreates the n8n / postgres / redis / traefik services.
+# Reachable only inside n8n-compose_default as http://samsung-consultant:8765/mcp.
+# NO `ports:` (never publish), NO Traefik router/service labels, no privileges, no host network,
+# no Docker socket, no volumes. Secrets live only in consultant.env on the VPS (mode 600, not in git).
+name: samsung-consultant
+
+services:
+  samsung-consultant:
+    image: samsung-consultant:4d2a
+    container_name: samsung-consultant
+    restart: unless-stopped
+    env_file:
+      - consultant.env          # CONSULTANT_DATABASE_URL, CONSULTANT_MCP_TOKEN (see consultant.env.example)
+    networks:
+      - n8n
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+    pids_limit: 64
+    labels:
+      traefik.enable: "false"   # defence in depth; Traefik already runs with exposedByDefault=false
+
+networks:
+  n8n:
+    name: n8n-compose_default
+    external: true

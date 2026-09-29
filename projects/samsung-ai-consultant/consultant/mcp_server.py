@@ -14,8 +14,9 @@ ends a session.
 
 Safety (Phase 4D): read-only DB session (verified on connect) with a statement timeout; a
 required bearer token compared in constant time; ``Origin`` allowlist (DNS-rebinding guard);
-64 KiB request cap; refuses to bind to a wildcard address -- the service is meant for a
-loopback or private bridge interface only, never a public one. Each MCP session is one n8n
+64 KiB request cap; refuses to bind to a wildcard address on a host. The deployed form is an
+internal Docker service with no published port (``--container``, Phase 4D.2A,
+``deploy/consultant/``): there the wildcard means the container's own interfaces only. Each MCP session is one n8n
 Agent run (the MCP Client Tool connects per run), so the per-turn tool-call cap is enforced per
 session. Nothing secret is logged; request arguments are not logged.
 """
@@ -50,6 +51,7 @@ SESSION_TTL_SECONDS = 30 * 60
 MAX_SESSIONS = 1000
 MIN_TOKEN_LENGTH = 32
 WILDCARD_HOSTS = frozenset({"", "0.0.0.0", "::", "[::]", "*"})
+CONTAINER_MARKER = "/.dockerenv"
 TOOL_ANNOTATIONS = {"readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}
 
 PARSE_ERROR, INVALID_REQUEST, METHOD_NOT_FOUND, INVALID_PARAMS = -32700, -32600, -32601, -32602
@@ -262,9 +264,13 @@ def make_handler(tools: ConsultantTools, token: str, sessions: SessionStore, all
 
 
 def build_server(tools: ConsultantTools, host: str, port: int, token: str,
-                 allowed_origins: tuple = (), sessions: Optional[SessionStore] = None) -> ThreadingHTTPServer:
-    if host.strip() in WILDCARD_HOSTS:
-        raise ValueError("refusing to bind to a wildcard address; use loopback or a private bridge IP")
+                 allowed_origins: tuple = (), sessions: Optional[SessionStore] = None,
+                 allow_wildcard: bool = False) -> ThreadingHTTPServer:
+    """``allow_wildcard`` is only for container mode: inside a container's own network namespace
+    with no published port, "all interfaces" means the container's loopback and its Docker
+    network interface -- never a host interface. On a host, wildcard binds stay refused."""
+    if host.strip() in WILDCARD_HOSTS and not allow_wildcard:
+        raise ValueError("refusing to bind to a wildcard address; use loopback, or --container inside Docker")
     if len(token) < MIN_TOKEN_LENGTH:
         raise ValueError(f"the MCP token must be at least {MIN_TOKEN_LENGTH} characters")
     handler = make_handler(tools, token, sessions or SessionStore(), frozenset(allowed_origins))
@@ -277,8 +283,14 @@ def main(argv: Optional[list] = None) -> int:
     ap.add_argument("--port", type=int, default=8765)
     ap.add_argument("--allowed-origin", action="append", default=[],
                     help="Origin header value to accept (requests without Origin are accepted)")
+    ap.add_argument("--container", action="store_true",
+                    help="container mode: permit a wildcard bind inside the container's network namespace "
+                         "(requires /.dockerenv; the container must not publish the port)")
     ns = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(message)s", stream=sys.stderr)
+    if ns.container and not os.path.exists(CONTAINER_MARKER):
+        print(f"--container given but {CONTAINER_MARKER} is missing: not running inside Docker", file=sys.stderr)
+        return 2
     dsn = os.environ.get("CONSULTANT_DATABASE_URL", "").strip()
     token = os.environ.get("CONSULTANT_MCP_TOKEN", "").strip()
     if not dsn or not token:
@@ -288,7 +300,7 @@ def main(argv: Optional[list] = None) -> int:
     with provider():                                  # fail fast: connect + verify read-only
         pass
     tools = ConsultantTools(provider)
-    server = build_server(tools, ns.host, ns.port, token, tuple(ns.allowed_origin))
+    server = build_server(tools, ns.host, ns.port, token, tuple(ns.allowed_origin), allow_wildcard=ns.container)
     log.info("serving %s tools on http://%s:%s%s (max %s calls per turn)", len(TOOL_SCHEMAS), ns.host, ns.port,
              MCP_PATH, tools.budget.max_calls)
     try:
