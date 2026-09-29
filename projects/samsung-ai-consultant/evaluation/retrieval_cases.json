@@ -2,6 +2,7 @@
   "_meta": {
     "description": "Phase 3A retrieval evaluation dataset for the Samsung AI Consultant. Baseline for Phase 3B retrieval evaluation once embeddings exist -- see projects/samsung-ai-consultant/indexing/README.md 'Evaluation dataset'. All product_ids/model_codes are real rows from the production samsung_rag catalog (75 products) as of 2026-09-28; none are fabricated. 'expected_mechanism' states, per the evaluation philosophy in the task brief, whether structured SQL filtering alone is sufficient, whether semantic/vector search is what actually does the work, or whether both are needed -- this is a design prediction to test against, not a claim that retrieval has already been evaluated (no embeddings exist yet in Phase 3A).",
     "catalog_snapshot": {"products": 75, "product_specs": 4151, "source": "galaxystore"},
+    "price_semantics": "Budget constraints (max_effective_price) mean effective_price = COALESCE(sale_price, price) unless a query explicitly asks for list/base/original price. Corrected in Phase 3D.1 after validation against the production catalog; see evaluation/AUDIT.md.",
     "expected_mechanism_values": ["sql_sufficient", "vector_primary", "sql_plus_vector", "aggregate_not_retrieval"]
   },
   "cases": [
@@ -56,8 +57,8 @@
       "intent": "structured_selection",
       "expected_mechanism": "sql_sufficient",
       "filters": {"max_effective_price": 30000},
-      "relevant_product_ids": ["UE32F6000FUXRU", "UE32H5000FUXRU", "UE43F6000FUXRU"],
-      "notes": "Price ceiling. 'до 30000' should use the effective (discounted, i.e. COALESCE(sale_price, price)) price, not the undiscounted list price -- none of these 3 happen to have an active sale_price, but a future case/product with one would need this handled correctly."
+      "relevant_product_ids": ["QE32Q5FAAUXPY", "UE32F6000FUXRU", "UE32H5000FUXRU", "UE43F6000FUXRU"],
+      "notes": "Price ceiling. 'до 30000' uses effective price COALESCE(sale_price, price). Exactly 4 available products qualify (verified against production in Phase 3D.1; the original 3-product set omitted QE32Q5FAAUXPY, 27990). UE32F6000FUXRU has an active sale price (26490 list, 23590 effective); the result set is the same under list price."
     },
     {
       "id": "structured-largest-oled",
@@ -119,8 +120,8 @@
       "intent": "hybrid",
       "expected_mechanism": "sql_plus_vector",
       "filters": {"panel_technology": "OLED", "screen_size_inches": 65},
-      "relevant_product_ids": ["QE65S95HAUXPY"],
-      "notes": "SQL narrows to exactly the 3 real 65\" OLED products (same set as 'structured-oled-65'); semantic ranking over their gaming specs should then prefer QE65S95HAUXPY, whose spec text explicitly names 'FreeSync Premium Pro' and 'Variable Refresh Rate', over the other two 65\" OLEDs which lack that specific spec text. Tests that hybrid retrieval actually re-ranks the SQL result set instead of just returning it unordered."
+      "relevant_product_ids": ["QE65S95HAUXPY", "QE65S85HAEXPY", "QE65S90HAEXPY"],
+      "notes": "SQL narrows to exactly the 3 real 65\" OLED products (same set as 'structured-oled-65'). All three carry FreeSync/Variable Refresh Rate spec evidence in production, so all three are acceptable answers. The original S95H-only expectation was invalid: it claimed the other two lacked that spec text, which the catalog contradicts. Consequence: this case checks that the structured filter is honored and gaming-relevant content is retrieved, but cannot discriminate re-ranking among the three."
     },
     {
       "id": "hybrid-neo-qled-budget-gaming",
@@ -128,8 +129,8 @@
       "intent": "hybrid",
       "expected_mechanism": "sql_plus_vector",
       "filters": {"panel_technology": "Neo QLED", "max_effective_price": 200000},
-      "relevant_product_ids": ["QE55QN80HAUXPY", "QE65QN80HAUXPY"],
-      "notes": "SQL filter (panel + price ceiling) admits 7 Neo QLED products under 200k; semantic gaming-intent ranking should favor the two 120Hz QN80H models over the cheaper-but-60Hz QN70H/QN1E models at the same panel technology -- refresh_rate_hz is a typed column here, but 'для игр' as free text is what should drive the actual preference, showing SQL alone under- or over-includes without the semantic signal."
+      "relevant_product_ids": ["QE55QN80HAUXPY", "QE65QN80HAUXPY", "QE75QN80HAUXPY"],
+      "notes": "SQL filter (panel + effective-price ceiling of 200000) admits 12 Neo QLED products (verified in Phase 3D.1). Exactly three of them are 120Hz -- the QN80H models in 55/65/75 inch; QE75QN80HAUXPY qualifies only because its effective (sale) price is 189990 (list 229990), and was omitted by the original list-price reading. The other 9 admitted products are 60Hz. Semantic gaming-intent ranking should favor the three QN80H models; refresh_rate_hz is a typed column but 'для игр' as free text is meant to drive the preference."
     },
     {
       "id": "hybrid-large-120hz-good-sound",
@@ -165,7 +166,7 @@
       "expected_mechanism": "sql_plus_vector",
       "filters": {},
       "relevant_product_ids": ["UE75U8000HUXPY", "UE65U8000HUXPY"],
-      "notes": "Inherently conflicting constraints (cheap AND large) with no single objectively correct answer -- Crystal UHD/LED products are the real 'large but relatively affordable' tier (65-75\" from ~74-95k RUB) versus premium OLED/Neo QLED/Micro RGB at the same size costing 3-10x more. A good system should surface the tradeoff, not silently pick one axis. UE70U8000HUXPY (70\") was deliberately excluded from relevant_product_ids despite fitting the size/price profile because it is currently is_available = false in production."
+      "notes": "Inherently conflicting constraints (cheap AND large) with no objective rule and no thresholds: informational only, not a deterministic pass/fail. The two listed products are examples of a plausible answer, not an exhaustive or authoritative set; the catalog also has other 65-75\" products at similar prices (e.g. UE65M70HAUXPY 75990, UE75M70HAUXPY 94990), so the earlier claim that premium panels cost 3-10x more at the same size does not hold across the board. UE70U8000HUXPY (70\") is excluded because it is is_available = false in production."
     },
     {
       "id": "difficult-stale-year-in-name",
