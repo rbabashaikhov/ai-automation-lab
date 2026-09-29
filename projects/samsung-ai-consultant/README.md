@@ -41,7 +41,10 @@ for the full reasoning behind that split.
 Phase 1 — Database Schema & Migrations:        COMPLETE
 Phase 2 — Product Ingestion:                   COMPLETE (full catalog crawled and retained; n8n orchestration still pending)
 Phase 3A — Document & Retrieval Design:        COMPLETE (no embeddings yet)
-Phase 3B — Embeddings & Vector Retrieval:      IN PROGRESS (single-product acceptance test + retrieval smoke test done; full catalog not yet indexed; STOPPED at review gate)
+Phase 3B — Embeddings & Vector Retrieval:      COMPLETE (n8n embeddings workflow + retrieval smoke test)
+Phase 3B.1 — Embedding-aware chunk sync:       COMPLETE (incremental rebuild preserves embeddings)
+Phase 3C — Full-catalog RAG indexing:          COMPLETE
+Phase 3D — Retrieval evaluation:               COMPLETE (baseline + consultant spikes; see docs/phase-3d-retrieval-evaluation.md)
 Phase 4 — AI Consultant:                       PLANNED
 Phase 5 — Evaluation / Observability:          PLANNED
 ```

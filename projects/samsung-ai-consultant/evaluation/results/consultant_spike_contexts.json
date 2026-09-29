@@ -1,0 +1,2156 @@
+{
+ "gate": {
+  "products": 75,
+  "chunks": 514,
+  "chunks_without_embedding": 0,
+  "read_only": "on"
+ },
+ "system_prompt": "You are a Samsung TV consultant. Answer in the language of the user's question.\nUse ONLY the catalog context provided below. Rules:\n- Recommend only products that appear in the context; never invent products, specs or prices.\n- Explain briefly why each recommended product fits the request, citing concrete facts from the context (numbers such as Hz, W, inches, cm, price).\n- State meaningful trade-offs (price, size, missing features, unavailability).\n- 'Retrieved chunks' come from semantic search. Their similarity is not a quality score; do not say one TV is better because of it.\n- If the context lacks the evidence needed to answer well (e.g. no candidate has the relevant feature, or a needed spec is missing), say so plainly instead of guessing.\n- Give at most 3 recommendations.",
+ "k_products": 8,
+ "chunk_window": 40,
+ "max_chunks_per_product": 3,
+ "cases": [
+  {
+   "query": "телевизор для игровой приставки",
+   "candidates": [
+    {
+     "model_code": "QE32Q5FAAUXPY",
+     "product_rank": 1,
+     "chunks": [
+      {
+       "chunk_id": 413,
+       "similarity": 0.4842279021010545,
+       "section": "gaming",
+       "model_code": "QE32Q5FAAUXPY",
+       "content": "Samsung Телевизор Samsung 32\" QLED Q5FA, Процессор Hyper Real, Smart ТВ (2026) QE32Q5FAAUXPY черный\nМодель: QE32Q5FAAUXPY\nКатегория: Crystal UHD\nРаздел: Игровые функции\n\nИгровой режим: Да\nАвтовключение игрового режима (ALLM): Да",
+       "chunk_rank": 1
+      }
+     ],
+     "facts": {
+      "model_code": "QE32Q5FAAUXPY",
+      "name": "Телевизор Samsung 32\" QLED Q5FA, Процессор Hyper Real, Smart ТВ (2026) QE32Q5FAAUXPY черный",
+      "fields": {
+       "category": "Crystal UHD",
+       "panel_technology": "QLED",
+       "screen_size_inches": 32.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 27990.0,
+       "effective_price_rub": 27990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Игровой режим": "Да",
+       "Автовключение игрового режима (ALLM)": "Да",
+       "Технологии улучшения звука": "Адаптивный звук; OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "10",
+       "Поддержка форматов HDR": "HDR10; HDR10+; HLG; Quantum HDR",
+       "Технология экрана": "QLED"
+      }
+     }
+    },
+    {
+     "model_code": "MRE115MR95FXRU",
+     "product_rank": 2,
+     "chunks": [
+      {
+       "chunk_id": 113,
+       "similarity": 0.4796568936579908,
+       "section": "gaming",
+       "model_code": "MRE115MR95FXRU",
+       "content": "Samsung Телевизор Samsung 115\" TV AI Micro RGB MR95F (2026), 4K серебряный\nМодель: MRE115MR95FXRU\nКатегория: Micro RGB\nРаздел: Игровые функции\n\nИгровой режим: Да\nАвтовключение игрового режима (ALLM): Да\nФункция Game Motion Plus: Да\nТехнология Dynamic Black EQ: Да\nТехнология FreeSync: FreeSync Premium Pro\nУльтраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\nИгровая панель (Game Bar): Да",
+       "chunk_rank": 2
+      }
+     ],
+     "facts": {
+      "model_code": "MRE115MR95FXRU",
+      "name": "Телевизор Samsung 115\" TV AI Micro RGB MR95F (2026), 4K серебряный",
+      "fields": {
+       "category": "Micro RGB",
+       "panel_technology": "Micro RGB",
+       "screen_size_inches": 115.0,
+       "refresh_rate_hz": 120,
+       "price_rub": 2999990.0,
+       "sale_price_rub": 2699990.0,
+       "effective_price_rub": 2699990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "257.4 х 147.8 х 3.57",
+       "Игровой режим": "Да",
+       "Автовключение игрового режима (ALLM)": "Да",
+       "Функция Game Motion Plus": "Да",
+       "Технология Dynamic Black EQ": "Да",
+       "Технология FreeSync": "FreeSync Premium Pro",
+       "Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View)": "Да",
+       "Игровая панель (Game Bar)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS+; Режим Q-Symphony",
+       "Мощность звука, Вт": "70",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "HDR10+",
+       "Антибликовое покрытие": "Anti Reflection",
+       "Технология экрана": "Micro RGB"
+      }
+     }
+    },
+    {
+     "model_code": "UE50M70HAUXPY",
+     "product_rank": 3,
+     "chunks": [
+      {
+       "chunk_id": 57,
+       "similarity": 0.47804583642985987,
+       "section": "gaming",
+       "model_code": "UE50M70HAUXPY",
+       "content": "Samsung Телевизор Samsung 50\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE50M70HAUXPY черный\nМодель: UE50M70HAUXPY\nКатегория: Mini LED\nРаздел: Игровые функции\n\nИгровой режим: Да\nАвтовключение игрового режима (ALLM): Да",
+       "chunk_rank": 3
+      }
+     ],
+     "facts": {
+      "model_code": "UE50M70HAUXPY",
+      "name": "Телевизор Samsung 50\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE50M70HAUXPY черный",
+      "fields": {
+       "category": "Mini LED",
+       "panel_technology": "Mini LED",
+       "screen_size_inches": 50.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 53990.0,
+       "sale_price_rub": 45490.0,
+       "effective_price_rub": 45490.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "111.08 x 64.38 x 7.64",
+       "Игровой режим": "Да",
+       "Автовключение игрового режима (ALLM)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "Адаптивный звук; OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "20",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "HDR10+; HLG; Mini LED HDR",
+       "Технология экрана": "Mini LED"
+      }
+     }
+    },
+    {
+     "model_code": "UE43M70HAUXPY",
+     "product_rank": 4,
+     "chunks": [
+      {
+       "chunk_id": 168,
+       "similarity": 0.47804567169266876,
+       "section": "gaming",
+       "model_code": "UE43M70HAUXPY",
+       "content": "Samsung Телевизор Samsung 43\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE43M70HAUXPY черный\nМодель: UE43M70HAUXPY\nКатегория: Mini LED\nРаздел: Игровые функции\n\nИгровой режим: Да\nАвтовключение игрового режима (ALLM): Да",
+       "chunk_rank": 4
+      }
+     ],
+     "facts": {
+      "model_code": "UE43M70HAUXPY",
+      "name": "Телевизор Samsung 43\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE43M70HAUXPY черный",
+      "fields": {
+       "category": "Mini LED",
+       "panel_technology": "Mini LED",
+       "screen_size_inches": 43.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 41990.0,
+       "effective_price_rub": 41990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "95.78 x 55.88 x 7.63",
+       "Игровой режим": "Да",
+       "Автовключение игрового режима (ALLM)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "Адаптивный звук; OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "20",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "HDR10+; HLG; Mini LED HDR",
+       "Технология экрана": "Mini LED"
+      }
+     }
+    },
+    {
+     "model_code": "QE115QN90FUXRU",
+     "product_rank": 5,
+     "chunks": [
+      {
+       "chunk_id": 120,
+       "similarity": 0.47432730719985017,
+       "section": "gaming",
+       "model_code": "QE115QN90FUXRU",
+       "content": "Samsung Телевизор Samsung 115\" Neo QLED 4K Smart TV (2026) серия 9 QE115QN90FUXRU черный титан\nМодель: QE115QN90FUXRU\nКатегория: Neo QLED\nРаздел: Игровые функции\n\nИгровой режим: Да\nАвтовключение игрового режима (ALLM): Да\nФункция Game Motion Plus: Да\nТехнология Dynamic Black EQ: Да\nТехнология FreeSync: FreeSync Premium Pro\nУльтраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\nИгровая панель (Game Bar): Да",
+       "chunk_rank": 5
+      }
+     ],
+     "facts": {
+      "model_code": "QE115QN90FUXRU",
+      "name": "Телевизор Samsung 115\" Neo QLED 4K Smart TV (2026) серия 9 QE115QN90FUXRU черный титан",
+      "fields": {
+       "category": "Neo QLED",
+       "panel_technology": "Neo QLED",
+       "screen_size_inches": 115.0,
+       "refresh_rate_hz": 120,
+       "price_rub": 1999990.0,
+       "sale_price_rub": 1799990.0,
+       "effective_price_rub": 1799990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "256.52 x 146.76 x 3.41",
+       "Игровой режим": "Да",
+       "Автовключение игрового режима (ALLM)": "Да",
+       "Функция Game Motion Plus": "Да",
+       "Технология Dynamic Black EQ": "Да",
+       "Технология FreeSync": "FreeSync Premium Pro",
+       "Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View)": "Да",
+       "Игровая панель (Game Bar)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS+; Режим Q-Symphony",
+       "Мощность звука, Вт": "60",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "HDR10+; HLG; Neo Quantum HDR Pro",
+       "Антибликовое покрытие": "Anti Reflection",
+       "Технология экрана": "Neo QLED"
+      }
+     }
+    },
+    {
+     "model_code": "UE50U8000HUXPY",
+     "product_rank": 6,
+     "chunks": [
+      {
+       "chunk_id": 516,
+       "similarity": 0.47346621320694426,
+       "section": "gaming",
+       "model_code": "UE50U8000HUXPY",
+       "content": "Samsung Телевизор Samsung 50\" Crystal UHD U8000 4K, Процессор Crystal, Smart ТВ (2026) UE50U8000HUXPY черный\nМодель: UE50U8000HUXPY\nКатегория: Crystal UHD\nРаздел: Игровые функции\n\nИгровой режим: Да\nАвтовключение игрового режима (ALLM): Да",
+       "chunk_rank": 6
+      }
+     ],
+     "facts": {
+      "model_code": "UE50U8000HUXPY",
+      "name": "Телевизор Samsung 50\" Crystal UHD U8000 4K, Процессор Crystal, Smart ТВ (2026) UE50U8000HUXPY черный",
+      "fields": {
+       "category": "Crystal UHD",
+       "panel_technology": "LED",
+       "screen_size_inches": 50.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 49990.0,
+       "effective_price_rub": 49990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "111.08 x 64.38 x 7.64",
+       "Игровой режим": "Да",
+       "Автовключение игрового режима (ALLM)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "Адаптивный звук; OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "20",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "HDR10; HDR10+; HLG",
+       "Технология экрана": "LED"
+      }
+     }
+    },
+    {
+     "model_code": "QE43LS03HEUXPY",
+     "product_rank": 7,
+     "chunks": [
+      {
+       "chunk_id": 530,
+       "similarity": 0.4728430266326633,
+       "section": "gaming",
+       "model_code": "QE43LS03HEUXPY",
+       "content": "Samsung Телевизор Samsung 43\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE43LS03HEUXPY черный\nМодель: QE43LS03HEUXPY\nКатегория: The Frame\nРаздел: Игровые функции\n\nИгровой режим: Да\nФункция Game Motion Plus: Да\nУльтраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\nИгровая панель (Game Bar): Да",
+       "chunk_rank": 7
+      }
+     ],
+     "facts": {
+      "model_code": "QE43LS03HEUXPY",
+      "name": "Телевизор Samsung 43\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE43LS03HEUXPY черный",
+      "fields": {
+       "category": "The Frame",
+       "panel_technology": "QLED",
+       "screen_size_inches": 43.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 84990.0,
+       "effective_price_rub": 84990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "96.95 x 55.78 x 2.75",
+       "Игровой режим": "Да",
+       "Функция Game Motion Plus": "Да",
+       "Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View)": "Да",
+       "Игровая панель (Game Bar)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "360 Audio; Active Voice Amplifier; Адаптивный звук Pro; OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "20",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "Auto HDR Remastering; HDR10+; HLG; Quantum HDR",
+       "Антибликовое покрытие": "Да",
+       "Технология экрана": "QLED"
+      }
+     }
+    },
+    {
+     "model_code": "UE43U8000HUXPY",
+     "product_rank": 8,
+     "chunks": [
+      {
+       "chunk_id": 557,
+       "similarity": 0.472790037130708,
+       "section": "gaming",
+       "model_code": "UE43U8000HUXPY",
+       "content": "Samsung Телевизор Samsung 43\" Crystal UHD U8000 4K, Процессор Crystal, Smart ТВ (2026) UE43U8000HUXPY черный\nМодель: UE43U8000HUXPY\nКатегория: Crystal UHD\nРаздел: Игровые функции\n\nИгровой режим: Да\nАвтовключение игрового режима (ALLM): Да",
+       "chunk_rank": 8
+      }
+     ],
+     "facts": {
+      "model_code": "UE43U8000HUXPY",
+      "name": "Телевизор Samsung 43\" Crystal UHD U8000 4K, Процессор Crystal, Smart ТВ (2026) UE43U8000HUXPY черный",
+      "fields": {
+       "category": "Crystal UHD",
+       "panel_technology": "LED",
+       "screen_size_inches": 43.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 35990.0,
+       "effective_price_rub": 35990.0,
+       "is_available": false,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "95.7 x 55.8 x 7.63",
+       "Игровой режим": "Да",
+       "Автовключение игрового режима (ALLM)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "Адаптивный звук; OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "20",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "HDR10; HDR10+; HLG",
+       "Технология экрана": "LED"
+      }
+     }
+    }
+   ],
+   "user_message": "User question: телевизор для игровой приставки\n\nCatalog context:\n\n### Candidate 1: QE32Q5FAAUXPY — Телевизор Samsung 32\" QLED Q5FA, Процессор Hyper Real, Smart ТВ (2026) QE32Q5FAAUXPY черный\nSTRUCTURED FACTS (catalog database):\n- category: Crystal UHD\n- panel_technology: QLED\n- screen_size_inches: 32.0\n- refresh_rate_hz: 60\n- price_rub: 27990.0\n- effective_price_rub: 27990.0\n- is_available: True\n- year: 2026\n- Игровой режим: Да\n- Автовключение игрового режима (ALLM): Да\n- Технологии улучшения звука: Адаптивный звук; OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 10\n- Поддержка форматов HDR: HDR10; HDR10+; HLG; Quantum HDR\n- Технология экрана: QLED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=gaming, similarity=0.484]\nSamsung Телевизор Samsung 32\" QLED Q5FA, Процессор Hyper Real, Smart ТВ (2026) QE32Q5FAAUXPY черный\nМодель: QE32Q5FAAUXPY\nКатегория: Crystal UHD\nРаздел: Игровые функции\n\nИгровой режим: Да\nАвтовключение игрового режима (ALLM): Да\n\n### Candidate 2: MRE115MR95FXRU — Телевизор Samsung 115\" TV AI Micro RGB MR95F (2026), 4K серебряный\nSTRUCTURED FACTS (catalog database):\n- category: Micro RGB\n- panel_technology: Micro RGB\n- screen_size_inches: 115.0\n- refresh_rate_hz: 120\n- price_rub: 2999990.0\n- sale_price_rub: 2699990.0\n- effective_price_rub: 2699990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 257.4 х 147.8 х 3.57\n- Игровой режим: Да\n- Автовключение игрового режима (ALLM): Да\n- Функция Game Motion Plus: Да\n- Технология Dynamic Black EQ: Да\n- Технология FreeSync: FreeSync Premium Pro\n- Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\n- Игровая панель (Game Bar): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: 360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS+; Режим Q-Symphony\n- Мощность звука, Вт: 70\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: HDR10+\n- Антибликовое покрытие: Anti Reflection\n- Технология экрана: Micro RGB\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=gaming, similarity=0.480]\nSamsung Телевизор Samsung 115\" TV AI Micro RGB MR95F (2026), 4K серебряный\nМодель: MRE115MR95FXRU\nКатегория: Micro RGB\nРаздел: Игровые функции\n\nИгровой режим: Да\nАвтовключение игрового режима (ALLM): Да\nФункция Game Motion Plus: Да\nТехнология Dynamic Black EQ: Да\nТехнология FreeSync: FreeSync Premium Pro\nУльтраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\nИгровая панель (Game Bar): Да\n\n### Candidate 3: UE50M70HAUXPY — Телевизор Samsung 50\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE50M70HAUXPY черный\nSTRUCTURED FACTS (catalog database):\n- category: Mini LED\n- panel_technology: Mini LED\n- screen_size_inches: 50.0\n- refresh_rate_hz: 60\n- price_rub: 53990.0\n- sale_price_rub: 45490.0\n- effective_price_rub: 45490.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 111.08 x 64.38 x 7.64\n- Игровой режим: Да\n- Автовключение игрового режима (ALLM): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: Адаптивный звук; OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 20\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: HDR10+; HLG; Mini LED HDR\n- Технология экрана: Mini LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=gaming, similarity=0.478]\nSamsung Телевизор Samsung 50\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE50M70HAUXPY черный\nМодель: UE50M70HAUXPY\nКатегория: Mini LED\nРаздел: Игровые функции\n\nИгровой режим: Да\nАвтовключение игрового режима (ALLM): Да\n\n### Candidate 4: UE43M70HAUXPY — Телевизор Samsung 43\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE43M70HAUXPY черный\nSTRUCTURED FACTS (catalog database):\n- category: Mini LED\n- panel_technology: Mini LED\n- screen_size_inches: 43.0\n- refresh_rate_hz: 60\n- price_rub: 41990.0\n- effective_price_rub: 41990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 95.78 x 55.88 x 7.63\n- Игровой режим: Да\n- Автовключение игрового режима (ALLM): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: Адаптивный звук; OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 20\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: HDR10+; HLG; Mini LED HDR\n- Технология экрана: Mini LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=gaming, similarity=0.478]\nSamsung Телевизор Samsung 43\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE43M70HAUXPY черный\nМодель: UE43M70HAUXPY\nКатегория: Mini LED\nРаздел: Игровые функции\n\nИгровой режим: Да\nАвтовключение игрового режима (ALLM): Да\n\n### Candidate 5: QE115QN90FUXRU — Телевизор Samsung 115\" Neo QLED 4K Smart TV (2026) серия 9 QE115QN90FUXRU черный титан\nSTRUCTURED FACTS (catalog database):\n- category: Neo QLED\n- panel_technology: Neo QLED\n- screen_size_inches: 115.0\n- refresh_rate_hz: 120\n- price_rub: 1999990.0\n- sale_price_rub: 1799990.0\n- effective_price_rub: 1799990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 256.52 x 146.76 x 3.41\n- Игровой режим: Да\n- Автовключение игрового режима (ALLM): Да\n- Функция Game Motion Plus: Да\n- Технология Dynamic Black EQ: Да\n- Технология FreeSync: FreeSync Premium Pro\n- Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\n- Игровая панель (Game Bar): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: 360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS+; Режим Q-Symphony\n- Мощность звука, Вт: 60\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: HDR10+; HLG; Neo Quantum HDR Pro\n- Антибликовое покрытие: Anti Reflection\n- Технология экрана: Neo QLED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=gaming, similarity=0.474]\nSamsung Телевизор Samsung 115\" Neo QLED 4K Smart TV (2026) серия 9 QE115QN90FUXRU черный титан\nМодель: QE115QN90FUXRU\nКатегория: Neo QLED\nРаздел: Игровые функции\n\nИгровой режим: Да\nАвтовключение игрового режима (ALLM): Да\nФункция Game Motion Plus: Да\nТехнология Dynamic Black EQ: Да\nТехнология FreeSync: FreeSync Premium Pro\nУльтраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\nИгровая панель (Game Bar): Да\n\n### Candidate 6: UE50U8000HUXPY — Телевизор Samsung 50\" Crystal UHD U8000 4K, Процессор Crystal, Smart ТВ (2026) UE50U8000HUXPY черный\nSTRUCTURED FACTS (catalog database):\n- category: Crystal UHD\n- panel_technology: LED\n- screen_size_inches: 50.0\n- refresh_rate_hz: 60\n- price_rub: 49990.0\n- effective_price_rub: 49990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 111.08 x 64.38 x 7.64\n- Игровой режим: Да\n- Автовключение игрового режима (ALLM): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: Адаптивный звук; OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 20\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: HDR10; HDR10+; HLG\n- Технология экрана: LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=gaming, similarity=0.473]\nSamsung Телевизор Samsung 50\" Crystal UHD U8000 4K, Процессор Crystal, Smart ТВ (2026) UE50U8000HUXPY черный\nМодель: UE50U8000HUXPY\nКатегория: Crystal UHD\nРаздел: Игровые функции\n\nИгровой режим: Да\nАвтовключение игрового режима (ALLM): Да\n\n### Candidate 7: QE43LS03HEUXPY — Телевизор Samsung 43\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE43LS03HEUXPY черный\nSTRUCTURED FACTS (catalog database):\n- category: The Frame\n- panel_technology: QLED\n- screen_size_inches: 43.0\n- refresh_rate_hz: 60\n- price_rub: 84990.0\n- effective_price_rub: 84990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 96.95 x 55.78 x 2.75\n- Игровой режим: Да\n- Функция Game Motion Plus: Да\n- Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\n- Игровая панель (Game Bar): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: 360 Audio; Active Voice Amplifier; Адаптивный звук Pro; OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 20\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG; Quantum HDR\n- Антибликовое покрытие: Да\n- Технология экрана: QLED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=gaming, similarity=0.473]\nSamsung Телевизор Samsung 43\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE43LS03HEUXPY черный\nМодель: QE43LS03HEUXPY\nКатегория: The Frame\nРаздел: Игровые функции\n\nИгровой режим: Да\nФункция Game Motion Plus: Да\nУльтраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\nИгровая панель (Game Bar): Да\n\n### Candidate 8: UE43U8000HUXPY — Телевизор Samsung 43\" Crystal UHD U8000 4K, Процессор Crystal, Smart ТВ (2026) UE43U8000HUXPY черный\nSTRUCTURED FACTS (catalog database):\n- category: Crystal UHD\n- panel_technology: LED\n- screen_size_inches: 43.0\n- refresh_rate_hz: 60\n- price_rub: 35990.0\n- effective_price_rub: 35990.0\n- is_available: False\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 95.7 x 55.8 x 7.63\n- Игровой режим: Да\n- Автовключение игрового режима (ALLM): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: Адаптивный звук; OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 20\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: HDR10; HDR10+; HLG\n- Технология экрана: LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=gaming, similarity=0.473]\nSamsung Телевизор Samsung 43\" Crystal UHD U8000 4K, Процессор Crystal, Smart ТВ (2026) UE43U8000HUXPY черный\nМодель: UE43U8000HUXPY\nКатегория: Crystal UHD\nРаздел: Игровые функции\n\nИгровой режим: Да\nАвтовключение игрового режима (ALLM): Да",
+   "coverage": {
+    "candidate_products": [
+     "QE32Q5FAAUXPY",
+     "MRE115MR95FXRU",
+     "UE50M70HAUXPY",
+     "UE43M70HAUXPY",
+     "QE115QN90FUXRU",
+     "UE50U8000HUXPY",
+     "QE43LS03HEUXPY",
+     "UE43U8000HUXPY"
+    ],
+    "sections_represented": [
+     "gaming"
+    ],
+    "reference_rule": "120 Hz panel AND FreeSync Premium* AND Game Bar",
+    "reference_count": 39,
+    "reference_in_context": [
+     "MRE115MR95FXRU",
+     "QE115QN90FUXRU"
+    ],
+    "reference_missing_best_ranked": [
+     [
+      "UE100M90HUXPY",
+      11
+     ],
+     [
+      "QE55LS03HAUXPY",
+      13
+     ],
+     [
+      "MRE55R85HAUXPY",
+      14
+     ],
+     [
+      "QE75LS03HWUXPY",
+      17
+     ],
+     [
+      "QE85LS03HWUXPY",
+      18
+     ],
+     [
+      "MRE100R85HUXPY",
+      19
+     ],
+     [
+      "QE98LS03HEUXPY",
+      21
+     ],
+     [
+      "MRE75R85HAUXPY",
+      22
+     ]
+    ]
+   }
+  },
+  {
+   "query": "для светлой комнаты",
+   "candidates": [
+    {
+     "model_code": "MNA114MS1CCXRU",
+     "product_rank": 1,
+     "chunks": [
+      {
+       "chunk_id": 178,
+       "similarity": 0.2954827131450657,
+       "section": "physical_design",
+       "model_code": "MNA114MS1CCXRU",
+       "content": "Samsung Дисплей Samsung 114\" Micro LED MS1C (2026) серебристый\nМодель: MNA114MS1CCXRU\nКатегория: Micro LED\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 2760 x 1776 x 770\nВес в упаковке, кг: 187\nСтрана производителя: Вьетнам\nОфициальная гарантия производителя, мес: 12\nПульт: TM2360E\nРазмер без подставки (ШxВxГ), см: 252.63 x 143.42 x 2.49\nПодставка (Основная) (ШxГ), см: 47.1 x 41.06\nВес с подставкой, кг: 88\nВес без подставки, кг: 79\nЦвет корпуса: Monolith Silver\nЦвет рамки: Безрамочный\nВозможность крепления на стену: Да\nСтандарт VESA: 800x800 мм\nИсточник питания: 100-240 В ～ 50/60 Гц\nЭнергопотребление в рабочем режиме (типичное), Вт: 834\nЭнергопотребление в рабочем режиме (макс.), Вт: 1150\nЭнергопотребление в режиме ожидания, Вт: 0.5",
+       "chunk_rank": 1
+      },
+      {
+       "chunk_id": 177,
+       "similarity": 0.26684954540539185,
+       "section": "connectivity",
+       "model_code": "MNA114MS1CCXRU",
+       "content": "Samsung Дисплей Samsung 114\" Micro LED MS1C (2026) серебристый\nМодель: MNA114MS1CCXRU\nКатегория: Micro LED\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nBluetooth: Да\nHDMI: 8 шт\nВерсия HDMI: 2.1\nUSB: 2 шт\nEthernet (LAN): Да\nДругие аудио и видео интерфейсы: Оптический",
+       "chunk_rank": 2
+      },
+      {
+       "chunk_id": 176,
+       "similarity": 0.2559737567585143,
+       "section": "smart_features",
+       "model_code": "MNA114MS1CCXRU",
+       "content": "Samsung Дисплей Samsung 114\" Micro LED MS1C (2026) серебристый\nМодель: MNA114MS1CCXRU\nКатегория: Micro LED\nРаздел: Smart TV и функции\n\nПоддержка Connect Share: USB\nДополнительные режимы: Режим &quot;Картина&quot; (Галерея); Интерьерный режим\nТаймер выключения: Да\nТелегид по программам: Да\nSmart TV: Да\nФункция зеркалирования: Экран мобильного устройства на экране ТВ",
+       "chunk_rank": 4
+      }
+     ],
+     "facts": {
+      "model_code": "MNA114MS1CCXRU",
+      "name": "Дисплей Samsung 114\" Micro LED MS1C (2026) серебристый",
+      "fields": {
+       "category": "Micro LED",
+       "panel_technology": "Micro LED",
+       "screen_size_inches": 114.0,
+       "refresh_rate_hz": 120,
+       "price_rub": 19999990.0,
+       "effective_price_rub": 19999990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "252.63 x 143.42 x 2.49",
+       "Поддержка форматов звука": "Dolby Digital",
+       "Мощность звука, Вт": "120",
+       "Поддержка форматов HDR": "HDR10+; HLG",
+       "Технология экрана": "Micro LED"
+      }
+     }
+    },
+    {
+     "model_code": "UE27LSM7FAXXPY",
+     "product_rank": 2,
+     "chunks": [
+      {
+       "chunk_id": 185,
+       "similarity": 0.2632921235315804,
+       "section": "physical_design",
+       "model_code": "UE27LSM7FAXXPY",
+       "content": "Samsung Дисплей Samsung портативный The Movingstyle LSM7F (2026) белый\nМодель: UE27LSM7FAXXPY\nКатегория: The Movingstyle\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 525 x 1234 x 174\nВес в упаковке, кг: 30.3\nСтрана производителя: Вьетнам\nОфициальная гарантия производителя, мес: 12\nКомплектация: Пульт дистанционного управления, Кабель USB-C, Руководство пользователя\nПульт: TM2361F\nРазмер с подставкой (ШxВxГ), см: 62.83 x 127.23 x 40.9\nРазмер без подставки (ШxВxГ), см: 62.83 x 36.82 x 4.74\nВес, кг: 11.6\nВес с подставкой, кг: 25.7\nВес без подставки, кг: 5.2\nЦвет корпуса: Белый\nЦвет подставки: Каменно-белый\nИсточник питания: 100-240 В ～ 50/60 Гц\nЭнергопотребление в рабочем режиме (типичное), Вт: 40\nЭнергопотребление в рабочем режиме (макс.), Вт: 100\nЭнергопотребление в режиме ожидания, Вт: 0.5",
+       "chunk_rank": 3
+      },
+      {
+       "chunk_id": 184,
+       "similarity": 0.23641637309484298,
+       "section": "connectivity",
+       "model_code": "UE27LSM7FAXXPY",
+       "content": "Samsung Дисплей Samsung портативный The Movingstyle LSM7F (2026) белый\nМодель: UE27LSM7FAXXPY\nКатегория: The Movingstyle\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nСтандарты Wi-Fi: Wi-Fi 5\nBluetooth: Да\nВерсия Bluetooth: 5.3\nHDMI: 1 шт\nUSB-C: 2 шт\nТехнология HDMI ARC: eARC\nТехнология Anynet+ (HDMI-CEC): Да",
+       "chunk_rank": 12
+      },
+      {
+       "chunk_id": 180,
+       "similarity": 0.2279895058863921,
+       "section": "display",
+       "model_code": "UE27LSM7FAXXPY",
+       "content": "Samsung Дисплей Samsung портативный The Movingstyle LSM7F (2026) белый\nМодель: UE27LSM7FAXXPY\nКатегория: The Movingstyle\nРаздел: Экран и изображение\n\nПоддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG\nТехнология улучшения цвета: Color Booster Pro\nТехнология улучшения четкости: Auto Motion Plus\nДругие технологии оптимизации изображения: Интеллектуальное масштабирование разрешения (AI Upscale)\nРежим защиты глаз: Да",
+       "chunk_rank": 30
+      }
+     ],
+     "facts": {
+      "model_code": "UE27LSM7FAXXPY",
+      "name": "Дисплей Samsung портативный The Movingstyle LSM7F (2026) белый",
+      "fields": {
+       "category": "The Movingstyle",
+       "panel_technology": "LED",
+       "screen_size_inches": 27.0,
+       "refresh_rate_hz": 120,
+       "price_rub": 124990.0,
+       "effective_price_rub": 124990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "62.83 x 36.82 x 4.74",
+       "Игровой режим": "Да",
+       "Функция Game Motion Plus": "Да",
+       "Игровая панель (Game Bar)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "360 Audio; Active Voice Amplifier Pro; Адаптивный звук; Режим Q-Symphony",
+       "Мощность звука, Вт": "10",
+       "Поддержка форматов HDR": "Auto HDR Remastering; HDR10+; HLG",
+       "Технология экрана": "LED"
+      }
+     }
+    },
+    {
+     "model_code": "MRE115MR95FXRU",
+     "product_rank": 3,
+     "chunks": [
+      {
+       "chunk_id": 117,
+       "similarity": 0.24862683935040142,
+       "section": "physical_design",
+       "model_code": "MRE115MR95FXRU",
+       "content": "Samsung Телевизор Samsung 115\" TV AI Micro RGB MR95F (2026), 4K серебряный\nМодель: MRE115MR95FXRU\nКатегория: Micro RGB\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 2765 х 1652 х 250\nВес в упаковке, кг: 140\nСтрана производителя: Вьетнам\nОфициальная гарантия производителя, мес: 12\nКомплектация: пульт ДУ, сетевой кабель, кронштейн, документация\nРазмер с подставкой (ШxВxГ), см: 257.4 х 153.4 х 46.81\nРазмер без подставки (ШxВxГ), см: 257.4 х 147.8 х 3.57\nПодставка (Минимальная) (ШxГ), см: 685 х 468.1\nВес с подставкой, кг: 90.5\nВес без подставки, кг: 88\nСтандарт VESA: 1000x600 мм\nИсточник питания: 220-240 В ～ 50/60 Гц\nЭнергопотребление в рабочем режиме (типичное), Вт: 228\nЭнергопотребление в рабочем режиме (макс.), Вт: 810\nЭнергопотребление в режиме ожидания, Вт: 0.5",
+       "chunk_rank": 6
+      }
+     ],
+     "facts": {
+      "model_code": "MRE115MR95FXRU",
+      "name": "Телевизор Samsung 115\" TV AI Micro RGB MR95F (2026), 4K серебряный",
+      "fields": {
+       "category": "Micro RGB",
+       "panel_technology": "Micro RGB",
+       "screen_size_inches": 115.0,
+       "refresh_rate_hz": 120,
+       "price_rub": 2999990.0,
+       "sale_price_rub": 2699990.0,
+       "effective_price_rub": 2699990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "257.4 х 147.8 х 3.57",
+       "Игровой режим": "Да",
+       "Автовключение игрового режима (ALLM)": "Да",
+       "Функция Game Motion Plus": "Да",
+       "Технология Dynamic Black EQ": "Да",
+       "Технология FreeSync": "FreeSync Premium Pro",
+       "Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View)": "Да",
+       "Игровая панель (Game Bar)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS+; Режим Q-Symphony",
+       "Мощность звука, Вт": "70",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "HDR10+",
+       "Антибликовое покрытие": "Anti Reflection",
+       "Технология экрана": "Micro RGB"
+      }
+     }
+    },
+    {
+     "model_code": "MRE75R85HAUXPY",
+     "product_rank": 4,
+     "chunks": [
+      {
+       "chunk_id": 293,
+       "similarity": 0.24484633021622848,
+       "section": "physical_design",
+       "model_code": "MRE75R85HAUXPY",
+       "content": "Samsung Телевизор Samsung 75\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE75R85HAUXPY сланцево-черный\nМодель: MRE75R85HAUXPY\nКатегория: Micro RGB\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 1075 x 1830 x 164\nВес в упаковке, кг: 34.3\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: универсальный пульт дистанционного управления, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 166.66 x 99.38 x 31.98\nРазмер без подставки (ШxВxГ), см: 166.66 x 95.78 x 5.23\nПодставка (Основная) (ШxГ), см: 140.32 x 31.98\nВес с подставкой, кг: 25.9\nВес без подставки, кг: 25.4\nЦвет корпуса: сланцево-черный\nЦвет подставки: черный\nСтандарт VESA: 400x300 мм\nЭнергопотребление в рабочем режиме (типичное), Вт: 280\nЭнергопотребление в режиме ожидания, Вт: 0.5",
+       "chunk_rank": 7
+      }
+     ],
+     "facts": {
+      "model_code": "MRE75R85HAUXPY",
+      "name": "Телевизор Samsung 75\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE75R85HAUXPY сланцево-черный",
+      "fields": {
+       "category": "Micro RGB",
+       "panel_technology": "Micro RGB",
+       "screen_size_inches": 75.0,
+       "refresh_rate_hz": 120,
+       "price_rub": 339990.0,
+       "sale_price_rub": 264990.0,
+       "effective_price_rub": 264990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "166.66 x 95.78 x 5.23",
+       "Игровой режим": "Да",
+       "Функция Game Motion Plus": "Да",
+       "Технология FreeSync": "FreeSync Premium Pro",
+       "Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View)": "Да",
+       "Игровая панель (Game Bar)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "30",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "Auto HDR Remastering; HDR10+; HLG; Micro RGB HDR+",
+       "Технология экрана": "Micro RGB"
+      }
+     }
+    },
+    {
+     "model_code": "MRE55R85HAUXPY",
+     "product_rank": 5,
+     "chunks": [
+      {
+       "chunk_id": 89,
+       "similarity": 0.243841101990925,
+       "section": "physical_design",
+       "model_code": "MRE55R85HAUXPY",
+       "content": "Samsung Телевизор Samsung 55\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE55R85HAUXPY сланцево-черный\nМодель: MRE55R85HAUXPY\nКатегория: Micro RGB\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 808 x 1352 x 127\nВес в упаковке, кг: 19.6\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: универсальный пульт дистанционного управления, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 122.4 x 74.4 x 21.8\nРазмер без подставки (ШxВxГ), см: 122.4 x 70.8 x 5.2\nПодставка (Основная) (ШxГ), см: 103.46 x 21.8\nВес с подставкой, кг: 14.9\nВес без подставки, кг: 14.6\nЦвет корпуса: сланцево-черный\nЦвет подставки: черный\nСтандарт VESA: 300x200 мм\nЭнергопотребление в рабочем режиме (типичное), Вт: 220\nЭнергопотребление в режиме ожидания, Вт: 0.5",
+       "chunk_rank": 8
+      }
+     ],
+     "facts": {
+      "model_code": "MRE55R85HAUXPY",
+      "name": "Телевизор Samsung 55\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE55R85HAUXPY сланцево-черный",
+      "fields": {
+       "category": "Micro RGB",
+       "panel_technology": "Micro RGB",
+       "screen_size_inches": 55.0,
+       "refresh_rate_hz": 120,
+       "price_rub": 179990.0,
+       "sale_price_rub": 139990.0,
+       "effective_price_rub": 139990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "122.4 x 70.8 x 5.2",
+       "Игровой режим": "Да",
+       "Функция Game Motion Plus": "Да",
+       "Технология FreeSync": "FreeSync Premium Pro",
+       "Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View)": "Да",
+       "Игровая панель (Game Bar)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "30",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "Auto HDR Remastering; HDR10+; HLG; Micro RGB HDR+",
+       "Технология экрана": "Micro RGB"
+      }
+     }
+    },
+    {
+     "model_code": "MRE100R85HUXPY",
+     "product_rank": 6,
+     "chunks": [
+      {
+       "chunk_id": 431,
+       "similarity": 0.2429868417534421,
+       "section": "physical_design",
+       "model_code": "MRE100R85HUXPY",
+       "content": "Samsung Телевизор Samsung 100\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE100R85HUXPY сланцево-черный\nМодель: MRE100R85HUXPY\nКатегория: Micro RGB\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 2399 x 1444 x 230\nВес в упаковке, кг: 81.7\nСтрана производителя: Вьетнам\nОфициальная гарантия производителя, мес: 12\nКомплектация: универсальный пульт дистанционного управления, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 2229.8 x 1332.4 x 415.4\nРазмер без подставки (ШxВxГ), см: 2229.8 x 1273.4 x 57.4\nПодставка (Основная) (ШxГ), см: 1722.9 x 415.4\nВес с подставкой, кг: 60.3\nВес без подставки, кг: 58.9\nЦвет корпуса: сланцево-черный\nЦвет подставки: титановый черный\nСтандарт VESA: 600x400 мм",
+       "chunk_rank": 9
+      }
+     ],
+     "facts": {
+      "model_code": "MRE100R85HUXPY",
+      "name": "Телевизор Samsung 100\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE100R85HUXPY сланцево-черный",
+      "fields": {
+       "category": "Micro RGB",
+       "panel_technology": "Micro RGB",
+       "screen_size_inches": 100.0,
+       "refresh_rate_hz": 120,
+       "price_rub": 899990.0,
+       "effective_price_rub": 899990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "2229.8 x 1273.4 x 57.4",
+       "Игровой режим": "Да",
+       "Функция Game Motion Plus": "Да",
+       "Технология FreeSync": "FreeSync Premium Pro",
+       "Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View)": "Да",
+       "Игровая панель (Game Bar)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "40",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "Auto HDR Remastering; HDR10+; HLG; Micro RGB HDR+",
+       "Технология экрана": "Micro RGB"
+      }
+     }
+    },
+    {
+     "model_code": "MRE85R85HAUXPY",
+     "product_rank": 7,
+     "chunks": [
+      {
+       "chunk_id": 438,
+       "similarity": 0.23844755656177097,
+       "section": "physical_design",
+       "model_code": "MRE85R85HAUXPY",
+       "content": "Samsung Телевизор Samsung 85\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE85R85HAUXPY сланцево-черный\nМодель: MRE85R85HAUXPY\nКатегория: Micro RGB\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 1200 x 2060 x 178\nВес в упаковке, кг: 46.2\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: универсальный пульт дистанционного управления, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 188.88 x 112.3 x 36.9\nРазмер без подставки (ШxВxГ), см: 188.88 x 108.32 x 5.25\nПодставка (Основная) (ШxГ), см: 162.52 x 36.9\nВес с подставкой, кг: 34.7\nВес без подставки, кг: 34\nЦвет корпуса: сланцево-черный\nЦвет подставки: черный\nСтандарт VESA: 600x400 мм\nЭнергопотребление в рабочем режиме (типичное), Вт: 340\nЭнергопотребление в режиме ожидания, Вт: 0.5",
+       "chunk_rank": 10
+      }
+     ],
+     "facts": {
+      "model_code": "MRE85R85HAUXPY",
+      "name": "Телевизор Samsung 85\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE85R85HAUXPY сланцево-черный",
+      "fields": {
+       "category": "Micro RGB",
+       "panel_technology": "Micro RGB",
+       "screen_size_inches": 85.0,
+       "refresh_rate_hz": 120,
+       "price_rub": 449990.0,
+       "effective_price_rub": 449990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "188.88 x 108.32 x 5.25",
+       "Игровой режим": "Да",
+       "Функция Game Motion Plus": "Да",
+       "Технология FreeSync": "FreeSync Premium Pro",
+       "Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View)": "Да",
+       "Игровая панель (Game Bar)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "30",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "Auto HDR Remastering; HDR10+; HLG; Micro RGB HDR+",
+       "Технология экрана": "Micro RGB"
+      }
+     }
+    },
+    {
+     "model_code": "UE50M70HAUXPY",
+     "product_rank": 8,
+     "chunks": [
+      {
+       "chunk_id": 61,
+       "similarity": 0.23642397060304354,
+       "section": "physical_design",
+       "model_code": "UE50M70HAUXPY",
+       "content": "Samsung Телевизор Samsung 50\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE50M70HAUXPY черный\nМодель: UE50M70HAUXPY\nКатегория: Mini LED\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 743 x 1228 x 127\nВес в упаковке, кг: 12\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: универсальный пульт дистанционного управления, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 111.08 x 69.51 x 19.9\nРазмер без подставки (ШxВxГ), см: 111.08 x 64.38 x 7.64\nПодставка (Основная) (ШxГ), см: 74.7 x 19.9\nВес с подставкой, кг: 8.6\nВес без подставки, кг: 8.3\nЦвет корпуса: черный\nЦвет подставки: черный\nСтандарт VESA: 200x200 мм",
+       "chunk_rank": 11
+      },
+      {
+       "chunk_id": 58,
+       "similarity": 0.23504812044071732,
+       "section": "audio",
+       "model_code": "UE50M70HAUXPY",
+       "content": "Samsung Телевизор Samsung 50\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE50M70HAUXPY черный\nМодель: UE50M70HAUXPY\nКатегория: Mini LED\nРаздел: Звук\n\nПоддержка форматов звука: Dolby Atmos\nТехнологии улучшения звука: Адаптивный звук; OTS Lite; Режим Q-Symphony\nМощность звука, Вт: 20",
+       "chunk_rank": 14
+      },
+      {
+       "chunk_id": 57,
+       "similarity": 0.23127821043072694,
+       "section": "gaming",
+       "model_code": "UE50M70HAUXPY",
+       "content": "Samsung Телевизор Samsung 50\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE50M70HAUXPY черный\nМодель: UE50M70HAUXPY\nКатегория: Mini LED\nРаздел: Игровые функции\n\nИгровой режим: Да\nАвтовключение игрового режима (ALLM): Да",
+       "chunk_rank": 21
+      }
+     ],
+     "facts": {
+      "model_code": "UE50M70HAUXPY",
+      "name": "Телевизор Samsung 50\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE50M70HAUXPY черный",
+      "fields": {
+       "category": "Mini LED",
+       "panel_technology": "Mini LED",
+       "screen_size_inches": 50.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 53990.0,
+       "sale_price_rub": 45490.0,
+       "effective_price_rub": 45490.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "111.08 x 64.38 x 7.64",
+       "Игровой режим": "Да",
+       "Автовключение игрового режима (ALLM)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "Адаптивный звук; OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "20",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "HDR10+; HLG; Mini LED HDR",
+       "Технология экрана": "Mini LED"
+      }
+     }
+    }
+   ],
+   "user_message": "User question: для светлой комнаты\n\nCatalog context:\n\n### Candidate 1: MNA114MS1CCXRU — Дисплей Samsung 114\" Micro LED MS1C (2026) серебристый\nSTRUCTURED FACTS (catalog database):\n- category: Micro LED\n- panel_technology: Micro LED\n- screen_size_inches: 114.0\n- refresh_rate_hz: 120\n- price_rub: 19999990.0\n- effective_price_rub: 19999990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 252.63 x 143.42 x 2.49\n- Поддержка форматов звука: Dolby Digital\n- Мощность звука, Вт: 120\n- Поддержка форматов HDR: HDR10+; HLG\n- Технология экрана: Micro LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=physical_design, similarity=0.295]\nSamsung Дисплей Samsung 114\" Micro LED MS1C (2026) серебристый\nМодель: MNA114MS1CCXRU\nКатегория: Micro LED\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 2760 x 1776 x 770\nВес в упаковке, кг: 187\nСтрана производителя: Вьетнам\nОфициальная гарантия производителя, мес: 12\nПульт: TM2360E\nРазмер без подставки (ШxВxГ), см: 252.63 x 143.42 x 2.49\nПодставка (Основная) (ШxГ), см: 47.1 x 41.06\nВес с подставкой, кг: 88\nВес без подставки, кг: 79\nЦвет корпуса: Monolith Silver\nЦвет рамки: Безрамочный\nВозможность крепления на стену: Да\nСтандарт VESA: 800x800 мм\nИсточник питания: 100-240 В ～ 50/60 Гц\nЭнергопотребление в рабочем режиме (типичное), Вт: 834\nЭнергопотребление в рабочем режиме (макс.), Вт: 1150\nЭнергопотребление в режиме ожидания, Вт: 0.5\n[section=connectivity, similarity=0.267]\nSamsung Дисплей Samsung 114\" Micro LED MS1C (2026) серебристый\nМодель: MNA114MS1CCXRU\nКатегория: Micro LED\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nBluetooth: Да\nHDMI: 8 шт\nВерсия HDMI: 2.1\nUSB: 2 шт\nEthernet (LAN): Да\nДругие аудио и видео интерфейсы: Оптический\n[section=smart_features, similarity=0.256]\nSamsung Дисплей Samsung 114\" Micro LED MS1C (2026) серебристый\nМодель: MNA114MS1CCXRU\nКатегория: Micro LED\nРаздел: Smart TV и функции\n\nПоддержка Connect Share: USB\nДополнительные режимы: Режим &quot;Картина&quot; (Галерея); Интерьерный режим\nТаймер выключения: Да\nТелегид по программам: Да\nSmart TV: Да\nФункция зеркалирования: Экран мобильного устройства на экране ТВ\n\n### Candidate 2: UE27LSM7FAXXPY — Дисплей Samsung портативный The Movingstyle LSM7F (2026) белый\nSTRUCTURED FACTS (catalog database):\n- category: The Movingstyle\n- panel_technology: LED\n- screen_size_inches: 27.0\n- refresh_rate_hz: 120\n- price_rub: 124990.0\n- effective_price_rub: 124990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 62.83 x 36.82 x 4.74\n- Игровой режим: Да\n- Функция Game Motion Plus: Да\n- Игровая панель (Game Bar): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: 360 Audio; Active Voice Amplifier Pro; Адаптивный звук; Режим Q-Symphony\n- Мощность звука, Вт: 10\n- Поддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG\n- Технология экрана: LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=physical_design, similarity=0.263]\nSamsung Дисплей Samsung портативный The Movingstyle LSM7F (2026) белый\nМодель: UE27LSM7FAXXPY\nКатегория: The Movingstyle\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 525 x 1234 x 174\nВес в упаковке, кг: 30.3\nСтрана производителя: Вьетнам\nОфициальная гарантия производителя, мес: 12\nКомплектация: Пульт дистанционного управления, Кабель USB-C, Руководство пользователя\nПульт: TM2361F\nРазмер с подставкой (ШxВxГ), см: 62.83 x 127.23 x 40.9\nРазмер без подставки (ШxВxГ), см: 62.83 x 36.82 x 4.74\nВес, кг: 11.6\nВес с подставкой, кг: 25.7\nВес без подставки, кг: 5.2\nЦвет корпуса: Белый\nЦвет подставки: Каменно-белый\nИсточник питания: 100-240 В ～ 50/60 Гц\nЭнергопотребление в рабочем режиме (типичное), Вт: 40\nЭнергопотребление в рабочем режиме (макс.), Вт: 100\nЭнергопотребление в режиме ожидания, Вт: 0.5\n[section=connectivity, similarity=0.236]\nSamsung Дисплей Samsung портативный The Movingstyle LSM7F (2026) белый\nМодель: UE27LSM7FAXXPY\nКатегория: The Movingstyle\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nСтандарты Wi-Fi: Wi-Fi 5\nBluetooth: Да\nВерсия Bluetooth: 5.3\nHDMI: 1 шт\nUSB-C: 2 шт\nТехнология HDMI ARC: eARC\nТехнология Anynet+ (HDMI-CEC): Да\n[section=display, similarity=0.228]\nSamsung Дисплей Samsung портативный The Movingstyle LSM7F (2026) белый\nМодель: UE27LSM7FAXXPY\nКатегория: The Movingstyle\nРаздел: Экран и изображение\n\nПоддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG\nТехнология улучшения цвета: Color Booster Pro\nТехнология улучшения четкости: Auto Motion Plus\nДругие технологии оптимизации изображения: Интеллектуальное масштабирование разрешения (AI Upscale)\nРежим защиты глаз: Да\n\n### Candidate 3: MRE115MR95FXRU — Телевизор Samsung 115\" TV AI Micro RGB MR95F (2026), 4K серебряный\nSTRUCTURED FACTS (catalog database):\n- category: Micro RGB\n- panel_technology: Micro RGB\n- screen_size_inches: 115.0\n- refresh_rate_hz: 120\n- price_rub: 2999990.0\n- sale_price_rub: 2699990.0\n- effective_price_rub: 2699990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 257.4 х 147.8 х 3.57\n- Игровой режим: Да\n- Автовключение игрового режима (ALLM): Да\n- Функция Game Motion Plus: Да\n- Технология Dynamic Black EQ: Да\n- Технология FreeSync: FreeSync Premium Pro\n- Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\n- Игровая панель (Game Bar): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: 360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS+; Режим Q-Symphony\n- Мощность звука, Вт: 70\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: HDR10+\n- Антибликовое покрытие: Anti Reflection\n- Технология экрана: Micro RGB\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=physical_design, similarity=0.249]\nSamsung Телевизор Samsung 115\" TV AI Micro RGB MR95F (2026), 4K серебряный\nМодель: MRE115MR95FXRU\nКатегория: Micro RGB\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 2765 х 1652 х 250\nВес в упаковке, кг: 140\nСтрана производителя: Вьетнам\nОфициальная гарантия производителя, мес: 12\nКомплектация: пульт ДУ, сетевой кабель, кронштейн, документация\nРазмер с подставкой (ШxВxГ), см: 257.4 х 153.4 х 46.81\nРазмер без подставки (ШxВxГ), см: 257.4 х 147.8 х 3.57\nПодставка (Минимальная) (ШxГ), см: 685 х 468.1\nВес с подставкой, кг: 90.5\nВес без подставки, кг: 88\nСтандарт VESA: 1000x600 мм\nИсточник питания: 220-240 В ～ 50/60 Гц\nЭнергопотребление в рабочем режиме (типичное), Вт: 228\nЭнергопотребление в рабочем режиме (макс.), Вт: 810\nЭнергопотребление в режиме ожидания, Вт: 0.5\n\n### Candidate 4: MRE75R85HAUXPY — Телевизор Samsung 75\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE75R85HAUXPY сланцево-черный\nSTRUCTURED FACTS (catalog database):\n- category: Micro RGB\n- panel_technology: Micro RGB\n- screen_size_inches: 75.0\n- refresh_rate_hz: 120\n- price_rub: 339990.0\n- sale_price_rub: 264990.0\n- effective_price_rub: 264990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 166.66 x 95.78 x 5.23\n- Игровой режим: Да\n- Функция Game Motion Plus: Да\n- Технология FreeSync: FreeSync Premium Pro\n- Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\n- Игровая панель (Game Bar): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: 360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 30\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG; Micro RGB HDR+\n- Технология экрана: Micro RGB\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=physical_design, similarity=0.245]\nSamsung Телевизор Samsung 75\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE75R85HAUXPY сланцево-черный\nМодель: MRE75R85HAUXPY\nКатегория: Micro RGB\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 1075 x 1830 x 164\nВес в упаковке, кг: 34.3\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: универсальный пульт дистанционного управления, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 166.66 x 99.38 x 31.98\nРазмер без подставки (ШxВxГ), см: 166.66 x 95.78 x 5.23\nПодставка (Основная) (ШxГ), см: 140.32 x 31.98\nВес с подставкой, кг: 25.9\nВес без подставки, кг: 25.4\nЦвет корпуса: сланцево-черный\nЦвет подставки: черный\nСтандарт VESA: 400x300 мм\nЭнергопотребление в рабочем режиме (типичное), Вт: 280\nЭнергопотребление в режиме ожидания, Вт: 0.5\n\n### Candidate 5: MRE55R85HAUXPY — Телевизор Samsung 55\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE55R85HAUXPY сланцево-черный\nSTRUCTURED FACTS (catalog database):\n- category: Micro RGB\n- panel_technology: Micro RGB\n- screen_size_inches: 55.0\n- refresh_rate_hz: 120\n- price_rub: 179990.0\n- sale_price_rub: 139990.0\n- effective_price_rub: 139990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 122.4 x 70.8 x 5.2\n- Игровой режим: Да\n- Функция Game Motion Plus: Да\n- Технология FreeSync: FreeSync Premium Pro\n- Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\n- Игровая панель (Game Bar): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: 360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 30\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG; Micro RGB HDR+\n- Технология экрана: Micro RGB\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=physical_design, similarity=0.244]\nSamsung Телевизор Samsung 55\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE55R85HAUXPY сланцево-черный\nМодель: MRE55R85HAUXPY\nКатегория: Micro RGB\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 808 x 1352 x 127\nВес в упаковке, кг: 19.6\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: универсальный пульт дистанционного управления, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 122.4 x 74.4 x 21.8\nРазмер без подставки (ШxВxГ), см: 122.4 x 70.8 x 5.2\nПодставка (Основная) (ШxГ), см: 103.46 x 21.8\nВес с подставкой, кг: 14.9\nВес без подставки, кг: 14.6\nЦвет корпуса: сланцево-черный\nЦвет подставки: черный\nСтандарт VESA: 300x200 мм\nЭнергопотребление в рабочем режиме (типичное), Вт: 220\nЭнергопотребление в режиме ожидания, Вт: 0.5\n\n### Candidate 6: MRE100R85HUXPY — Телевизор Samsung 100\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE100R85HUXPY сланцево-черный\nSTRUCTURED FACTS (catalog database):\n- category: Micro RGB\n- panel_technology: Micro RGB\n- screen_size_inches: 100.0\n- refresh_rate_hz: 120\n- price_rub: 899990.0\n- effective_price_rub: 899990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 2229.8 x 1273.4 x 57.4\n- Игровой режим: Да\n- Функция Game Motion Plus: Да\n- Технология FreeSync: FreeSync Premium Pro\n- Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\n- Игровая панель (Game Bar): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: 360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 40\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG; Micro RGB HDR+\n- Технология экрана: Micro RGB\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=physical_design, similarity=0.243]\nSamsung Телевизор Samsung 100\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE100R85HUXPY сланцево-черный\nМодель: MRE100R85HUXPY\nКатегория: Micro RGB\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 2399 x 1444 x 230\nВес в упаковке, кг: 81.7\nСтрана производителя: Вьетнам\nОфициальная гарантия производителя, мес: 12\nКомплектация: универсальный пульт дистанционного управления, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 2229.8 x 1332.4 x 415.4\nРазмер без подставки (ШxВxГ), см: 2229.8 x 1273.4 x 57.4\nПодставка (Основная) (ШxГ), см: 1722.9 x 415.4\nВес с подставкой, кг: 60.3\nВес без подставки, кг: 58.9\nЦвет корпуса: сланцево-черный\nЦвет подставки: титановый черный\nСтандарт VESA: 600x400 мм\n\n### Candidate 7: MRE85R85HAUXPY — Телевизор Samsung 85\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE85R85HAUXPY сланцево-черный\nSTRUCTURED FACTS (catalog database):\n- category: Micro RGB\n- panel_technology: Micro RGB\n- screen_size_inches: 85.0\n- refresh_rate_hz: 120\n- price_rub: 449990.0\n- effective_price_rub: 449990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 188.88 x 108.32 x 5.25\n- Игровой режим: Да\n- Функция Game Motion Plus: Да\n- Технология FreeSync: FreeSync Premium Pro\n- Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\n- Игровая панель (Game Bar): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: 360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 30\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG; Micro RGB HDR+\n- Технология экрана: Micro RGB\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=physical_design, similarity=0.238]\nSamsung Телевизор Samsung 85\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE85R85HAUXPY сланцево-черный\nМодель: MRE85R85HAUXPY\nКатегория: Micro RGB\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 1200 x 2060 x 178\nВес в упаковке, кг: 46.2\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: универсальный пульт дистанционного управления, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 188.88 x 112.3 x 36.9\nРазмер без подставки (ШxВxГ), см: 188.88 x 108.32 x 5.25\nПодставка (Основная) (ШxГ), см: 162.52 x 36.9\nВес с подставкой, кг: 34.7\nВес без подставки, кг: 34\nЦвет корпуса: сланцево-черный\nЦвет подставки: черный\nСтандарт VESA: 600x400 мм\nЭнергопотребление в рабочем режиме (типичное), Вт: 340\nЭнергопотребление в режиме ожидания, Вт: 0.5\n\n### Candidate 8: UE50M70HAUXPY — Телевизор Samsung 50\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE50M70HAUXPY черный\nSTRUCTURED FACTS (catalog database):\n- category: Mini LED\n- panel_technology: Mini LED\n- screen_size_inches: 50.0\n- refresh_rate_hz: 60\n- price_rub: 53990.0\n- sale_price_rub: 45490.0\n- effective_price_rub: 45490.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 111.08 x 64.38 x 7.64\n- Игровой режим: Да\n- Автовключение игрового режима (ALLM): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: Адаптивный звук; OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 20\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: HDR10+; HLG; Mini LED HDR\n- Технология экрана: Mini LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=physical_design, similarity=0.236]\nSamsung Телевизор Samsung 50\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE50M70HAUXPY черный\nМодель: UE50M70HAUXPY\nКатегория: Mini LED\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 743 x 1228 x 127\nВес в упаковке, кг: 12\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: универсальный пульт дистанционного управления, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 111.08 x 69.51 x 19.9\nРазмер без подставки (ШxВxГ), см: 111.08 x 64.38 x 7.64\nПодставка (Основная) (ШxГ), см: 74.7 x 19.9\nВес с подставкой, кг: 8.6\nВес без подставки, кг: 8.3\nЦвет корпуса: черный\nЦвет подставки: черный\nСтандарт VESA: 200x200 мм\n[section=audio, similarity=0.235]\nSamsung Телевизор Samsung 50\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE50M70HAUXPY черный\nМодель: UE50M70HAUXPY\nКатегория: Mini LED\nРаздел: Звук\n\nПоддержка форматов звука: Dolby Atmos\nТехнологии улучшения звука: Адаптивный звук; OTS Lite; Режим Q-Symphony\nМощность звука, Вт: 20\n[section=gaming, similarity=0.231]\nSamsung Телевизор Samsung 50\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE50M70HAUXPY черный\nМодель: UE50M70HAUXPY\nКатегория: Mini LED\nРаздел: Игровые функции\n\nИгровой режим: Да\nАвтовключение игрового режима (ALLM): Да",
+   "coverage": {
+    "candidate_products": [
+     "MNA114MS1CCXRU",
+     "UE27LSM7FAXXPY",
+     "MRE115MR95FXRU",
+     "MRE75R85HAUXPY",
+     "MRE55R85HAUXPY",
+     "MRE100R85HUXPY",
+     "MRE85R85HAUXPY",
+     "UE50M70HAUXPY"
+    ],
+    "sections_represented": [
+     "audio",
+     "connectivity",
+     "display",
+     "gaming",
+     "physical_design",
+     "smart_features"
+    ],
+    "reference_rule": "has 'Антибликовое покрытие' spec",
+    "reference_count": 27,
+    "reference_in_context": [
+     "MRE115MR95FXRU"
+    ],
+    "reference_missing_best_ranked": [
+     [
+      "MRE75R95HAUXPY",
+      14
+     ],
+     [
+      "MRE85R95HAUXPY",
+      22
+     ],
+     [
+      "MRE65R95HAUXPY",
+      25
+     ],
+     [
+      "QE75LS03HWUXPY",
+      26
+     ],
+     [
+      "QE115QN90FUXRU",
+      31
+     ],
+     [
+      "QE85LS03HWUXPY",
+      32
+     ],
+     [
+      "QE32LS03CBUXRU",
+      39
+     ],
+     [
+      "QE55LS03HAUXPY",
+      46
+     ]
+    ]
+   }
+  },
+  {
+   "query": "телевизор для фильмов",
+   "candidates": [
+    {
+     "model_code": "QE32LS03CBUXRU",
+     "product_rank": 1,
+     "chunks": [
+      {
+       "chunk_id": 126,
+       "similarity": 0.4979697445980602,
+       "section": "display",
+       "model_code": "QE32LS03CBUXRU",
+       "content": "Samsung Телевизор Samsung 32\" серия The Frame QLED Full HD (2023) LS03C\nМодель: QE32LS03CBUXRU\nКатегория: The Frame\nРаздел: Экран и изображение\n\nРежимы просмотра: Режим режиссера (Filmmaker Mode); Режим &quot;Кино&quot; (Movie Mode); Естественный режим (Natural Mode); Стандартный режим (Standard Mode)\nПоддержка форматов HDR: HDR10+; Quantum HDR\nТип LED подсветки: Dual LED\nТехнология улучшения контрастности: Mega Contrast; Micro Dimming Pro\nТехнология улучшения цвета: Quantum Dot (100% цветового объема)\nТехнология улучшения четкости: Motion Xcelerator; Picture Clarity\nHD формат: Full HD\nФормат экрана: 16:9\nИзогнутый экран: Нет\nАнтибликовое покрытие: Anti Reflection",
+       "chunk_rank": 1
+      },
+      {
+       "chunk_id": 129,
+       "similarity": 0.49168241306449645,
+       "section": "connectivity",
+       "model_code": "QE32LS03CBUXRU",
+       "content": "Samsung Телевизор Samsung 32\" серия The Frame QLED Full HD (2023) LS03C\nМодель: QE32LS03CBUXRU\nКатегория: The Frame\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nСтандарты Wi-Fi: IEEE 802.11ac (Wi-Fi 5)\nBluetooth: Да\nВерсия Bluetooth: 5.2\nMiracast: Да\nПоддержка Wireless DeX: Да\nHDMI: 2 шт\nUSB: 2 шт\nТехнология HDMI ARC: ARC\nТехнология Anynet+ (HDMI-CEC): Да\nСлот для CI: Да\nПоддержка CI+: Да\nДругие аудио и видео интерфейсы: RS-232\nЦифровое телевещание: DVB-C; DVB-S2; DVB-T2\nDLNA: Да",
+       "chunk_rank": 2
+      },
+      {
+       "chunk_id": 130,
+       "similarity": 0.4913103204823779,
+       "section": "physical_design",
+       "model_code": "QE32LS03CBUXRU",
+       "content": "Samsung Телевизор Samsung 32\" серия The Frame QLED Full HD (2023) LS03C\nМодель: QE32LS03CBUXRU\nКатегория: The Frame\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 815 x 507 x 119\nВес в упаковке, кг: 8\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: Телевизор, пульт, кронштейн SlimFit, модуль One Connect Mini, сетевой кабель, руководство пользователя\nПульт: TM2280G\nРазмер с подставкой (ШxВxГ), см: 72.73 x 45.19 x 14.33\nРазмер без подставки (ШxВxГ), см: 72.73 x 42.68 x 2.55\nПодставка (Основная) (ШxГ), см: 59.12 x 14.33\nВес с подставкой, кг: 5.2\nВес без подставки, кг: 5.1\nЦвет корпуса: черный\nЦвет рамки: черный\nВозможность крепления на стену: Да\nСтандарт VESA: Нет\nЭнергопотребление в рабочем режиме (макс.), Вт: 55\nЭнергопотребление в режиме ожидания, Вт: 0.5",
+       "chunk_rank": 3
+      }
+     ],
+     "facts": {
+      "model_code": "QE32LS03CBUXRU",
+      "name": "Телевизор Samsung 32\" серия The Frame QLED Full HD (2023) LS03C",
+      "fields": {
+       "category": "The Frame",
+       "panel_technology": "QLED",
+       "screen_size_inches": 32.0,
+       "refresh_rate_hz": 50,
+       "price_rub": 50990.0,
+       "effective_price_rub": 50990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "72.73 x 42.68 x 2.55",
+       "Технологии улучшения звука": "OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "20",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode); Режим &quot;Кино&quot; (Movie Mode); Естественный режим (Natural Mode); Стандартный режим (Standard Mode)",
+       "Поддержка форматов HDR": "HDR10+; Quantum HDR",
+       "Антибликовое покрытие": "Anti Reflection",
+       "Технология экрана": "QLED"
+      }
+     }
+    },
+    {
+     "model_code": "QE55LS03HAUXPY",
+     "product_rank": 2,
+     "chunks": [
+      {
+       "chunk_id": 356,
+       "similarity": 0.48997486726831363,
+       "section": "display",
+       "model_code": "QE55LS03HAUXPY",
+       "content": "Samsung Телевизор Samsung 55\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE55LS03HAUXPY черный\nМодель: QE55LS03HAUXPY\nКатегория: The Frame\nРаздел: Экран и изображение\n\nМасштабирование: Да\nРежимы просмотра: Режим режиссера (Filmmaker Mode)\nПоддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG; Quantum HDR\nТехнология улучшения контрастности: Dual LED; Quantum HDR; Real Depth Enhancer; Supreme UHD Dimming\nТехнология улучшения цвета: Dynamic Crystal Color; Quantum Dot (100% цветового объема); Wide Color Enhancer\nТехнология улучшения четкости: Motion Xcelerator\nДругие технологии оптимизации изображения: Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate\nHD формат: 4K Ultra HD\nФормат экрана: 16:9\nАнтибликовое покрытие: Да",
+       "chunk_rank": 5
+      },
+      {
+       "chunk_id": 359,
+       "similarity": 0.4787697496369425,
+       "section": "smart_features",
+       "model_code": "QE55LS03HAUXPY",
+       "content": "Samsung Телевизор Samsung 55\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE55LS03HAUXPY черный\nМодель: QE55LS03HAUXPY\nКатегория: The Frame\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон; Голос\nПоддержка Connect Share: Да\nДополнительные режимы: Автоматическое переключение; HGiG; Mini Map Zoom; Мультиэкран (Multi View)\nФункция Time Shift (сдвига времени просмотра): Да\nТелетекст: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nВеб-браузер: Да\nФункция зеркалирования: Экран мобильного устройства на экране ТВ; Звук мобильного устройства в ТВ (Sound Mirroring); Звук ТВ в мобильное устройство",
+       "chunk_rank": 15
+      },
+      {
+       "chunk_id": 360,
+       "similarity": 0.4729372754871437,
+       "section": "connectivity",
+       "model_code": "QE55LS03HAUXPY",
+       "content": "Samsung Телевизор Samsung 55\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE55LS03HAUXPY черный\nМодель: QE55LS03HAUXPY\nКатегория: The Frame\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nСтандарты Wi-Fi: Wi-Fi 6E\nBluetooth: Да\nВерсия Bluetooth: 5.3\nHDMI: 4 шт\nUSB: 2 шт\nUSB-C: 1 шт\nТехнология HDMI ARC: eARC\nТехнология Anynet+ (HDMI-CEC): Да\nСлот для CI: 1 шт\nПоддержка CI+: Да\nEthernet (LAN): Да\nАнтенный вход (аналоговый): 1 шт\nДругие аудио и видео интерфейсы: Оптический\nЦифровое телевещание: DVB-C; DVB-S; DVB-S2; DVB-T; DVB-T2",
+       "chunk_rank": 26
+      }
+     ],
+     "facts": {
+      "model_code": "QE55LS03HAUXPY",
+      "name": "Телевизор Samsung 55\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE55LS03HAUXPY черный",
+      "fields": {
+       "category": "The Frame",
+       "panel_technology": "QLED",
+       "screen_size_inches": 55.0,
+       "refresh_rate_hz": 120,
+       "price_rub": 139990.0,
+       "effective_price_rub": 139990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "123.79 x 70.8.8 x 2.49",
+       "Игровой режим": "Да",
+       "Функция Game Motion Plus": "Да",
+       "Технология FreeSync": "FreeSync Premium",
+       "Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View)": "Да",
+       "Игровая панель (Game Bar)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "360 Audio; Active Voice Amplifier; Адаптивный звук Pro; OTS; Режим Q-Symphony",
+       "Мощность звука, Вт": "40",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "Auto HDR Remastering; HDR10+; HLG; Quantum HDR",
+       "Антибликовое покрытие": "Да",
+       "Технология экрана": "QLED"
+      }
+     }
+    },
+    {
+     "model_code": "QE43LS03HEUXPY",
+     "product_rank": 3,
+     "chunks": [
+      {
+       "chunk_id": 529,
+       "similarity": 0.48743415401563583,
+       "section": "display",
+       "model_code": "QE43LS03HEUXPY",
+       "content": "Samsung Телевизор Samsung 43\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE43LS03HEUXPY черный\nМодель: QE43LS03HEUXPY\nКатегория: The Frame\nРаздел: Экран и изображение\n\nМасштабирование: Да\nРежимы просмотра: Режим режиссера (Filmmaker Mode)\nПоддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG; Quantum HDR\nТехнология улучшения контрастности: Dual LED; Quantum HDR; Real Depth Enhancer; Supreme UHD Dimming\nТехнология улучшения цвета: Dynamic Crystal Color; Quantum Dot (100% цветового объема); Wide Color Enhancer\nТехнология улучшения четкости: Motion Xcelerator\nДругие технологии оптимизации изображения: Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate\nHD формат: 4K Ultra HD\nФормат экрана: 16:9\nАнтибликовое покрытие: Да",
+       "chunk_rank": 7
+      },
+      {
+       "chunk_id": 533,
+       "similarity": 0.4786720763576373,
+       "section": "connectivity",
+       "model_code": "QE43LS03HEUXPY",
+       "content": "Samsung Телевизор Samsung 43\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE43LS03HEUXPY черный\nМодель: QE43LS03HEUXPY\nКатегория: The Frame\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nСтандарты Wi-Fi: Wi-Fi 6E\nBluetooth: Да\nВерсия Bluetooth: 5.3\nHDMI: 3 шт\nUSB: 2 шт\nТехнология HDMI ARC: eARC\nТехнология Anynet+ (HDMI-CEC): Да\nСлот для CI: 1 шт\nПоддержка CI+: Да\nEthernet (LAN): Да\nАнтенный вход (аналоговый): 1 шт\nДругие аудио и видео интерфейсы: Оптический; RS-232C\nЦифровое телевещание: DVB-C; DVB-S; DVB-S2; DVB-T; DVB-T2",
+       "chunk_rank": 16
+      },
+      {
+       "chunk_id": 532,
+       "similarity": 0.4757119897682839,
+       "section": "smart_features",
+       "model_code": "QE43LS03HEUXPY",
+       "content": "Samsung Телевизор Samsung 43\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE43LS03HEUXPY черный\nМодель: QE43LS03HEUXPY\nКатегория: The Frame\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон; Голос\nПоддержка Connect Share: Да\nДополнительные режимы: Автоматическое переключение; HGiG; Mini Map Zoom; Мультиэкран (Multi View)\nФункция Time Shift (сдвига времени просмотра): Да\nТелетекст: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nВеб-браузер: Да\nФункция зеркалирования: Экран мобильного устройства на экране ТВ; Звук мобильного устройства в ТВ (Sound Mirroring); Экран ТВ на мобильном устройстве; Звук ТВ в мобильное устройство",
+       "chunk_rank": 23
+      }
+     ],
+     "facts": {
+      "model_code": "QE43LS03HEUXPY",
+      "name": "Телевизор Samsung 43\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE43LS03HEUXPY черный",
+      "fields": {
+       "category": "The Frame",
+       "panel_technology": "QLED",
+       "screen_size_inches": 43.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 84990.0,
+       "effective_price_rub": 84990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "96.95 x 55.78 x 2.75",
+       "Игровой режим": "Да",
+       "Функция Game Motion Plus": "Да",
+       "Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View)": "Да",
+       "Игровая панель (Game Bar)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "360 Audio; Active Voice Amplifier; Адаптивный звук Pro; OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "20",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "Auto HDR Remastering; HDR10+; HLG; Quantum HDR",
+       "Антибликовое покрытие": "Да",
+       "Технология экрана": "QLED"
+      }
+     }
+    },
+    {
+     "model_code": "QE65LS03HAUXPY",
+     "product_rank": 4,
+     "chunks": [
+      {
+       "chunk_id": 349,
+       "similarity": 0.4870058893870418,
+       "section": "display",
+       "model_code": "QE65LS03HAUXPY",
+       "content": "Samsung Телевизор Samsung 65\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE65LS03HAUXPY черный\nМодель: QE65LS03HAUXPY\nКатегория: The Frame\nРаздел: Экран и изображение\n\nМасштабирование: Да\nРежимы просмотра: Режим режиссера (Filmmaker Mode)\nПоддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG; Quantum HDR\nТехнология улучшения контрастности: Dual LED; Quantum HDR; Real Depth Enhancer; Supreme UHD Dimming\nТехнология улучшения цвета: Dynamic Crystal Color; Quantum Dot (100% цветового объема); Wide Color Enhancer\nТехнология улучшения четкости: Motion Xcelerator\nДругие технологии оптимизации изображения: Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate\nHD формат: 4K Ultra HD\nФормат экрана: 16:9\nАнтибликовое покрытие: Да",
+       "chunk_rank": 8
+      },
+      {
+       "chunk_id": 352,
+       "similarity": 0.47765953977380626,
+       "section": "smart_features",
+       "model_code": "QE65LS03HAUXPY",
+       "content": "Samsung Телевизор Samsung 65\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE65LS03HAUXPY черный\nМодель: QE65LS03HAUXPY\nКатегория: The Frame\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон; Голос\nПоддержка Connect Share: Да\nДополнительные режимы: Автоматическое переключение; HGiG; Mini Map Zoom; Мультиэкран (Multi View)\nФункция Time Shift (сдвига времени просмотра): Да\nТелетекст: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nВеб-браузер: Да\nФункция зеркалирования: Экран мобильного устройства на экране ТВ; Звук мобильного устройства в ТВ (Sound Mirroring); Звук ТВ в мобильное устройство",
+       "chunk_rank": 19
+      },
+      {
+       "chunk_id": 353,
+       "similarity": 0.4718027178501646,
+       "section": "connectivity",
+       "model_code": "QE65LS03HAUXPY",
+       "content": "Samsung Телевизор Samsung 65\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE65LS03HAUXPY черный\nМодель: QE65LS03HAUXPY\nКатегория: The Frame\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nСтандарты Wi-Fi: Wi-Fi 6E\nBluetooth: Да\nВерсия Bluetooth: 5.3\nHDMI: 4 шт\nUSB: 2 шт\nUSB-C: 1 шт\nТехнология HDMI ARC: eARC\nТехнология Anynet+ (HDMI-CEC): Да\nСлот для CI: 1 шт\nПоддержка CI+: Да\nEthernet (LAN): Да\nАнтенный вход (аналоговый): 1 шт\nДругие аудио и видео интерфейсы: Оптический\nЦифровое телевещание: DVB-C; DVB-S; DVB-S2; DVB-T; DVB-T2",
+       "chunk_rank": 30
+      }
+     ],
+     "facts": {
+      "model_code": "QE65LS03HAUXPY",
+      "name": "Телевизор Samsung 65\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE65LS03HAUXPY черный",
+      "fields": {
+       "category": "The Frame",
+       "panel_technology": "QLED",
+       "screen_size_inches": 65.0,
+       "refresh_rate_hz": 120,
+       "price_rub": 179990.0,
+       "effective_price_rub": 179990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "145.68 x 83.19 x 2.49",
+       "Игровой режим": "Да",
+       "Функция Game Motion Plus": "Да",
+       "Технология FreeSync": "FreeSync Premium",
+       "Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View)": "Да",
+       "Игровая панель (Game Bar)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "360 Audio; Active Voice Amplifier; Адаптивный звук Pro; OTS; Режим Q-Symphony",
+       "Мощность звука, Вт": "40",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "Auto HDR Remastering; HDR10+; HLG; Quantum HDR",
+       "Антибликовое покрытие": "Да",
+       "Технология экрана": "QLED"
+      }
+     }
+    },
+    {
+     "model_code": "UE43F6000FUXRU",
+     "product_rank": 5,
+     "chunks": [
+      {
+       "chunk_id": 201,
+       "similarity": 0.4857556478614182,
+       "section": "smart_features",
+       "model_code": "UE43F6000FUXRU",
+       "content": "Samsung Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU\nМодель: UE43F6000FUXRU\nКатегория: Full HD\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон\nПоддержка Connect Share: USB\nФункция Time Shift (сдвига времени просмотра): Нет\nТелетекст: Да\nЗащита: От детей\nТелегид по программам: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nПоддержка SmartThings: Да\nПоддерживаемые форматы видео: 3GP; ASF; AV1; AVI; M2TS; MKV; MP4; TS; VOB; VRO\nПоддерживаемые видеокодеки: H.263; H.264; H.265; MPEG4; VC-1; VP8; WMV",
+       "chunk_rank": 9
+      },
+      {
+       "chunk_id": 199,
+       "similarity": 0.48248343089578616,
+       "section": "display",
+       "model_code": "UE43F6000FUXRU",
+       "content": "Samsung Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU\nМодель: UE43F6000FUXRU\nКатегория: Full HD\nРаздел: Экран и изображение\n\nПоддержка форматов HDR: HDR10+; HDR10\nТехнология улучшения цвета: Pur Color\nHD формат: Full HD\nФормат экрана: 16:9",
+       "chunk_rank": 11
+      },
+      {
+       "chunk_id": 202,
+       "similarity": 0.4709006879538886,
+       "section": "connectivity",
+       "model_code": "UE43F6000FUXRU",
+       "content": "Samsung Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU\nМодель: UE43F6000FUXRU\nКатегория: Full HD\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nHDMI: 2 шт\nUSB: 1 шт\nТехнология HDMI ARC: eARC\nСлот для CI: 1 шт\nПоддержка CI+: Да\nEthernet (LAN): Да\nАнтенный вход (аналоговый): 1 шт\nЦифровое телевещание: DVB-C; DVB-S2; DVB-T2\nDLNA: Да",
+       "chunk_rank": 32
+      }
+     ],
+     "facts": {
+      "model_code": "UE43F6000FUXRU",
+      "name": "Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU",
+      "fields": {
+       "category": "Full HD",
+       "panel_technology": "LED",
+       "screen_size_inches": 43.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 29990.0,
+       "effective_price_rub": 29990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "96.5\tx 56.3 x 7.5",
+       "Поддержка форматов звука": "Dolby Digital",
+       "Технологии улучшения звука": "Адаптивный звук; OTS Lite",
+       "Мощность звука, Вт": "20",
+       "Поддержка форматов HDR": "HDR10+; HDR10",
+       "Технология экрана": "LED"
+      }
+     }
+    },
+    {
+     "model_code": "QE75LS03HWUXPY",
+     "product_rank": 6,
+     "chunks": [
+      {
+       "chunk_id": 232,
+       "similarity": 0.48405323484195595,
+       "section": "display",
+       "model_code": "QE75LS03HWUXPY",
+       "content": "Samsung Телевизор Samsung 75\" The Frame NeoQLED LS03 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE75LS03HWUXPY черный\nМодель: QE75LS03HWUXPY\nКатегория: The Frame\nРаздел: Экран и изображение\n\nМасштабирование: Да\nРежимы просмотра: Режим режиссера (Filmmaker Mode)\nПоддержка форматов HDR: Auto HDR Remastering Pro; HDR10+; HLG; Neo Quantum HDR\nТехнология улучшения контрастности: Quantum Matrix; Supreme UHD Dimming; Real Depth Enhancer\nТехнология улучшения цвета: Dynamic Crystal Color; Quantum Dot (100% цветового объема); Wide Color Enhancer\nТехнология улучшения четкости: Motion Xcelerator\nДругие технологии оптимизации изображения: AI Motion Enhancer Pro; Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate\nHD формат: 4K Ultra HD\nФормат экрана: 16:9\nАнтибликовое покрытие: Да",
+       "chunk_rank": 10
+      },
+      {
+       "chunk_id": 235,
+       "similarity": 0.47863084103336195,
+       "section": "smart_features",
+       "model_code": "QE75LS03HWUXPY",
+       "content": "Samsung Телевизор Samsung 75\" The Frame NeoQLED LS03 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE75LS03HWUXPY черный\nМодель: QE75LS03HWUXPY\nКатегория: The Frame\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон; Голос\nПоддержка Connect Share: Да\nДополнительные режимы: Автоматическое переключение; HGiG; Mini Map Zoom; Мультиэкран (Multi View)\nФункция Time Shift (сдвига времени просмотра): Да\nТелетекст: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nВеб-браузер: Да\nФункция зеркалирования: Экран мобильного устройства на экране ТВ; Звук мобильного устройства в ТВ (Sound Mirroring); Звук ТВ в мобильное устройство",
+       "chunk_rank": 17
+      },
+      {
+       "chunk_id": 236,
+       "similarity": 0.4744929660720798,
+       "section": "connectivity",
+       "model_code": "QE75LS03HWUXPY",
+       "content": "Samsung Телевизор Samsung 75\" The Frame NeoQLED LS03 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE75LS03HWUXPY черный\nМодель: QE75LS03HWUXPY\nКатегория: The Frame\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nСтандарты Wi-Fi: Wi-Fi 6E\nBluetooth: Да\nВерсия Bluetooth: 5.3\nHDMI: 5 шт\nUSB: 2 шт\nUSB-C: 1 шт\nТехнология HDMI ARC: eARC\nТехнология Anynet+ (HDMI-CEC): Да\nСлот для CI: 1 шт\nПоддержка CI+: Да\nEthernet (LAN): Да\nАнтенный вход (аналоговый): 1 шт\nДругие аудио и видео интерфейсы: Оптический\nЦифровое телевещание: DVB-C; DVB-S; DVB-S2; DVB-T; DVB-T2",
+       "chunk_rank": 25
+      }
+     ],
+     "facts": {
+      "model_code": "QE75LS03HWUXPY",
+      "name": "Телевизор Samsung 75\" The Frame NeoQLED LS03 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE75LS03HWUXPY черный",
+      "fields": {
+       "category": "The Frame",
+       "panel_technology": "Neo QLED",
+       "screen_size_inches": 75.0,
+       "refresh_rate_hz": 120,
+       "price_rub": 299990.0,
+       "sale_price_rub": 249990.0,
+       "effective_price_rub": 249990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "168.23 x 96.54 x 2.69",
+       "Игровой режим": "Да",
+       "Функция Game Motion Plus": "Да",
+       "Технология FreeSync": "FreeSync Premium Pro",
+       "Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View)": "Да",
+       "Игровая панель (Game Bar)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "360 Audio; Active Voice Amplifier; Адаптивный звук Pro; OTS; Режим Q-Symphony",
+       "Мощность звука, Вт": "40",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "Auto HDR Remastering Pro; HDR10+; HLG; Neo Quantum HDR",
+       "Антибликовое покрытие": "Да",
+       "Технология экрана": "Neo QLED"
+      }
+     }
+    },
+    {
+     "model_code": "QE85LS03HWUXPY",
+     "product_rank": 7,
+     "chunks": [
+      {
+       "chunk_id": 342,
+       "similarity": 0.48197391652009447,
+       "section": "display",
+       "model_code": "QE85LS03HWUXPY",
+       "content": "Samsung Телевизор Samsung 85\" The Frame NeoQLED LS03 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE85LS03HWUXPY черный\nМодель: QE85LS03HWUXPY\nКатегория: The Frame\nРаздел: Экран и изображение\n\nМасштабирование: Да\nРежимы просмотра: Режим режиссера (Filmmaker Mode)\nПоддержка форматов HDR: Auto HDR Remastering Pro; HDR10+; HLG; Neo Quantum HDR\nТехнология улучшения контрастности: Quantum Matrix; Supreme UHD Dimming; Real Depth Enhancer\nТехнология улучшения цвета: Dynamic Crystal Color; Quantum Dot (100% цветового объема); Wide Color Enhancer\nТехнология улучшения четкости: Motion Xcelerator\nДругие технологии оптимизации изображения: AI Motion Enhancer Pro; Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate\nHD формат: 4K Ultra HD\nФормат экрана: 16:9\nАнтибликовое покрытие: Да",
+       "chunk_rank": 12
+      },
+      {
+       "chunk_id": 345,
+       "similarity": 0.476044035907525,
+       "section": "smart_features",
+       "model_code": "QE85LS03HWUXPY",
+       "content": "Samsung Телевизор Samsung 85\" The Frame NeoQLED LS03 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE85LS03HWUXPY черный\nМодель: QE85LS03HWUXPY\nКатегория: The Frame\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон; Голос\nПоддержка Connect Share: Да\nДополнительные режимы: Автоматическое переключение; HGiG; Mini Map Zoom; Мультиэкран (Multi View)\nФункция Time Shift (сдвига времени просмотра): Да\nТелетекст: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nВеб-браузер: Да\nФункция зеркалирования: Экран мобильного устройства на экране ТВ; Звук мобильного устройства в ТВ (Sound Mirroring); Звук ТВ в мобильное устройство",
+       "chunk_rank": 22
+      },
+      {
+       "chunk_id": 346,
+       "similarity": 0.4729349864586473,
+       "section": "connectivity",
+       "model_code": "QE85LS03HWUXPY",
+       "content": "Samsung Телевизор Samsung 85\" The Frame NeoQLED LS03 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE85LS03HWUXPY черный\nМодель: QE85LS03HWUXPY\nКатегория: The Frame\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nСтандарты Wi-Fi: Wi-Fi 6E\nBluetooth: Да\nВерсия Bluetooth: 5.3\nHDMI: 5 шт\nUSB: 2 шт\nUSB-C: 1 шт\nТехнология HDMI ARC: eARC\nТехнология Anynet+ (HDMI-CEC): Да\nСлот для CI: 1 шт\nПоддержка CI+: Да\nEthernet (LAN): Да\nАнтенный вход (аналоговый): 1 шт\nДругие аудио и видео интерфейсы: Оптический\nЦифровое телевещание: DVB-C; DVB-S; DVB-S2; DVB-T; DVB-T2",
+       "chunk_rank": 27
+      }
+     ],
+     "facts": {
+      "model_code": "QE85LS03HWUXPY",
+      "name": "Телевизор Samsung 85\" The Frame NeoQLED LS03 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE85LS03HWUXPY черный",
+      "fields": {
+       "category": "The Frame",
+       "panel_technology": "Neo QLED",
+       "screen_size_inches": 85.0,
+       "refresh_rate_hz": 120,
+       "price_rub": 349990.0,
+       "effective_price_rub": 349990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "190.43 x 109.09 x 2.69",
+       "Игровой режим": "Да",
+       "Функция Game Motion Plus": "Да",
+       "Технология FreeSync": "FreeSync Premium Pro",
+       "Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View)": "Да",
+       "Игровая панель (Game Bar)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "360 Audio; Active Voice Amplifier; Адаптивный звук Pro; OTS; Режим Q-Symphony",
+       "Мощность звука, Вт": "40",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "Auto HDR Remastering Pro; HDR10+; HLG; Neo Quantum HDR",
+       "Антибликовое покрытие": "Да",
+       "Технология экрана": "Neo QLED"
+      }
+     }
+    },
+    {
+     "model_code": "UE32H5000FUXRU",
+     "product_rank": 8,
+     "chunks": [
+      {
+       "chunk_id": 193,
+       "similarity": 0.4807932667224646,
+       "section": "display",
+       "model_code": "UE32H5000FUXRU",
+       "content": "Samsung Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU\nМодель: UE32H5000FUXRU\nКатегория: HD\nРаздел: Экран и изображение\n\nПоддержка форматов HDR: HDR10+; HDR10\nТехнология улучшения цвета: Pur Color\nHD формат: HD\nФормат экрана: 16:9",
+       "chunk_rank": 13
+      },
+      {
+       "chunk_id": 195,
+       "similarity": 0.480649708200243,
+       "section": "smart_features",
+       "model_code": "UE32H5000FUXRU",
+       "content": "Samsung Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU\nМодель: UE32H5000FUXRU\nКатегория: HD\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон\nПоддержка Connect Share: USB\nФункция Time Shift (сдвига времени просмотра): Нет\nТелетекст: Да\nЗащита: От детей\nТелегид по программам: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nПоддержка SmartThings: Да\nПоддерживаемые форматы видео: 3GP; ASF; AV1; AVI; M2TS; MKV; MP4; TS; VOB; VRO\nПоддерживаемые видеокодеки: H.263; H.264; H.265; MPEG4; VC-1; VP8; WMV",
+       "chunk_rank": 14
+      },
+      {
+       "chunk_id": 196,
+       "similarity": 0.4718215848328522,
+       "section": "connectivity",
+       "model_code": "UE32H5000FUXRU",
+       "content": "Samsung Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU\nМодель: UE32H5000FUXRU\nКатегория: HD\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nBluetooth: Нет\nHDMI: 2 шт\nUSB: 1 шт\nТехнология HDMI ARC: eARC\nСлот для CI: 1 шт\nПоддержка CI+: Да\nEthernet (LAN): Да\nАнтенный вход (аналоговый): 1 шт\nЦифровое телевещание: DVB-C; DVB-S2; DVB-T2\nDLNA: Да",
+       "chunk_rank": 29
+      }
+     ],
+     "facts": {
+      "model_code": "UE32H5000FUXRU",
+      "name": "Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU",
+      "fields": {
+       "category": "HD",
+       "panel_technology": "LED",
+       "screen_size_inches": 32.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 22990.0,
+       "effective_price_rub": 22990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "73.3 x 43.8 x 7.2",
+       "Технологии улучшения звука": "Адаптивный звук; OTS Lite",
+       "Мощность звука, Вт": "10",
+       "Поддержка форматов HDR": "HDR10+; HDR10",
+       "Технология экрана": "LED"
+      }
+     }
+    }
+   ],
+   "user_message": "User question: телевизор для фильмов\n\nCatalog context:\n\n### Candidate 1: QE32LS03CBUXRU — Телевизор Samsung 32\" серия The Frame QLED Full HD (2023) LS03C\nSTRUCTURED FACTS (catalog database):\n- category: The Frame\n- panel_technology: QLED\n- screen_size_inches: 32.0\n- refresh_rate_hz: 50\n- price_rub: 50990.0\n- effective_price_rub: 50990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 72.73 x 42.68 x 2.55\n- Технологии улучшения звука: OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 20\n- Режимы просмотра: Режим режиссера (Filmmaker Mode); Режим &quot;Кино&quot; (Movie Mode); Естественный режим (Natural Mode); Стандартный режим (Standard Mode)\n- Поддержка форматов HDR: HDR10+; Quantum HDR\n- Антибликовое покрытие: Anti Reflection\n- Технология экрана: QLED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=display, similarity=0.498]\nSamsung Телевизор Samsung 32\" серия The Frame QLED Full HD (2023) LS03C\nМодель: QE32LS03CBUXRU\nКатегория: The Frame\nРаздел: Экран и изображение\n\nРежимы просмотра: Режим режиссера (Filmmaker Mode); Режим &quot;Кино&quot; (Movie Mode); Естественный режим (Natural Mode); Стандартный режим (Standard Mode)\nПоддержка форматов HDR: HDR10+; Quantum HDR\nТип LED подсветки: Dual LED\nТехнология улучшения контрастности: Mega Contrast; Micro Dimming Pro\nТехнология улучшения цвета: Quantum Dot (100% цветового объема)\nТехнология улучшения четкости: Motion Xcelerator; Picture Clarity\nHD формат: Full HD\nФормат экрана: 16:9\nИзогнутый экран: Нет\nАнтибликовое покрытие: Anti Reflection\n[section=connectivity, similarity=0.492]\nSamsung Телевизор Samsung 32\" серия The Frame QLED Full HD (2023) LS03C\nМодель: QE32LS03CBUXRU\nКатегория: The Frame\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nСтандарты Wi-Fi: IEEE 802.11ac (Wi-Fi 5)\nBluetooth: Да\nВерсия Bluetooth: 5.2\nMiracast: Да\nПоддержка Wireless DeX: Да\nHDMI: 2 шт\nUSB: 2 шт\nТехнология HDMI ARC: ARC\nТехнология Anynet+ (HDMI-CEC): Да\nСлот для CI: Да\nПоддержка CI+: Да\nДругие аудио и видео интерфейсы: RS-232\nЦифровое телевещание: DVB-C; DVB-S2; DVB-T2\nDLNA: Да\n[section=physical_design, similarity=0.491]\nSamsung Телевизор Samsung 32\" серия The Frame QLED Full HD (2023) LS03C\nМодель: QE32LS03CBUXRU\nКатегория: The Frame\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 815 x 507 x 119\nВес в упаковке, кг: 8\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: Телевизор, пульт, кронштейн SlimFit, модуль One Connect Mini, сетевой кабель, руководство пользователя\nПульт: TM2280G\nРазмер с подставкой (ШxВxГ), см: 72.73 x 45.19 x 14.33\nРазмер без подставки (ШxВxГ), см: 72.73 x 42.68 x 2.55\nПодставка (Основная) (ШxГ), см: 59.12 x 14.33\nВес с подставкой, кг: 5.2\nВес без подставки, кг: 5.1\nЦвет корпуса: черный\nЦвет рамки: черный\nВозможность крепления на стену: Да\nСтандарт VESA: Нет\nЭнергопотребление в рабочем режиме (макс.), Вт: 55\nЭнергопотребление в режиме ожидания, Вт: 0.5\n\n### Candidate 2: QE55LS03HAUXPY — Телевизор Samsung 55\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE55LS03HAUXPY черный\nSTRUCTURED FACTS (catalog database):\n- category: The Frame\n- panel_technology: QLED\n- screen_size_inches: 55.0\n- refresh_rate_hz: 120\n- price_rub: 139990.0\n- effective_price_rub: 139990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 123.79 x 70.8.8 x 2.49\n- Игровой режим: Да\n- Функция Game Motion Plus: Да\n- Технология FreeSync: FreeSync Premium\n- Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\n- Игровая панель (Game Bar): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: 360 Audio; Active Voice Amplifier; Адаптивный звук Pro; OTS; Режим Q-Symphony\n- Мощность звука, Вт: 40\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG; Quantum HDR\n- Антибликовое покрытие: Да\n- Технология экрана: QLED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=display, similarity=0.490]\nSamsung Телевизор Samsung 55\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE55LS03HAUXPY черный\nМодель: QE55LS03HAUXPY\nКатегория: The Frame\nРаздел: Экран и изображение\n\nМасштабирование: Да\nРежимы просмотра: Режим режиссера (Filmmaker Mode)\nПоддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG; Quantum HDR\nТехнология улучшения контрастности: Dual LED; Quantum HDR; Real Depth Enhancer; Supreme UHD Dimming\nТехнология улучшения цвета: Dynamic Crystal Color; Quantum Dot (100% цветового объема); Wide Color Enhancer\nТехнология улучшения четкости: Motion Xcelerator\nДругие технологии оптимизации изображения: Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate\nHD формат: 4K Ultra HD\nФормат экрана: 16:9\nАнтибликовое покрытие: Да\n[section=smart_features, similarity=0.479]\nSamsung Телевизор Samsung 55\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE55LS03HAUXPY черный\nМодель: QE55LS03HAUXPY\nКатегория: The Frame\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон; Голос\nПоддержка Connect Share: Да\nДополнительные режимы: Автоматическое переключение; HGiG; Mini Map Zoom; Мультиэкран (Multi View)\nФункция Time Shift (сдвига времени просмотра): Да\nТелетекст: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nВеб-браузер: Да\nФункция зеркалирования: Экран мобильного устройства на экране ТВ; Звук мобильного устройства в ТВ (Sound Mirroring); Звук ТВ в мобильное устройство\n[section=connectivity, similarity=0.473]\nSamsung Телевизор Samsung 55\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE55LS03HAUXPY черный\nМодель: QE55LS03HAUXPY\nКатегория: The Frame\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nСтандарты Wi-Fi: Wi-Fi 6E\nBluetooth: Да\nВерсия Bluetooth: 5.3\nHDMI: 4 шт\nUSB: 2 шт\nUSB-C: 1 шт\nТехнология HDMI ARC: eARC\nТехнология Anynet+ (HDMI-CEC): Да\nСлот для CI: 1 шт\nПоддержка CI+: Да\nEthernet (LAN): Да\nАнтенный вход (аналоговый): 1 шт\nДругие аудио и видео интерфейсы: Оптический\nЦифровое телевещание: DVB-C; DVB-S; DVB-S2; DVB-T; DVB-T2\n\n### Candidate 3: QE43LS03HEUXPY — Телевизор Samsung 43\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE43LS03HEUXPY черный\nSTRUCTURED FACTS (catalog database):\n- category: The Frame\n- panel_technology: QLED\n- screen_size_inches: 43.0\n- refresh_rate_hz: 60\n- price_rub: 84990.0\n- effective_price_rub: 84990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 96.95 x 55.78 x 2.75\n- Игровой режим: Да\n- Функция Game Motion Plus: Да\n- Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\n- Игровая панель (Game Bar): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: 360 Audio; Active Voice Amplifier; Адаптивный звук Pro; OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 20\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG; Quantum HDR\n- Антибликовое покрытие: Да\n- Технология экрана: QLED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=display, similarity=0.487]\nSamsung Телевизор Samsung 43\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE43LS03HEUXPY черный\nМодель: QE43LS03HEUXPY\nКатегория: The Frame\nРаздел: Экран и изображение\n\nМасштабирование: Да\nРежимы просмотра: Режим режиссера (Filmmaker Mode)\nПоддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG; Quantum HDR\nТехнология улучшения контрастности: Dual LED; Quantum HDR; Real Depth Enhancer; Supreme UHD Dimming\nТехнология улучшения цвета: Dynamic Crystal Color; Quantum Dot (100% цветового объема); Wide Color Enhancer\nТехнология улучшения четкости: Motion Xcelerator\nДругие технологии оптимизации изображения: Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate\nHD формат: 4K Ultra HD\nФормат экрана: 16:9\nАнтибликовое покрытие: Да\n[section=connectivity, similarity=0.479]\nSamsung Телевизор Samsung 43\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE43LS03HEUXPY черный\nМодель: QE43LS03HEUXPY\nКатегория: The Frame\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nСтандарты Wi-Fi: Wi-Fi 6E\nBluetooth: Да\nВерсия Bluetooth: 5.3\nHDMI: 3 шт\nUSB: 2 шт\nТехнология HDMI ARC: eARC\nТехнология Anynet+ (HDMI-CEC): Да\nСлот для CI: 1 шт\nПоддержка CI+: Да\nEthernet (LAN): Да\nАнтенный вход (аналоговый): 1 шт\nДругие аудио и видео интерфейсы: Оптический; RS-232C\nЦифровое телевещание: DVB-C; DVB-S; DVB-S2; DVB-T; DVB-T2\n[section=smart_features, similarity=0.476]\nSamsung Телевизор Samsung 43\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE43LS03HEUXPY черный\nМодель: QE43LS03HEUXPY\nКатегория: The Frame\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон; Голос\nПоддержка Connect Share: Да\nДополнительные режимы: Автоматическое переключение; HGiG; Mini Map Zoom; Мультиэкран (Multi View)\nФункция Time Shift (сдвига времени просмотра): Да\nТелетекст: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nВеб-браузер: Да\nФункция зеркалирования: Экран мобильного устройства на экране ТВ; Звук мобильного устройства в ТВ (Sound Mirroring); Экран ТВ на мобильном устройстве; Звук ТВ в мобильное устройство\n\n### Candidate 4: QE65LS03HAUXPY — Телевизор Samsung 65\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE65LS03HAUXPY черный\nSTRUCTURED FACTS (catalog database):\n- category: The Frame\n- panel_technology: QLED\n- screen_size_inches: 65.0\n- refresh_rate_hz: 120\n- price_rub: 179990.0\n- effective_price_rub: 179990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 145.68 x 83.19 x 2.49\n- Игровой режим: Да\n- Функция Game Motion Plus: Да\n- Технология FreeSync: FreeSync Premium\n- Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\n- Игровая панель (Game Bar): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: 360 Audio; Active Voice Amplifier; Адаптивный звук Pro; OTS; Режим Q-Symphony\n- Мощность звука, Вт: 40\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG; Quantum HDR\n- Антибликовое покрытие: Да\n- Технология экрана: QLED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=display, similarity=0.487]\nSamsung Телевизор Samsung 65\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE65LS03HAUXPY черный\nМодель: QE65LS03HAUXPY\nКатегория: The Frame\nРаздел: Экран и изображение\n\nМасштабирование: Да\nРежимы просмотра: Режим режиссера (Filmmaker Mode)\nПоддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG; Quantum HDR\nТехнология улучшения контрастности: Dual LED; Quantum HDR; Real Depth Enhancer; Supreme UHD Dimming\nТехнология улучшения цвета: Dynamic Crystal Color; Quantum Dot (100% цветового объема); Wide Color Enhancer\nТехнология улучшения четкости: Motion Xcelerator\nДругие технологии оптимизации изображения: Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate\nHD формат: 4K Ultra HD\nФормат экрана: 16:9\nАнтибликовое покрытие: Да\n[section=smart_features, similarity=0.478]\nSamsung Телевизор Samsung 65\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE65LS03HAUXPY черный\nМодель: QE65LS03HAUXPY\nКатегория: The Frame\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон; Голос\nПоддержка Connect Share: Да\nДополнительные режимы: Автоматическое переключение; HGiG; Mini Map Zoom; Мультиэкран (Multi View)\nФункция Time Shift (сдвига времени просмотра): Да\nТелетекст: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nВеб-браузер: Да\nФункция зеркалирования: Экран мобильного устройства на экране ТВ; Звук мобильного устройства в ТВ (Sound Mirroring); Звук ТВ в мобильное устройство\n[section=connectivity, similarity=0.472]\nSamsung Телевизор Samsung 65\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE65LS03HAUXPY черный\nМодель: QE65LS03HAUXPY\nКатегория: The Frame\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nСтандарты Wi-Fi: Wi-Fi 6E\nBluetooth: Да\nВерсия Bluetooth: 5.3\nHDMI: 4 шт\nUSB: 2 шт\nUSB-C: 1 шт\nТехнология HDMI ARC: eARC\nТехнология Anynet+ (HDMI-CEC): Да\nСлот для CI: 1 шт\nПоддержка CI+: Да\nEthernet (LAN): Да\nАнтенный вход (аналоговый): 1 шт\nДругие аудио и видео интерфейсы: Оптический\nЦифровое телевещание: DVB-C; DVB-S; DVB-S2; DVB-T; DVB-T2\n\n### Candidate 5: UE43F6000FUXRU — Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU\nSTRUCTURED FACTS (catalog database):\n- category: Full HD\n- panel_technology: LED\n- screen_size_inches: 43.0\n- refresh_rate_hz: 60\n- price_rub: 29990.0\n- effective_price_rub: 29990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 96.5\tx 56.3 x 7.5\n- Поддержка форматов звука: Dolby Digital\n- Технологии улучшения звука: Адаптивный звук; OTS Lite\n- Мощность звука, Вт: 20\n- Поддержка форматов HDR: HDR10+; HDR10\n- Технология экрана: LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=smart_features, similarity=0.486]\nSamsung Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU\nМодель: UE43F6000FUXRU\nКатегория: Full HD\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон\nПоддержка Connect Share: USB\nФункция Time Shift (сдвига времени просмотра): Нет\nТелетекст: Да\nЗащита: От детей\nТелегид по программам: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nПоддержка SmartThings: Да\nПоддерживаемые форматы видео: 3GP; ASF; AV1; AVI; M2TS; MKV; MP4; TS; VOB; VRO\nПоддерживаемые видеокодеки: H.263; H.264; H.265; MPEG4; VC-1; VP8; WMV\n[section=display, similarity=0.482]\nSamsung Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU\nМодель: UE43F6000FUXRU\nКатегория: Full HD\nРаздел: Экран и изображение\n\nПоддержка форматов HDR: HDR10+; HDR10\nТехнология улучшения цвета: Pur Color\nHD формат: Full HD\nФормат экрана: 16:9\n[section=connectivity, similarity=0.471]\nSamsung Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU\nМодель: UE43F6000FUXRU\nКатегория: Full HD\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nHDMI: 2 шт\nUSB: 1 шт\nТехнология HDMI ARC: eARC\nСлот для CI: 1 шт\nПоддержка CI+: Да\nEthernet (LAN): Да\nАнтенный вход (аналоговый): 1 шт\nЦифровое телевещание: DVB-C; DVB-S2; DVB-T2\nDLNA: Да\n\n### Candidate 6: QE75LS03HWUXPY — Телевизор Samsung 75\" The Frame NeoQLED LS03 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE75LS03HWUXPY черный\nSTRUCTURED FACTS (catalog database):\n- category: The Frame\n- panel_technology: Neo QLED\n- screen_size_inches: 75.0\n- refresh_rate_hz: 120\n- price_rub: 299990.0\n- sale_price_rub: 249990.0\n- effective_price_rub: 249990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 168.23 x 96.54 x 2.69\n- Игровой режим: Да\n- Функция Game Motion Plus: Да\n- Технология FreeSync: FreeSync Premium Pro\n- Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\n- Игровая панель (Game Bar): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: 360 Audio; Active Voice Amplifier; Адаптивный звук Pro; OTS; Режим Q-Symphony\n- Мощность звука, Вт: 40\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: Auto HDR Remastering Pro; HDR10+; HLG; Neo Quantum HDR\n- Антибликовое покрытие: Да\n- Технология экрана: Neo QLED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=display, similarity=0.484]\nSamsung Телевизор Samsung 75\" The Frame NeoQLED LS03 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE75LS03HWUXPY черный\nМодель: QE75LS03HWUXPY\nКатегория: The Frame\nРаздел: Экран и изображение\n\nМасштабирование: Да\nРежимы просмотра: Режим режиссера (Filmmaker Mode)\nПоддержка форматов HDR: Auto HDR Remastering Pro; HDR10+; HLG; Neo Quantum HDR\nТехнология улучшения контрастности: Quantum Matrix; Supreme UHD Dimming; Real Depth Enhancer\nТехнология улучшения цвета: Dynamic Crystal Color; Quantum Dot (100% цветового объема); Wide Color Enhancer\nТехнология улучшения четкости: Motion Xcelerator\nДругие технологии оптимизации изображения: AI Motion Enhancer Pro; Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate\nHD формат: 4K Ultra HD\nФормат экрана: 16:9\nАнтибликовое покрытие: Да\n[section=smart_features, similarity=0.479]\nSamsung Телевизор Samsung 75\" The Frame NeoQLED LS03 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE75LS03HWUXPY черный\nМодель: QE75LS03HWUXPY\nКатегория: The Frame\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон; Голос\nПоддержка Connect Share: Да\nДополнительные режимы: Автоматическое переключение; HGiG; Mini Map Zoom; Мультиэкран (Multi View)\nФункция Time Shift (сдвига времени просмотра): Да\nТелетекст: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nВеб-браузер: Да\nФункция зеркалирования: Экран мобильного устройства на экране ТВ; Звук мобильного устройства в ТВ (Sound Mirroring); Звук ТВ в мобильное устройство\n[section=connectivity, similarity=0.474]\nSamsung Телевизор Samsung 75\" The Frame NeoQLED LS03 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE75LS03HWUXPY черный\nМодель: QE75LS03HWUXPY\nКатегория: The Frame\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nСтандарты Wi-Fi: Wi-Fi 6E\nBluetooth: Да\nВерсия Bluetooth: 5.3\nHDMI: 5 шт\nUSB: 2 шт\nUSB-C: 1 шт\nТехнология HDMI ARC: eARC\nТехнология Anynet+ (HDMI-CEC): Да\nСлот для CI: 1 шт\nПоддержка CI+: Да\nEthernet (LAN): Да\nАнтенный вход (аналоговый): 1 шт\nДругие аудио и видео интерфейсы: Оптический\nЦифровое телевещание: DVB-C; DVB-S; DVB-S2; DVB-T; DVB-T2\n\n### Candidate 7: QE85LS03HWUXPY — Телевизор Samsung 85\" The Frame NeoQLED LS03 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE85LS03HWUXPY черный\nSTRUCTURED FACTS (catalog database):\n- category: The Frame\n- panel_technology: Neo QLED\n- screen_size_inches: 85.0\n- refresh_rate_hz: 120\n- price_rub: 349990.0\n- effective_price_rub: 349990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 190.43 x 109.09 x 2.69\n- Игровой режим: Да\n- Функция Game Motion Plus: Да\n- Технология FreeSync: FreeSync Premium Pro\n- Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\n- Игровая панель (Game Bar): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: 360 Audio; Active Voice Amplifier; Адаптивный звук Pro; OTS; Режим Q-Symphony\n- Мощность звука, Вт: 40\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: Auto HDR Remastering Pro; HDR10+; HLG; Neo Quantum HDR\n- Антибликовое покрытие: Да\n- Технология экрана: Neo QLED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=display, similarity=0.482]\nSamsung Телевизор Samsung 85\" The Frame NeoQLED LS03 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE85LS03HWUXPY черный\nМодель: QE85LS03HWUXPY\nКатегория: The Frame\nРаздел: Экран и изображение\n\nМасштабирование: Да\nРежимы просмотра: Режим режиссера (Filmmaker Mode)\nПоддержка форматов HDR: Auto HDR Remastering Pro; HDR10+; HLG; Neo Quantum HDR\nТехнология улучшения контрастности: Quantum Matrix; Supreme UHD Dimming; Real Depth Enhancer\nТехнология улучшения цвета: Dynamic Crystal Color; Quantum Dot (100% цветового объема); Wide Color Enhancer\nТехнология улучшения четкости: Motion Xcelerator\nДругие технологии оптимизации изображения: AI Motion Enhancer Pro; Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate\nHD формат: 4K Ultra HD\nФормат экрана: 16:9\nАнтибликовое покрытие: Да\n[section=smart_features, similarity=0.476]\nSamsung Телевизор Samsung 85\" The Frame NeoQLED LS03 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE85LS03HWUXPY черный\nМодель: QE85LS03HWUXPY\nКатегория: The Frame\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон; Голос\nПоддержка Connect Share: Да\nДополнительные режимы: Автоматическое переключение; HGiG; Mini Map Zoom; Мультиэкран (Multi View)\nФункция Time Shift (сдвига времени просмотра): Да\nТелетекст: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nВеб-браузер: Да\nФункция зеркалирования: Экран мобильного устройства на экране ТВ; Звук мобильного устройства в ТВ (Sound Mirroring); Звук ТВ в мобильное устройство\n[section=connectivity, similarity=0.473]\nSamsung Телевизор Samsung 85\" The Frame NeoQLED LS03 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE85LS03HWUXPY черный\nМодель: QE85LS03HWUXPY\nКатегория: The Frame\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nСтандарты Wi-Fi: Wi-Fi 6E\nBluetooth: Да\nВерсия Bluetooth: 5.3\nHDMI: 5 шт\nUSB: 2 шт\nUSB-C: 1 шт\nТехнология HDMI ARC: eARC\nТехнология Anynet+ (HDMI-CEC): Да\nСлот для CI: 1 шт\nПоддержка CI+: Да\nEthernet (LAN): Да\nАнтенный вход (аналоговый): 1 шт\nДругие аудио и видео интерфейсы: Оптический\nЦифровое телевещание: DVB-C; DVB-S; DVB-S2; DVB-T; DVB-T2\n\n### Candidate 8: UE32H5000FUXRU — Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU\nSTRUCTURED FACTS (catalog database):\n- category: HD\n- panel_technology: LED\n- screen_size_inches: 32.0\n- refresh_rate_hz: 60\n- price_rub: 22990.0\n- effective_price_rub: 22990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 73.3 x 43.8 x 7.2\n- Технологии улучшения звука: Адаптивный звук; OTS Lite\n- Мощность звука, Вт: 10\n- Поддержка форматов HDR: HDR10+; HDR10\n- Технология экрана: LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=display, similarity=0.481]\nSamsung Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU\nМодель: UE32H5000FUXRU\nКатегория: HD\nРаздел: Экран и изображение\n\nПоддержка форматов HDR: HDR10+; HDR10\nТехнология улучшения цвета: Pur Color\nHD формат: HD\nФормат экрана: 16:9\n[section=smart_features, similarity=0.481]\nSamsung Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU\nМодель: UE32H5000FUXRU\nКатегория: HD\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон\nПоддержка Connect Share: USB\nФункция Time Shift (сдвига времени просмотра): Нет\nТелетекст: Да\nЗащита: От детей\nТелегид по программам: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nПоддержка SmartThings: Да\nПоддерживаемые форматы видео: 3GP; ASF; AV1; AVI; M2TS; MKV; MP4; TS; VOB; VRO\nПоддерживаемые видеокодеки: H.263; H.264; H.265; MPEG4; VC-1; VP8; WMV\n[section=connectivity, similarity=0.472]\nSamsung Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU\nМодель: UE32H5000FUXRU\nКатегория: HD\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nBluetooth: Нет\nHDMI: 2 шт\nUSB: 1 шт\nТехнология HDMI ARC: eARC\nСлот для CI: 1 шт\nПоддержка CI+: Да\nEthernet (LAN): Да\nАнтенный вход (аналоговый): 1 шт\nЦифровое телевещание: DVB-C; DVB-S2; DVB-T2\nDLNA: Да",
+   "coverage": {
+    "candidate_products": [
+     "QE32LS03CBUXRU",
+     "QE55LS03HAUXPY",
+     "QE43LS03HEUXPY",
+     "QE65LS03HAUXPY",
+     "UE43F6000FUXRU",
+     "QE75LS03HWUXPY",
+     "QE85LS03HWUXPY",
+     "UE32H5000FUXRU"
+    ],
+    "sections_represented": [
+     "connectivity",
+     "display",
+     "physical_design",
+     "smart_features"
+    ],
+    "reference_rule": "Filmmaker Mode / Режим режиссера in viewing modes AND Dolby Atmos",
+    "reference_count": 61,
+    "reference_in_context": [
+     "QE43LS03HEUXPY",
+     "QE55LS03HAUXPY",
+     "QE65LS03HAUXPY",
+     "QE75LS03HWUXPY",
+     "QE85LS03HWUXPY"
+    ],
+    "reference_missing_best_ranked": [
+     [
+      "QE98LS03HEUXPY",
+      10
+     ],
+     [
+      "UE50M70HAUXPY",
+      11
+     ],
+     [
+      "UE43M70HAUXPY",
+      12
+     ],
+     [
+      "UE75M70HAUXPY",
+      15
+     ],
+     [
+      "UE50M1EHAUXPY",
+      16
+     ],
+     [
+      "UE55M70HAUXPY",
+      17
+     ],
+     [
+      "UE85M70HAUXPY",
+      18
+     ],
+     [
+      "MRE75R95HAUXPY",
+      19
+     ]
+    ]
+   }
+  },
+  {
+   "query": "хочу хороший звук без отдельного саундбара",
+   "candidates": [
+    {
+     "model_code": "UE27LSM7FAXXPY",
+     "product_rank": 1,
+     "chunks": [
+      {
+       "chunk_id": 182,
+       "similarity": 0.41031451392482254,
+       "section": "audio",
+       "model_code": "UE27LSM7FAXXPY",
+       "content": "Samsung Дисплей Samsung портативный The Movingstyle LSM7F (2026) белый\nМодель: UE27LSM7FAXXPY\nКатегория: The Movingstyle\nРаздел: Звук\n\nКоличество каналов звука: 2.0\nПоддержка форматов звука: Dolby Atmos\nТехнологии улучшения звука: 360 Audio; Active Voice Amplifier Pro; Адаптивный звук; Режим Q-Symphony\nОбъемное звучание: Да\nМощность звука, Вт: 10",
+       "chunk_rank": 1
+      }
+     ],
+     "facts": {
+      "model_code": "UE27LSM7FAXXPY",
+      "name": "Дисплей Samsung портативный The Movingstyle LSM7F (2026) белый",
+      "fields": {
+       "category": "The Movingstyle",
+       "panel_technology": "LED",
+       "screen_size_inches": 27.0,
+       "refresh_rate_hz": 120,
+       "price_rub": 124990.0,
+       "effective_price_rub": 124990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "62.83 x 36.82 x 4.74",
+       "Игровой режим": "Да",
+       "Функция Game Motion Plus": "Да",
+       "Игровая панель (Game Bar)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "360 Audio; Active Voice Amplifier Pro; Адаптивный звук; Режим Q-Symphony",
+       "Мощность звука, Вт": "10",
+       "Поддержка форматов HDR": "Auto HDR Remastering; HDR10+; HLG",
+       "Технология экрана": "LED"
+      }
+     }
+    },
+    {
+     "model_code": "MNA114MS1CCXRU",
+     "product_rank": 2,
+     "chunks": [
+      {
+       "chunk_id": 175,
+       "similarity": 0.3850443942724908,
+       "section": "audio",
+       "model_code": "MNA114MS1CCXRU",
+       "content": "Samsung Дисплей Samsung 114\" Micro LED MS1C (2026) серебристый\nМодель: MNA114MS1CCXRU\nКатегория: Micro LED\nРаздел: Звук\n\nКоличество каналов звука: 6.4.4\nПоддержка форматов звука: Dolby Digital\nМощность звука, Вт: 120\nСабвуфер: Да\nDolby 5.1 декодер: Да",
+       "chunk_rank": 2
+      }
+     ],
+     "facts": {
+      "model_code": "MNA114MS1CCXRU",
+      "name": "Дисплей Samsung 114\" Micro LED MS1C (2026) серебристый",
+      "fields": {
+       "category": "Micro LED",
+       "panel_technology": "Micro LED",
+       "screen_size_inches": 114.0,
+       "refresh_rate_hz": 120,
+       "price_rub": 19999990.0,
+       "effective_price_rub": 19999990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "252.63 x 143.42 x 2.49",
+       "Поддержка форматов звука": "Dolby Digital",
+       "Мощность звука, Вт": "120",
+       "Поддержка форматов HDR": "HDR10+; HLG",
+       "Технология экрана": "Micro LED"
+      }
+     }
+    },
+    {
+     "model_code": "UE32H5000FUXRU",
+     "product_rank": 3,
+     "chunks": [
+      {
+       "chunk_id": 194,
+       "similarity": 0.3501032547321795,
+       "section": "audio",
+       "model_code": "UE32H5000FUXRU",
+       "content": "Samsung Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU\nМодель: UE32H5000FUXRU\nКатегория: HD\nРаздел: Звук\n\nКоличество каналов звука: 2.0\nТехнологии улучшения звука: Адаптивный звук; OTS Lite\nМощность звука, Вт: 10",
+       "chunk_rank": 3
+      }
+     ],
+     "facts": {
+      "model_code": "UE32H5000FUXRU",
+      "name": "Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU",
+      "fields": {
+       "category": "HD",
+       "panel_technology": "LED",
+       "screen_size_inches": 32.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 22990.0,
+       "effective_price_rub": 22990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "73.3 x 43.8 x 7.2",
+       "Технологии улучшения звука": "Адаптивный звук; OTS Lite",
+       "Мощность звука, Вт": "10",
+       "Поддержка форматов HDR": "HDR10+; HDR10",
+       "Технология экрана": "LED"
+      }
+     }
+    },
+    {
+     "model_code": "UE43F6000FUXRU",
+     "product_rank": 4,
+     "chunks": [
+      {
+       "chunk_id": 200,
+       "similarity": 0.336594866672588,
+       "section": "audio",
+       "model_code": "UE43F6000FUXRU",
+       "content": "Samsung Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU\nМодель: UE43F6000FUXRU\nКатегория: Full HD\nРаздел: Звук\n\nКоличество каналов звука: 2.0\nПоддержка форматов звука: Dolby Digital\nТехнологии улучшения звука: Адаптивный звук; OTS Lite\nМощность звука, Вт: 20",
+       "chunk_rank": 4
+      }
+     ],
+     "facts": {
+      "model_code": "UE43F6000FUXRU",
+      "name": "Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU",
+      "fields": {
+       "category": "Full HD",
+       "panel_technology": "LED",
+       "screen_size_inches": 43.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 29990.0,
+       "effective_price_rub": 29990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "96.5\tx 56.3 x 7.5",
+       "Поддержка форматов звука": "Dolby Digital",
+       "Технологии улучшения звука": "Адаптивный звук; OTS Lite",
+       "Мощность звука, Вт": "20",
+       "Поддержка форматов HDR": "HDR10+; HDR10",
+       "Технология экрана": "LED"
+      }
+     }
+    },
+    {
+     "model_code": "MRE115MR95FXRU",
+     "product_rank": 5,
+     "chunks": [
+      {
+       "chunk_id": 114,
+       "similarity": 0.33654871907424866,
+       "section": "audio",
+       "model_code": "MRE115MR95FXRU",
+       "content": "Samsung Телевизор Samsung 115\" TV AI Micro RGB MR95F (2026), 4K серебряный\nМодель: MRE115MR95FXRU\nКатегория: Micro RGB\nРаздел: Звук\n\nКоличество каналов звука: 4.2.2\nПоддержка форматов звука: Dolby Atmos\nТехнологии улучшения звука: 360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS+; Режим Q-Symphony\nОбъемное звучание: Да\nМощность звука, Вт: 70",
+       "chunk_rank": 5
+      }
+     ],
+     "facts": {
+      "model_code": "MRE115MR95FXRU",
+      "name": "Телевизор Samsung 115\" TV AI Micro RGB MR95F (2026), 4K серебряный",
+      "fields": {
+       "category": "Micro RGB",
+       "panel_technology": "Micro RGB",
+       "screen_size_inches": 115.0,
+       "refresh_rate_hz": 120,
+       "price_rub": 2999990.0,
+       "sale_price_rub": 2699990.0,
+       "effective_price_rub": 2699990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "257.4 х 147.8 х 3.57",
+       "Игровой режим": "Да",
+       "Автовключение игрового режима (ALLM)": "Да",
+       "Функция Game Motion Plus": "Да",
+       "Технология Dynamic Black EQ": "Да",
+       "Технология FreeSync": "FreeSync Premium Pro",
+       "Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View)": "Да",
+       "Игровая панель (Game Bar)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS+; Режим Q-Symphony",
+       "Мощность звука, Вт": "70",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "HDR10+",
+       "Антибликовое покрытие": "Anti Reflection",
+       "Технология экрана": "Micro RGB"
+      }
+     }
+    },
+    {
+     "model_code": "UE32F6000FUXRU",
+     "product_rank": 6,
+     "chunks": [
+      {
+       "chunk_id": 188,
+       "similarity": 0.336314396684559,
+       "section": "audio",
+       "model_code": "UE32F6000FUXRU",
+       "content": "Samsung Телевизор Samsung 32\" FHD F6000, Hyper Real, Smart ТВ (2026) UE32F6000FUXRU\nМодель: UE32F6000FUXRU\nКатегория: Full HD\nРаздел: Звук\n\nКоличество каналов звука: 2.0\nПоддержка форматов звука: Dolby Digital\nТехнологии улучшения звука: Адаптивный звук; OTS Lite\nМощность звука, Вт: 10",
+       "chunk_rank": 6
+      }
+     ],
+     "facts": {
+      "model_code": "UE32F6000FUXRU",
+      "name": "Телевизор Samsung 32\" FHD F6000, Hyper Real, Smart ТВ (2026) UE32F6000FUXRU",
+      "fields": {
+       "category": "Full HD",
+       "panel_technology": "LED",
+       "screen_size_inches": 32.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 26490.0,
+       "sale_price_rub": 23590.0,
+       "effective_price_rub": 23590.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "73.3 x 43.8 x 7.3",
+       "Поддержка форматов звука": "Dolby Digital",
+       "Технологии улучшения звука": "Адаптивный звук; OTS Lite",
+       "Мощность звука, Вт": "10",
+       "Поддержка форматов HDR": "HDR10+; HDR10",
+       "Технология экрана": "LED"
+      }
+     }
+    },
+    {
+     "model_code": "UE50U8000HUXPY",
+     "product_rank": 7,
+     "chunks": [
+      {
+       "chunk_id": 517,
+       "similarity": 0.3328972925267454,
+       "section": "audio",
+       "model_code": "UE50U8000HUXPY",
+       "content": "Samsung Телевизор Samsung 50\" Crystal UHD U8000 4K, Процессор Crystal, Smart ТВ (2026) UE50U8000HUXPY черный\nМодель: UE50U8000HUXPY\nКатегория: Crystal UHD\nРаздел: Звук\n\nПоддержка форматов звука: Dolby Atmos\nТехнологии улучшения звука: Адаптивный звук; OTS Lite; Режим Q-Symphony\nМощность звука, Вт: 20",
+       "chunk_rank": 7
+      }
+     ],
+     "facts": {
+      "model_code": "UE50U8000HUXPY",
+      "name": "Телевизор Samsung 50\" Crystal UHD U8000 4K, Процессор Crystal, Smart ТВ (2026) UE50U8000HUXPY черный",
+      "fields": {
+       "category": "Crystal UHD",
+       "panel_technology": "LED",
+       "screen_size_inches": 50.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 49990.0,
+       "effective_price_rub": 49990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "111.08 x 64.38 x 7.64",
+       "Игровой режим": "Да",
+       "Автовключение игрового режима (ALLM)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "Адаптивный звук; OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "20",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "HDR10; HDR10+; HLG",
+       "Технология экрана": "LED"
+      }
+     }
+    },
+    {
+     "model_code": "UE70U8000HUXPY",
+     "product_rank": 8,
+     "chunks": [
+      {
+       "chunk_id": 551,
+       "similarity": 0.332473848837906,
+       "section": "audio",
+       "model_code": "UE70U8000HUXPY",
+       "content": "Samsung Телевизор Samsung 70\" Crystal UHD U8000 4K, Процессор Crystal, Smart ТВ (2026) UE70U8000HUXPY черный\nМодель: UE70U8000HUXPY\nКатегория: Crystal UHD\nРаздел: Звук\n\nПоддержка форматов звука: Dolby Atmos\nТехнологии улучшения звука: Адаптивный звук; OTS Lite; Режим Q-Symphony\nМощность звука, Вт: 20",
+       "chunk_rank": 8
+      }
+     ],
+     "facts": {
+      "model_code": "UE70U8000HUXPY",
+      "name": "Телевизор Samsung 70\" Crystal UHD U8000 4K, Процессор Crystal, Smart ТВ (2026) UE70U8000HUXPY черный",
+      "fields": {
+       "category": "Crystal UHD",
+       "panel_technology": "LED",
+       "screen_size_inches": 70.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 84990.0,
+       "effective_price_rub": 84990.0,
+       "is_available": false,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "156.72 x 87.55 x 7.72",
+       "Игровой режим": "Да",
+       "Автовключение игрового режима (ALLM)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "Адаптивный звук; OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "20",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "HDR10; HDR10+; HLG",
+       "Технология экрана": "LED"
+      }
+     }
+    }
+   ],
+   "user_message": "User question: хочу хороший звук без отдельного саундбара\n\nCatalog context:\n\n### Candidate 1: UE27LSM7FAXXPY — Дисплей Samsung портативный The Movingstyle LSM7F (2026) белый\nSTRUCTURED FACTS (catalog database):\n- category: The Movingstyle\n- panel_technology: LED\n- screen_size_inches: 27.0\n- refresh_rate_hz: 120\n- price_rub: 124990.0\n- effective_price_rub: 124990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 62.83 x 36.82 x 4.74\n- Игровой режим: Да\n- Функция Game Motion Plus: Да\n- Игровая панель (Game Bar): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: 360 Audio; Active Voice Amplifier Pro; Адаптивный звук; Режим Q-Symphony\n- Мощность звука, Вт: 10\n- Поддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG\n- Технология экрана: LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=audio, similarity=0.410]\nSamsung Дисплей Samsung портативный The Movingstyle LSM7F (2026) белый\nМодель: UE27LSM7FAXXPY\nКатегория: The Movingstyle\nРаздел: Звук\n\nКоличество каналов звука: 2.0\nПоддержка форматов звука: Dolby Atmos\nТехнологии улучшения звука: 360 Audio; Active Voice Amplifier Pro; Адаптивный звук; Режим Q-Symphony\nОбъемное звучание: Да\nМощность звука, Вт: 10\n\n### Candidate 2: MNA114MS1CCXRU — Дисплей Samsung 114\" Micro LED MS1C (2026) серебристый\nSTRUCTURED FACTS (catalog database):\n- category: Micro LED\n- panel_technology: Micro LED\n- screen_size_inches: 114.0\n- refresh_rate_hz: 120\n- price_rub: 19999990.0\n- effective_price_rub: 19999990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 252.63 x 143.42 x 2.49\n- Поддержка форматов звука: Dolby Digital\n- Мощность звука, Вт: 120\n- Поддержка форматов HDR: HDR10+; HLG\n- Технология экрана: Micro LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=audio, similarity=0.385]\nSamsung Дисплей Samsung 114\" Micro LED MS1C (2026) серебристый\nМодель: MNA114MS1CCXRU\nКатегория: Micro LED\nРаздел: Звук\n\nКоличество каналов звука: 6.4.4\nПоддержка форматов звука: Dolby Digital\nМощность звука, Вт: 120\nСабвуфер: Да\nDolby 5.1 декодер: Да\n\n### Candidate 3: UE32H5000FUXRU — Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU\nSTRUCTURED FACTS (catalog database):\n- category: HD\n- panel_technology: LED\n- screen_size_inches: 32.0\n- refresh_rate_hz: 60\n- price_rub: 22990.0\n- effective_price_rub: 22990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 73.3 x 43.8 x 7.2\n- Технологии улучшения звука: Адаптивный звук; OTS Lite\n- Мощность звука, Вт: 10\n- Поддержка форматов HDR: HDR10+; HDR10\n- Технология экрана: LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=audio, similarity=0.350]\nSamsung Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU\nМодель: UE32H5000FUXRU\nКатегория: HD\nРаздел: Звук\n\nКоличество каналов звука: 2.0\nТехнологии улучшения звука: Адаптивный звук; OTS Lite\nМощность звука, Вт: 10\n\n### Candidate 4: UE43F6000FUXRU — Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU\nSTRUCTURED FACTS (catalog database):\n- category: Full HD\n- panel_technology: LED\n- screen_size_inches: 43.0\n- refresh_rate_hz: 60\n- price_rub: 29990.0\n- effective_price_rub: 29990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 96.5\tx 56.3 x 7.5\n- Поддержка форматов звука: Dolby Digital\n- Технологии улучшения звука: Адаптивный звук; OTS Lite\n- Мощность звука, Вт: 20\n- Поддержка форматов HDR: HDR10+; HDR10\n- Технология экрана: LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=audio, similarity=0.337]\nSamsung Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU\nМодель: UE43F6000FUXRU\nКатегория: Full HD\nРаздел: Звук\n\nКоличество каналов звука: 2.0\nПоддержка форматов звука: Dolby Digital\nТехнологии улучшения звука: Адаптивный звук; OTS Lite\nМощность звука, Вт: 20\n\n### Candidate 5: MRE115MR95FXRU — Телевизор Samsung 115\" TV AI Micro RGB MR95F (2026), 4K серебряный\nSTRUCTURED FACTS (catalog database):\n- category: Micro RGB\n- panel_technology: Micro RGB\n- screen_size_inches: 115.0\n- refresh_rate_hz: 120\n- price_rub: 2999990.0\n- sale_price_rub: 2699990.0\n- effective_price_rub: 2699990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 257.4 х 147.8 х 3.57\n- Игровой режим: Да\n- Автовключение игрового режима (ALLM): Да\n- Функция Game Motion Plus: Да\n- Технология Dynamic Black EQ: Да\n- Технология FreeSync: FreeSync Premium Pro\n- Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\n- Игровая панель (Game Bar): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: 360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS+; Режим Q-Symphony\n- Мощность звука, Вт: 70\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: HDR10+\n- Антибликовое покрытие: Anti Reflection\n- Технология экрана: Micro RGB\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=audio, similarity=0.337]\nSamsung Телевизор Samsung 115\" TV AI Micro RGB MR95F (2026), 4K серебряный\nМодель: MRE115MR95FXRU\nКатегория: Micro RGB\nРаздел: Звук\n\nКоличество каналов звука: 4.2.2\nПоддержка форматов звука: Dolby Atmos\nТехнологии улучшения звука: 360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS+; Режим Q-Symphony\nОбъемное звучание: Да\nМощность звука, Вт: 70\n\n### Candidate 6: UE32F6000FUXRU — Телевизор Samsung 32\" FHD F6000, Hyper Real, Smart ТВ (2026) UE32F6000FUXRU\nSTRUCTURED FACTS (catalog database):\n- category: Full HD\n- panel_technology: LED\n- screen_size_inches: 32.0\n- refresh_rate_hz: 60\n- price_rub: 26490.0\n- sale_price_rub: 23590.0\n- effective_price_rub: 23590.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 73.3 x 43.8 x 7.3\n- Поддержка форматов звука: Dolby Digital\n- Технологии улучшения звука: Адаптивный звук; OTS Lite\n- Мощность звука, Вт: 10\n- Поддержка форматов HDR: HDR10+; HDR10\n- Технология экрана: LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=audio, similarity=0.336]\nSamsung Телевизор Samsung 32\" FHD F6000, Hyper Real, Smart ТВ (2026) UE32F6000FUXRU\nМодель: UE32F6000FUXRU\nКатегория: Full HD\nРаздел: Звук\n\nКоличество каналов звука: 2.0\nПоддержка форматов звука: Dolby Digital\nТехнологии улучшения звука: Адаптивный звук; OTS Lite\nМощность звука, Вт: 10\n\n### Candidate 7: UE50U8000HUXPY — Телевизор Samsung 50\" Crystal UHD U8000 4K, Процессор Crystal, Smart ТВ (2026) UE50U8000HUXPY черный\nSTRUCTURED FACTS (catalog database):\n- category: Crystal UHD\n- panel_technology: LED\n- screen_size_inches: 50.0\n- refresh_rate_hz: 60\n- price_rub: 49990.0\n- effective_price_rub: 49990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 111.08 x 64.38 x 7.64\n- Игровой режим: Да\n- Автовключение игрового режима (ALLM): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: Адаптивный звук; OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 20\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: HDR10; HDR10+; HLG\n- Технология экрана: LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=audio, similarity=0.333]\nSamsung Телевизор Samsung 50\" Crystal UHD U8000 4K, Процессор Crystal, Smart ТВ (2026) UE50U8000HUXPY черный\nМодель: UE50U8000HUXPY\nКатегория: Crystal UHD\nРаздел: Звук\n\nПоддержка форматов звука: Dolby Atmos\nТехнологии улучшения звука: Адаптивный звук; OTS Lite; Режим Q-Symphony\nМощность звука, Вт: 20\n\n### Candidate 8: UE70U8000HUXPY — Телевизор Samsung 70\" Crystal UHD U8000 4K, Процессор Crystal, Smart ТВ (2026) UE70U8000HUXPY черный\nSTRUCTURED FACTS (catalog database):\n- category: Crystal UHD\n- panel_technology: LED\n- screen_size_inches: 70.0\n- refresh_rate_hz: 60\n- price_rub: 84990.0\n- effective_price_rub: 84990.0\n- is_available: False\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 156.72 x 87.55 x 7.72\n- Игровой режим: Да\n- Автовключение игрового режима (ALLM): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: Адаптивный звук; OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 20\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: HDR10; HDR10+; HLG\n- Технология экрана: LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=audio, similarity=0.332]\nSamsung Телевизор Samsung 70\" Crystal UHD U8000 4K, Процессор Crystal, Smart ТВ (2026) UE70U8000HUXPY черный\nМодель: UE70U8000HUXPY\nКатегория: Crystal UHD\nРаздел: Звук\n\nПоддержка форматов звука: Dolby Atmos\nТехнологии улучшения звука: Адаптивный звук; OTS Lite; Режим Q-Symphony\nМощность звука, Вт: 20",
+   "coverage": {
+    "candidate_products": [
+     "UE27LSM7FAXXPY",
+     "MNA114MS1CCXRU",
+     "UE32H5000FUXRU",
+     "UE43F6000FUXRU",
+     "MRE115MR95FXRU",
+     "UE32F6000FUXRU",
+     "UE50U8000HUXPY",
+     "UE70U8000HUXPY"
+    ],
+    "sections_represented": [
+     "audio"
+    ],
+    "reference_rule": "sound power >= 70 W",
+    "reference_count": 9,
+    "reference_in_context": [
+     "MNA114MS1CCXRU",
+     "MRE115MR95FXRU"
+    ],
+    "reference_missing_best_ranked": [
+     [
+      "QE55S95HAUXPY",
+      34
+     ],
+     [
+      "QE65S95HAUXPY",
+      46
+     ],
+     [
+      "QE77S95HAEXPY",
+      54
+     ],
+     [
+      "MRE75R95HAUXPY",
+      63
+     ],
+     [
+      "MRE85R95HAUXPY",
+      69
+     ],
+     [
+      "MRE65R95HAUXPY",
+      73
+     ],
+     [
+      "QE83S95HAEXPY",
+      75
+     ]
+    ]
+   }
+  },
+  {
+   "query": "тонкий телевизор на стену",
+   "candidates": [
+    {
+     "model_code": "UE32H5000FUXRU",
+     "product_rank": 1,
+     "chunks": [
+      {
+       "chunk_id": 197,
+       "similarity": 0.46623510679066504,
+       "section": "physical_design",
+       "model_code": "UE32H5000FUXRU",
+       "content": "Samsung Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU\nМодель: UE32H5000FUXRU\nКатегория: HD\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 500 × 800 × 114\nВес в упаковке, кг: 5.4\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: пульт ДУ, боковые ножки, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 73.3 x 45.1 x 11.7\nРазмер без подставки (ШxВxГ), см: 73.3 x 43.8 x 7.2\nВес, кг: 3.8\nВес без подставки, кг: 3.8\nЦвет корпуса: черный\nЦвет подставки: черный\nСтандарт VESA: 200x200 мм\nЭнергопотребление в рабочем режиме (типичное), Вт: 60\nЭнергопотребление в режиме ожидания, Вт: 0.5",
+       "chunk_rank": 1
+      },
+      {
+       "chunk_id": 194,
+       "similarity": 0.44621636681720456,
+       "section": "audio",
+       "model_code": "UE32H5000FUXRU",
+       "content": "Samsung Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU\nМодель: UE32H5000FUXRU\nКатегория: HD\nРаздел: Звук\n\nКоличество каналов звука: 2.0\nТехнологии улучшения звука: Адаптивный звук; OTS Lite\nМощность звука, Вт: 10",
+       "chunk_rank": 5
+      },
+      {
+       "chunk_id": 195,
+       "similarity": 0.4437845933488155,
+       "section": "smart_features",
+       "model_code": "UE32H5000FUXRU",
+       "content": "Samsung Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU\nМодель: UE32H5000FUXRU\nКатегория: HD\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон\nПоддержка Connect Share: USB\nФункция Time Shift (сдвига времени просмотра): Нет\nТелетекст: Да\nЗащита: От детей\nТелегид по программам: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nПоддержка SmartThings: Да\nПоддерживаемые форматы видео: 3GP; ASF; AV1; AVI; M2TS; MKV; MP4; TS; VOB; VRO\nПоддерживаемые видеокодеки: H.263; H.264; H.265; MPEG4; VC-1; VP8; WMV",
+       "chunk_rank": 6
+      }
+     ],
+     "facts": {
+      "model_code": "UE32H5000FUXRU",
+      "name": "Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU",
+      "fields": {
+       "category": "HD",
+       "panel_technology": "LED",
+       "screen_size_inches": 32.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 22990.0,
+       "effective_price_rub": 22990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "73.3 x 43.8 x 7.2",
+       "Технологии улучшения звука": "Адаптивный звук; OTS Lite",
+       "Мощность звука, Вт": "10",
+       "Поддержка форматов HDR": "HDR10+; HDR10",
+       "Технология экрана": "LED"
+      }
+     }
+    },
+    {
+     "model_code": "QE32LS03CBUXRU",
+     "product_rank": 2,
+     "chunks": [
+      {
+       "chunk_id": 130,
+       "similarity": 0.4645738630871632,
+       "section": "physical_design",
+       "model_code": "QE32LS03CBUXRU",
+       "content": "Samsung Телевизор Samsung 32\" серия The Frame QLED Full HD (2023) LS03C\nМодель: QE32LS03CBUXRU\nКатегория: The Frame\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 815 x 507 x 119\nВес в упаковке, кг: 8\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: Телевизор, пульт, кронштейн SlimFit, модуль One Connect Mini, сетевой кабель, руководство пользователя\nПульт: TM2280G\nРазмер с подставкой (ШxВxГ), см: 72.73 x 45.19 x 14.33\nРазмер без подставки (ШxВxГ), см: 72.73 x 42.68 x 2.55\nПодставка (Основная) (ШxГ), см: 59.12 x 14.33\nВес с подставкой, кг: 5.2\nВес без подставки, кг: 5.1\nЦвет корпуса: черный\nЦвет рамки: черный\nВозможность крепления на стену: Да\nСтандарт VESA: Нет\nЭнергопотребление в рабочем режиме (макс.), Вт: 55\nЭнергопотребление в режиме ожидания, Вт: 0.5",
+       "chunk_rank": 2
+      },
+      {
+       "chunk_id": 128,
+       "similarity": 0.4335723135195735,
+       "section": "smart_features",
+       "model_code": "QE32LS03CBUXRU",
+       "content": "Samsung Телевизор Samsung 32\" серия The Frame QLED Full HD (2023) LS03C\nМодель: QE32LS03CBUXRU\nКатегория: The Frame\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон\nФункция Tap View: Да\nДополнительные режимы: Режим &quot;Картина&quot; (Галерея); Интерьерный режим\nТелетекст: Да\nТаймер выключения: Да\nТаймер включения: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nВеб-браузер: Да\nПоддержка SmartThings: Да\nПоддержка USB HID: Подключение клавиатуры, мыши, игрового контроллера\nВстроенная поддержка BT HID: Подключение клавиатуры, мыши, игрового контроллера",
+       "chunk_rank": 18
+      }
+     ],
+     "facts": {
+      "model_code": "QE32LS03CBUXRU",
+      "name": "Телевизор Samsung 32\" серия The Frame QLED Full HD (2023) LS03C",
+      "fields": {
+       "category": "The Frame",
+       "panel_technology": "QLED",
+       "screen_size_inches": 32.0,
+       "refresh_rate_hz": 50,
+       "price_rub": 50990.0,
+       "effective_price_rub": 50990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "72.73 x 42.68 x 2.55",
+       "Технологии улучшения звука": "OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "20",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode); Режим &quot;Кино&quot; (Movie Mode); Естественный режим (Natural Mode); Стандартный режим (Standard Mode)",
+       "Поддержка форматов HDR": "HDR10+; Quantum HDR",
+       "Антибликовое покрытие": "Anti Reflection",
+       "Технология экрана": "QLED"
+      }
+     }
+    },
+    {
+     "model_code": "UE32F6000FUXRU",
+     "product_rank": 3,
+     "chunks": [
+      {
+       "chunk_id": 191,
+       "similarity": 0.45156654405080665,
+       "section": "physical_design",
+       "model_code": "UE32F6000FUXRU",
+       "content": "Samsung Телевизор Samsung 32\" FHD F6000, Hyper Real, Smart ТВ (2026) UE32F6000FUXRU\nМодель: UE32F6000FUXRU\nКатегория: Full HD\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 500 × 800 × 114\nВес в упаковке, кг: 5.1\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: пульт ДУ, боковые ножки, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 73.3 x 45.2.5 x 11.8\nРазмер без подставки (ШxВxГ), см: 73.3 x 43.8 x 7.3\nВес, кг: 3.9\nВес без подставки, кг: 3.8\nЦвет корпуса: черный\nЦвет подставки: черный\nСтандарт VESA: 200x200 мм\nЭнергопотребление в рабочем режиме (типичное), Вт: 65\nЭнергопотребление в режиме ожидания, Вт: 0.5",
+       "chunk_rank": 3
+      },
+      {
+       "chunk_id": 189,
+       "similarity": 0.42846694258313534,
+       "section": "smart_features",
+       "model_code": "UE32F6000FUXRU",
+       "content": "Samsung Телевизор Samsung 32\" FHD F6000, Hyper Real, Smart ТВ (2026) UE32F6000FUXRU\nМодель: UE32F6000FUXRU\nКатегория: Full HD\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон\nПоддержка Connect Share: USB\nФункция Time Shift (сдвига времени просмотра): Нет\nТелетекст: Да\nЗащита: От детей\nТелегид по программам: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nПоддержка SmartThings: Да\nПоддерживаемые форматы видео: 3GP; ASF; AV1; AVI; M2TS; MKV; MP4; TS; VOB; VRO\nПоддерживаемые видеокодеки: H.263; H.264; H.265; MPEG4; VC-1; VP8; WMV",
+       "chunk_rank": 24
+      }
+     ],
+     "facts": {
+      "model_code": "UE32F6000FUXRU",
+      "name": "Телевизор Samsung 32\" FHD F6000, Hyper Real, Smart ТВ (2026) UE32F6000FUXRU",
+      "fields": {
+       "category": "Full HD",
+       "panel_technology": "LED",
+       "screen_size_inches": 32.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 26490.0,
+       "sale_price_rub": 23590.0,
+       "effective_price_rub": 23590.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "73.3 x 43.8 x 7.3",
+       "Поддержка форматов звука": "Dolby Digital",
+       "Технологии улучшения звука": "Адаптивный звук; OTS Lite",
+       "Мощность звука, Вт": "10",
+       "Поддержка форматов HDR": "HDR10+; HDR10",
+       "Технология экрана": "LED"
+      }
+     }
+    },
+    {
+     "model_code": "UE43F6000FUXRU",
+     "product_rank": 4,
+     "chunks": [
+      {
+       "chunk_id": 203,
+       "similarity": 0.44671316622361024,
+       "section": "physical_design",
+       "model_code": "UE43F6000FUXRU",
+       "content": "Samsung Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU\nМодель: UE43F6000FUXRU\nКатегория: Full HD\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 630 × 1058 × 119\nВес в упаковке, кг: 8.3\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: пульт ДУ, боковые ножки, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 96.5 x 59\tx 15.7\nРазмер без подставки (ШxВxГ), см: 96.5\tx 56.3 x 7.5\nВес, кг: 6.6\nВес без подставки, кг: 6.5\nЦвет корпуса: черный\nЦвет подставки: черный\nСтандарт VESA: 200x200 мм\nЭнергопотребление в рабочем режиме (типичное), Вт: 80\nЭнергопотребление в режиме ожидания, Вт: 0.5",
+       "chunk_rank": 4
+      },
+      {
+       "chunk_id": 201,
+       "similarity": 0.42676894085167016,
+       "section": "smart_features",
+       "model_code": "UE43F6000FUXRU",
+       "content": "Samsung Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU\nМодель: UE43F6000FUXRU\nКатегория: Full HD\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон\nПоддержка Connect Share: USB\nФункция Time Shift (сдвига времени просмотра): Нет\nТелетекст: Да\nЗащита: От детей\nТелегид по программам: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nПоддержка SmartThings: Да\nПоддерживаемые форматы видео: 3GP; ASF; AV1; AVI; M2TS; MKV; MP4; TS; VOB; VRO\nПоддерживаемые видеокодеки: H.263; H.264; H.265; MPEG4; VC-1; VP8; WMV",
+       "chunk_rank": 27
+      }
+     ],
+     "facts": {
+      "model_code": "UE43F6000FUXRU",
+      "name": "Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU",
+      "fields": {
+       "category": "Full HD",
+       "panel_technology": "LED",
+       "screen_size_inches": 43.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 29990.0,
+       "effective_price_rub": 29990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "96.5\tx 56.3 x 7.5",
+       "Поддержка форматов звука": "Dolby Digital",
+       "Технологии улучшения звука": "Адаптивный звук; OTS Lite",
+       "Мощность звука, Вт": "20",
+       "Поддержка форматов HDR": "HDR10+; HDR10",
+       "Технология экрана": "LED"
+      }
+     }
+    },
+    {
+     "model_code": "QE115QN90FUXRU",
+     "product_rank": 5,
+     "chunks": [
+      {
+       "chunk_id": 124,
+       "similarity": 0.4437469157621594,
+       "section": "physical_design",
+       "model_code": "QE115QN90FUXRU",
+       "content": "Samsung Телевизор Samsung 115\" Neo QLED 4K Smart TV (2026) серия 9 QE115QN90FUXRU черный титан\nМодель: QE115QN90FUXRU\nКатегория: Neo QLED\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 1787,0 х 2785,0 х 255\nВес в упаковке, кг: 133\nСтрана производителя: Вьетнам\nОфициальная гарантия производителя, мес: 12\nКомплектация: пульт ДУ на солнечных элементах, кронштейн, центральный стенд, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 256.52 х 152.5 х 46.72\nРазмер без подставки (ШxВxГ), см: 256.52 x 146.76 x 3.41\nПодставка (Основная) (ШxГ), см: 203.75 х 46.72\nПодставка (Минимальная) (ШxГ), см: 68.15 х 46.72\nВес, кг: 133.6\nВес с подставкой, кг: 86\nВес без подставки, кг: 83.7\nЦвет корпуса: черный титан\nЦвет подставки: серебро\nСтандарт VESA: 600x400 мм\nЭнергопотребление в рабочем режиме (типичное), Вт: 228\nЭнергопотребление в рабочем режиме (макс.), Вт: 790\nЭнергопотребление в режиме ожидания, Вт: 0.5",
+       "chunk_rank": 7
+      }
+     ],
+     "facts": {
+      "model_code": "QE115QN90FUXRU",
+      "name": "Телевизор Samsung 115\" Neo QLED 4K Smart TV (2026) серия 9 QE115QN90FUXRU черный титан",
+      "fields": {
+       "category": "Neo QLED",
+       "panel_technology": "Neo QLED",
+       "screen_size_inches": 115.0,
+       "refresh_rate_hz": 120,
+       "price_rub": 1999990.0,
+       "sale_price_rub": 1799990.0,
+       "effective_price_rub": 1799990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "256.52 x 146.76 x 3.41",
+       "Игровой режим": "Да",
+       "Автовключение игрового режима (ALLM)": "Да",
+       "Функция Game Motion Plus": "Да",
+       "Технология Dynamic Black EQ": "Да",
+       "Технология FreeSync": "FreeSync Premium Pro",
+       "Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View)": "Да",
+       "Игровая панель (Game Bar)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS+; Режим Q-Symphony",
+       "Мощность звука, Вт": "60",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "HDR10+; HLG; Neo Quantum HDR Pro",
+       "Антибликовое покрытие": "Anti Reflection",
+       "Технология экрана": "Neo QLED"
+      }
+     }
+    },
+    {
+     "model_code": "MRE100R85HUXPY",
+     "product_rank": 6,
+     "chunks": [
+      {
+       "chunk_id": 431,
+       "similarity": 0.44083017662623303,
+       "section": "physical_design",
+       "model_code": "MRE100R85HUXPY",
+       "content": "Samsung Телевизор Samsung 100\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE100R85HUXPY сланцево-черный\nМодель: MRE100R85HUXPY\nКатегория: Micro RGB\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 2399 x 1444 x 230\nВес в упаковке, кг: 81.7\nСтрана производителя: Вьетнам\nОфициальная гарантия производителя, мес: 12\nКомплектация: универсальный пульт дистанционного управления, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 2229.8 x 1332.4 x 415.4\nРазмер без подставки (ШxВxГ), см: 2229.8 x 1273.4 x 57.4\nПодставка (Основная) (ШxГ), см: 1722.9 x 415.4\nВес с подставкой, кг: 60.3\nВес без подставки, кг: 58.9\nЦвет корпуса: сланцево-черный\nЦвет подставки: титановый черный\nСтандарт VESA: 600x400 мм",
+       "chunk_rank": 9
+      }
+     ],
+     "facts": {
+      "model_code": "MRE100R85HUXPY",
+      "name": "Телевизор Samsung 100\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE100R85HUXPY сланцево-черный",
+      "fields": {
+       "category": "Micro RGB",
+       "panel_technology": "Micro RGB",
+       "screen_size_inches": 100.0,
+       "refresh_rate_hz": 120,
+       "price_rub": 899990.0,
+       "effective_price_rub": 899990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "2229.8 x 1273.4 x 57.4",
+       "Игровой режим": "Да",
+       "Функция Game Motion Plus": "Да",
+       "Технология FreeSync": "FreeSync Premium Pro",
+       "Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View)": "Да",
+       "Игровая панель (Game Bar)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "40",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "Auto HDR Remastering; HDR10+; HLG; Micro RGB HDR+",
+       "Технология экрана": "Micro RGB"
+      }
+     }
+    },
+    {
+     "model_code": "UE75M70HAUXPY",
+     "product_rank": 7,
+     "chunks": [
+      {
+       "chunk_id": 144,
+       "similarity": 0.437714064064024,
+       "section": "physical_design",
+       "model_code": "UE75M70HAUXPY",
+       "content": "Samsung Телевизор Samsung 75\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE75M70HAUXPY черный\nМодель: UE75M70HAUXPY\nКатегория: Mini LED\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 1100 x 1820 x 164\nВес в упаковке, кг: 31\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: универсальный пульт дистанционного управления, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 166.81 x 100.59 x 28\nРазмер без подставки (ШxВxГ), см: 166.81 x 95.78 x 7.7\nПодставка (Основная) (ШxГ), см: 125 x 28\nВес с подставкой, кг: 22.8\nВес без подставки, кг: 22.4\nЦвет корпуса: черный\nЦвет подставки: черный\nСтандарт VESA: 400x300 мм",
+       "chunk_rank": 10
+      }
+     ],
+     "facts": {
+      "model_code": "UE75M70HAUXPY",
+      "name": "Телевизор Samsung 75\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE75M70HAUXPY черный",
+      "fields": {
+       "category": "Mini LED",
+       "panel_technology": "Mini LED",
+       "screen_size_inches": 75.0,
+       "refresh_rate_hz": 60,
+       "price_rub": 109990.0,
+       "sale_price_rub": 94990.0,
+       "effective_price_rub": 94990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "166.81 x 95.78 x 7.7",
+       "Игровой режим": "Да",
+       "Автовключение игрового режима (ALLM)": "Да",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "Адаптивный звук; OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "20",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "HDR10+; HLG; Mini LED HDR",
+       "Технология экрана": "Mini LED"
+      }
+     }
+    },
+    {
+     "model_code": "UE75M1EHAUXPY",
+     "product_rank": 8,
+     "chunks": [
+      {
+       "chunk_id": 333,
+       "similarity": 0.4371474986478392,
+       "section": "physical_design",
+       "model_code": "UE75M1EHAUXPY",
+       "content": "Samsung Телевизор Samsung 75\" Mini LED M1E 4K, Процессор Mini LED, Smart ТВ (2026) UE75M1EHAUXPY титановый черный\nМодель: UE75M1EHAUXPY\nКатегория: Mini LED\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 1825 x 1100 x 170\nВес в упаковке, кг: 30\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: универсальный пульт дистанционного управления, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 166.81 x 100.7.9 x 28\nРазмер без подставки (ШxВxГ), см: 166.81 x 95.78 x 7.7\nПодставка (Основная) (ШxГ), см: 1250 x 280\nВес с подставкой, кг: 22\nВес без подставки, кг: 21.6\nЦвет корпуса: титановый серый\nЦвет подставки: черный\nЭнергопотребление в рабочем режиме (типичное), Вт: 230\nЭнергопотребление в режиме ожидания, Вт: 0.5",
+       "chunk_rank": 11
+      },
+      {
+       "chunk_id": 331,
+       "similarity": 0.43219390225297105,
+       "section": "smart_features",
+       "model_code": "UE75M1EHAUXPY",
+       "content": "Samsung Телевизор Samsung 75\" Mini LED M1E 4K, Процессор Mini LED, Smart ТВ (2026) UE75M1EHAUXPY титановый черный\nМодель: UE75M1EHAUXPY\nКатегория: Mini LED\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон\nПоддержка Connect Share: USB\nДополнительные режимы: HGiG\nТелетекст: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nВеб-браузер: Да\nФункция зеркалирования: Экран мобильного устройства на экране ТВ; Звук мобильного устройства в ТВ (Sound Mirroring)",
+       "chunk_rank": 20
+      },
+      {
+       "chunk_id": 332,
+       "similarity": 0.426858096894847,
+       "section": "connectivity",
+       "model_code": "UE75M1EHAUXPY",
+       "content": "Samsung Телевизор Samsung 75\" Mini LED M1E 4K, Процессор Mini LED, Smart ТВ (2026) UE75M1EHAUXPY титановый черный\nМодель: UE75M1EHAUXPY\nКатегория: Mini LED\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nСтандарты Wi-Fi: Wi-Fi 5\nBluetooth: Да\nHDMI: 3 шт\nUSB: 1 шт\nТехнология HDMI ARC: eARC\nТехнология Anynet+ (HDMI-CEC): Да\nСлот для CI: 1 шт\nПоддержка CI+: Да\nEthernet (LAN): Да\nАнтенный вход (аналоговый): 1 шт\nЦифровое телевещание: DVB-C; DVB-S; DVB-S2; DVB-T; DVB-T2",
+       "chunk_rank": 26
+      }
+     ],
+     "facts": {
+      "model_code": "UE75M1EHAUXPY",
+      "name": "Телевизор Samsung 75\" Mini LED M1E 4K, Процессор Mini LED, Smart ТВ (2026) UE75M1EHAUXPY титановый черный",
+      "fields": {
+       "category": "Mini LED",
+       "panel_technology": "Mini LED",
+       "screen_size_inches": 75.0,
+       "refresh_rate_hz": 50,
+       "price_rub": 109990.0,
+       "sale_price_rub": 94990.0,
+       "effective_price_rub": 94990.0,
+       "is_available": true,
+       "year": 2026
+      },
+      "specs": {
+       "Размер без подставки (ШxВxГ), см": "166.81 x 95.78 x 7.7",
+       "Поддержка форматов звука": "Dolby Atmos",
+       "Технологии улучшения звука": "Адаптивный звук; OTS Lite; Режим Q-Symphony",
+       "Мощность звука, Вт": "20",
+       "Режимы просмотра": "Режим режиссера (Filmmaker Mode)",
+       "Поддержка форматов HDR": "HDR10+; HLG; Mini LED HDR",
+       "Технология экрана": "Mini LED"
+      }
+     }
+    }
+   ],
+   "user_message": "User question: тонкий телевизор на стену\n\nCatalog context:\n\n### Candidate 1: UE32H5000FUXRU — Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU\nSTRUCTURED FACTS (catalog database):\n- category: HD\n- panel_technology: LED\n- screen_size_inches: 32.0\n- refresh_rate_hz: 60\n- price_rub: 22990.0\n- effective_price_rub: 22990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 73.3 x 43.8 x 7.2\n- Технологии улучшения звука: Адаптивный звук; OTS Lite\n- Мощность звука, Вт: 10\n- Поддержка форматов HDR: HDR10+; HDR10\n- Технология экрана: LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=physical_design, similarity=0.466]\nSamsung Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU\nМодель: UE32H5000FUXRU\nКатегория: HD\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 500 × 800 × 114\nВес в упаковке, кг: 5.4\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: пульт ДУ, боковые ножки, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 73.3 x 45.1 x 11.7\nРазмер без подставки (ШxВxГ), см: 73.3 x 43.8 x 7.2\nВес, кг: 3.8\nВес без подставки, кг: 3.8\nЦвет корпуса: черный\nЦвет подставки: черный\nСтандарт VESA: 200x200 мм\nЭнергопотребление в рабочем режиме (типичное), Вт: 60\nЭнергопотребление в режиме ожидания, Вт: 0.5\n[section=audio, similarity=0.446]\nSamsung Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU\nМодель: UE32H5000FUXRU\nКатегория: HD\nРаздел: Звук\n\nКоличество каналов звука: 2.0\nТехнологии улучшения звука: Адаптивный звук; OTS Lite\nМощность звука, Вт: 10\n[section=smart_features, similarity=0.444]\nSamsung Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU\nМодель: UE32H5000FUXRU\nКатегория: HD\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон\nПоддержка Connect Share: USB\nФункция Time Shift (сдвига времени просмотра): Нет\nТелетекст: Да\nЗащита: От детей\nТелегид по программам: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nПоддержка SmartThings: Да\nПоддерживаемые форматы видео: 3GP; ASF; AV1; AVI; M2TS; MKV; MP4; TS; VOB; VRO\nПоддерживаемые видеокодеки: H.263; H.264; H.265; MPEG4; VC-1; VP8; WMV\n\n### Candidate 2: QE32LS03CBUXRU — Телевизор Samsung 32\" серия The Frame QLED Full HD (2023) LS03C\nSTRUCTURED FACTS (catalog database):\n- category: The Frame\n- panel_technology: QLED\n- screen_size_inches: 32.0\n- refresh_rate_hz: 50\n- price_rub: 50990.0\n- effective_price_rub: 50990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 72.73 x 42.68 x 2.55\n- Технологии улучшения звука: OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 20\n- Режимы просмотра: Режим режиссера (Filmmaker Mode); Режим &quot;Кино&quot; (Movie Mode); Естественный режим (Natural Mode); Стандартный режим (Standard Mode)\n- Поддержка форматов HDR: HDR10+; Quantum HDR\n- Антибликовое покрытие: Anti Reflection\n- Технология экрана: QLED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=physical_design, similarity=0.465]\nSamsung Телевизор Samsung 32\" серия The Frame QLED Full HD (2023) LS03C\nМодель: QE32LS03CBUXRU\nКатегория: The Frame\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 815 x 507 x 119\nВес в упаковке, кг: 8\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: Телевизор, пульт, кронштейн SlimFit, модуль One Connect Mini, сетевой кабель, руководство пользователя\nПульт: TM2280G\nРазмер с подставкой (ШxВxГ), см: 72.73 x 45.19 x 14.33\nРазмер без подставки (ШxВxГ), см: 72.73 x 42.68 x 2.55\nПодставка (Основная) (ШxГ), см: 59.12 x 14.33\nВес с подставкой, кг: 5.2\nВес без подставки, кг: 5.1\nЦвет корпуса: черный\nЦвет рамки: черный\nВозможность крепления на стену: Да\nСтандарт VESA: Нет\nЭнергопотребление в рабочем режиме (макс.), Вт: 55\nЭнергопотребление в режиме ожидания, Вт: 0.5\n[section=smart_features, similarity=0.434]\nSamsung Телевизор Samsung 32\" серия The Frame QLED Full HD (2023) LS03C\nМодель: QE32LS03CBUXRU\nКатегория: The Frame\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон\nФункция Tap View: Да\nДополнительные режимы: Режим &quot;Картина&quot; (Галерея); Интерьерный режим\nТелетекст: Да\nТаймер выключения: Да\nТаймер включения: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nВеб-браузер: Да\nПоддержка SmartThings: Да\nПоддержка USB HID: Подключение клавиатуры, мыши, игрового контроллера\nВстроенная поддержка BT HID: Подключение клавиатуры, мыши, игрового контроллера\n\n### Candidate 3: UE32F6000FUXRU — Телевизор Samsung 32\" FHD F6000, Hyper Real, Smart ТВ (2026) UE32F6000FUXRU\nSTRUCTURED FACTS (catalog database):\n- category: Full HD\n- panel_technology: LED\n- screen_size_inches: 32.0\n- refresh_rate_hz: 60\n- price_rub: 26490.0\n- sale_price_rub: 23590.0\n- effective_price_rub: 23590.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 73.3 x 43.8 x 7.3\n- Поддержка форматов звука: Dolby Digital\n- Технологии улучшения звука: Адаптивный звук; OTS Lite\n- Мощность звука, Вт: 10\n- Поддержка форматов HDR: HDR10+; HDR10\n- Технология экрана: LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=physical_design, similarity=0.452]\nSamsung Телевизор Samsung 32\" FHD F6000, Hyper Real, Smart ТВ (2026) UE32F6000FUXRU\nМодель: UE32F6000FUXRU\nКатегория: Full HD\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 500 × 800 × 114\nВес в упаковке, кг: 5.1\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: пульт ДУ, боковые ножки, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 73.3 x 45.2.5 x 11.8\nРазмер без подставки (ШxВxГ), см: 73.3 x 43.8 x 7.3\nВес, кг: 3.9\nВес без подставки, кг: 3.8\nЦвет корпуса: черный\nЦвет подставки: черный\nСтандарт VESA: 200x200 мм\nЭнергопотребление в рабочем режиме (типичное), Вт: 65\nЭнергопотребление в режиме ожидания, Вт: 0.5\n[section=smart_features, similarity=0.428]\nSamsung Телевизор Samsung 32\" FHD F6000, Hyper Real, Smart ТВ (2026) UE32F6000FUXRU\nМодель: UE32F6000FUXRU\nКатегория: Full HD\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон\nПоддержка Connect Share: USB\nФункция Time Shift (сдвига времени просмотра): Нет\nТелетекст: Да\nЗащита: От детей\nТелегид по программам: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nПоддержка SmartThings: Да\nПоддерживаемые форматы видео: 3GP; ASF; AV1; AVI; M2TS; MKV; MP4; TS; VOB; VRO\nПоддерживаемые видеокодеки: H.263; H.264; H.265; MPEG4; VC-1; VP8; WMV\n\n### Candidate 4: UE43F6000FUXRU — Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU\nSTRUCTURED FACTS (catalog database):\n- category: Full HD\n- panel_technology: LED\n- screen_size_inches: 43.0\n- refresh_rate_hz: 60\n- price_rub: 29990.0\n- effective_price_rub: 29990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 96.5\tx 56.3 x 7.5\n- Поддержка форматов звука: Dolby Digital\n- Технологии улучшения звука: Адаптивный звук; OTS Lite\n- Мощность звука, Вт: 20\n- Поддержка форматов HDR: HDR10+; HDR10\n- Технология экрана: LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=physical_design, similarity=0.447]\nSamsung Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU\nМодель: UE43F6000FUXRU\nКатегория: Full HD\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 630 × 1058 × 119\nВес в упаковке, кг: 8.3\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: пульт ДУ, боковые ножки, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 96.5 x 59\tx 15.7\nРазмер без подставки (ШxВxГ), см: 96.5\tx 56.3 x 7.5\nВес, кг: 6.6\nВес без подставки, кг: 6.5\nЦвет корпуса: черный\nЦвет подставки: черный\nСтандарт VESA: 200x200 мм\nЭнергопотребление в рабочем режиме (типичное), Вт: 80\nЭнергопотребление в режиме ожидания, Вт: 0.5\n[section=smart_features, similarity=0.427]\nSamsung Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU\nМодель: UE43F6000FUXRU\nКатегория: Full HD\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон\nПоддержка Connect Share: USB\nФункция Time Shift (сдвига времени просмотра): Нет\nТелетекст: Да\nЗащита: От детей\nТелегид по программам: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nПоддержка SmartThings: Да\nПоддерживаемые форматы видео: 3GP; ASF; AV1; AVI; M2TS; MKV; MP4; TS; VOB; VRO\nПоддерживаемые видеокодеки: H.263; H.264; H.265; MPEG4; VC-1; VP8; WMV\n\n### Candidate 5: QE115QN90FUXRU — Телевизор Samsung 115\" Neo QLED 4K Smart TV (2026) серия 9 QE115QN90FUXRU черный титан\nSTRUCTURED FACTS (catalog database):\n- category: Neo QLED\n- panel_technology: Neo QLED\n- screen_size_inches: 115.0\n- refresh_rate_hz: 120\n- price_rub: 1999990.0\n- sale_price_rub: 1799990.0\n- effective_price_rub: 1799990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 256.52 x 146.76 x 3.41\n- Игровой режим: Да\n- Автовключение игрового режима (ALLM): Да\n- Функция Game Motion Plus: Да\n- Технология Dynamic Black EQ: Да\n- Технология FreeSync: FreeSync Premium Pro\n- Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\n- Игровая панель (Game Bar): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: 360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS+; Режим Q-Symphony\n- Мощность звука, Вт: 60\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: HDR10+; HLG; Neo Quantum HDR Pro\n- Антибликовое покрытие: Anti Reflection\n- Технология экрана: Neo QLED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=physical_design, similarity=0.444]\nSamsung Телевизор Samsung 115\" Neo QLED 4K Smart TV (2026) серия 9 QE115QN90FUXRU черный титан\nМодель: QE115QN90FUXRU\nКатегория: Neo QLED\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 1787,0 х 2785,0 х 255\nВес в упаковке, кг: 133\nСтрана производителя: Вьетнам\nОфициальная гарантия производителя, мес: 12\nКомплектация: пульт ДУ на солнечных элементах, кронштейн, центральный стенд, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 256.52 х 152.5 х 46.72\nРазмер без подставки (ШxВxГ), см: 256.52 x 146.76 x 3.41\nПодставка (Основная) (ШxГ), см: 203.75 х 46.72\nПодставка (Минимальная) (ШxГ), см: 68.15 х 46.72\nВес, кг: 133.6\nВес с подставкой, кг: 86\nВес без подставки, кг: 83.7\nЦвет корпуса: черный титан\nЦвет подставки: серебро\nСтандарт VESA: 600x400 мм\nЭнергопотребление в рабочем режиме (типичное), Вт: 228\nЭнергопотребление в рабочем режиме (макс.), Вт: 790\nЭнергопотребление в режиме ожидания, Вт: 0.5\n\n### Candidate 6: MRE100R85HUXPY — Телевизор Samsung 100\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE100R85HUXPY сланцево-черный\nSTRUCTURED FACTS (catalog database):\n- category: Micro RGB\n- panel_technology: Micro RGB\n- screen_size_inches: 100.0\n- refresh_rate_hz: 120\n- price_rub: 899990.0\n- effective_price_rub: 899990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 2229.8 x 1273.4 x 57.4\n- Игровой режим: Да\n- Функция Game Motion Plus: Да\n- Технология FreeSync: FreeSync Premium Pro\n- Ультраширокий обзор в игровом режиме (Super Ultra Wide Game View): Да\n- Игровая панель (Game Bar): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: 360 Audio; Active Voice Amplifier Pro; Адаптивный звук Pro; OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 40\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: Auto HDR Remastering; HDR10+; HLG; Micro RGB HDR+\n- Технология экрана: Micro RGB\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=physical_design, similarity=0.441]\nSamsung Телевизор Samsung 100\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE100R85HUXPY сланцево-черный\nМодель: MRE100R85HUXPY\nКатегория: Micro RGB\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 2399 x 1444 x 230\nВес в упаковке, кг: 81.7\nСтрана производителя: Вьетнам\nОфициальная гарантия производителя, мес: 12\nКомплектация: универсальный пульт дистанционного управления, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 2229.8 x 1332.4 x 415.4\nРазмер без подставки (ШxВxГ), см: 2229.8 x 1273.4 x 57.4\nПодставка (Основная) (ШxГ), см: 1722.9 x 415.4\nВес с подставкой, кг: 60.3\nВес без подставки, кг: 58.9\nЦвет корпуса: сланцево-черный\nЦвет подставки: титановый черный\nСтандарт VESA: 600x400 мм\n\n### Candidate 7: UE75M70HAUXPY — Телевизор Samsung 75\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE75M70HAUXPY черный\nSTRUCTURED FACTS (catalog database):\n- category: Mini LED\n- panel_technology: Mini LED\n- screen_size_inches: 75.0\n- refresh_rate_hz: 60\n- price_rub: 109990.0\n- sale_price_rub: 94990.0\n- effective_price_rub: 94990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 166.81 x 95.78 x 7.7\n- Игровой режим: Да\n- Автовключение игрового режима (ALLM): Да\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: Адаптивный звук; OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 20\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: HDR10+; HLG; Mini LED HDR\n- Технология экрана: Mini LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=physical_design, similarity=0.438]\nSamsung Телевизор Samsung 75\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE75M70HAUXPY черный\nМодель: UE75M70HAUXPY\nКатегория: Mini LED\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 1100 x 1820 x 164\nВес в упаковке, кг: 31\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: универсальный пульт дистанционного управления, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 166.81 x 100.59 x 28\nРазмер без подставки (ШxВxГ), см: 166.81 x 95.78 x 7.7\nПодставка (Основная) (ШxГ), см: 125 x 28\nВес с подставкой, кг: 22.8\nВес без подставки, кг: 22.4\nЦвет корпуса: черный\nЦвет подставки: черный\nСтандарт VESA: 400x300 мм\n\n### Candidate 8: UE75M1EHAUXPY — Телевизор Samsung 75\" Mini LED M1E 4K, Процессор Mini LED, Smart ТВ (2026) UE75M1EHAUXPY титановый черный\nSTRUCTURED FACTS (catalog database):\n- category: Mini LED\n- panel_technology: Mini LED\n- screen_size_inches: 75.0\n- refresh_rate_hz: 50\n- price_rub: 109990.0\n- sale_price_rub: 94990.0\n- effective_price_rub: 94990.0\n- is_available: True\n- year: 2026\n- Размер без подставки (ШxВxГ), см: 166.81 x 95.78 x 7.7\n- Поддержка форматов звука: Dolby Atmos\n- Технологии улучшения звука: Адаптивный звук; OTS Lite; Режим Q-Symphony\n- Мощность звука, Вт: 20\n- Режимы просмотра: Режим режиссера (Filmmaker Mode)\n- Поддержка форматов HDR: HDR10+; HLG; Mini LED HDR\n- Технология экрана: Mini LED\nRETRIEVED CHUNKS (semantic search text; similarity is not a quality score):\n[section=physical_design, similarity=0.437]\nSamsung Телевизор Samsung 75\" Mini LED M1E 4K, Процессор Mini LED, Smart ТВ (2026) UE75M1EHAUXPY титановый черный\nМодель: UE75M1EHAUXPY\nКатегория: Mini LED\nРаздел: Конструкция и комплектация\n\nРазмер в упаковке (В x Ш x Г), мм: 1825 x 1100 x 170\nВес в упаковке, кг: 30\nСтрана производителя: Египет\nОфициальная гарантия производителя, мес: 12\nКомплектация: универсальный пульт дистанционного управления, сетевой кабель, документация\nРазмер с подставкой (ШxВxГ), см: 166.81 x 100.7.9 x 28\nРазмер без подставки (ШxВxГ), см: 166.81 x 95.78 x 7.7\nПодставка (Основная) (ШxГ), см: 1250 x 280\nВес с подставкой, кг: 22\nВес без подставки, кг: 21.6\nЦвет корпуса: титановый серый\nЦвет подставки: черный\nЭнергопотребление в рабочем режиме (типичное), Вт: 230\nЭнергопотребление в режиме ожидания, Вт: 0.5\n[section=smart_features, similarity=0.432]\nSamsung Телевизор Samsung 75\" Mini LED M1E 4K, Процессор Mini LED, Smart ТВ (2026) UE75M1EHAUXPY титановый черный\nМодель: UE75M1EHAUXPY\nКатегория: Mini LED\nРаздел: Smart TV и функции\n\nСпособы управления: Пульт ДУ; Смартфон\nПоддержка Connect Share: USB\nДополнительные режимы: HGiG\nТелетекст: Да\nSmart TV: Да\nОперационная система: ОС Tizen™\nВеб-браузер: Да\nФункция зеркалирования: Экран мобильного устройства на экране ТВ; Звук мобильного устройства в ТВ (Sound Mirroring)\n[section=connectivity, similarity=0.427]\nSamsung Телевизор Samsung 75\" Mini LED M1E 4K, Процессор Mini LED, Smart ТВ (2026) UE75M1EHAUXPY титановый черный\nМодель: UE75M1EHAUXPY\nКатегория: Mini LED\nРаздел: Подключение\n\nПоддержка Wi-Fi: Да\nСтандарты Wi-Fi: Wi-Fi 5\nBluetooth: Да\nHDMI: 3 шт\nUSB: 1 шт\nТехнология HDMI ARC: eARC\nТехнология Anynet+ (HDMI-CEC): Да\nСлот для CI: 1 шт\nПоддержка CI+: Да\nEthernet (LAN): Да\nАнтенный вход (аналоговый): 1 шт\nЦифровое телевещание: DVB-C; DVB-S; DVB-S2; DVB-T; DVB-T2",
+   "coverage": {
+    "candidate_products": [
+     "UE32H5000FUXRU",
+     "QE32LS03CBUXRU",
+     "UE32F6000FUXRU",
+     "UE43F6000FUXRU",
+     "QE115QN90FUXRU",
+     "MRE100R85HUXPY",
+     "UE75M70HAUXPY",
+     "UE75M1EHAUXPY"
+    ],
+    "sections_represented": [
+     "audio",
+     "connectivity",
+     "physical_design",
+     "smart_features"
+    ],
+    "reference_rule": "depth without stand <= 3 cm (spec present for 59 products)",
+    "reference_count": 14,
+    "reference_in_context": [
+     "QE32LS03CBUXRU"
+    ],
+    "reference_missing_best_ranked": [
+     [
+      "QE43LS03HEUXPY",
+      25
+     ],
+     [
+      "QE75LS03HWUXPY",
+      33
+     ],
+     [
+      "QE85LS03HWUXPY",
+      36
+     ],
+     [
+      "MRE75R95HAUXPY",
+      38
+     ],
+     [
+      "QE65LS03HAUXPY",
+      48
+     ],
+     [
+      "MRE85R95HAUXPY",
+      49
+     ],
+     [
+      "QE55LS03HAUXPY",
+      50
+     ],
+     [
+      "QE77S95HAEXPY",
+      53
+     ]
+    ]
+   }
+  }
+ ]
+}

@@ -5,7 +5,7 @@ from collections import Counter
 import pytest
 
 from evaluation.dataset import (
-    DatasetError, EXPECTED_CASE_COUNT, FAMILIES, derive_family, load_dataset, parse_dataset,
+    DEFAULT_DATASET_PATH, DatasetError, EXPECTED_CASE_COUNT, FAMILIES, derive_family, load_dataset, parse_dataset,
     select_cases,
 )
 from evaluation.catalog_check import compile_filters
@@ -43,7 +43,7 @@ def test_derive_family_precedence():
 
 
 def test_wrong_count_rejected(cases):
-    data = json.loads(open("evaluation/retrieval_cases.json", encoding="utf-8").read())
+    data = json.loads(DEFAULT_DATASET_PATH.read_text(encoding="utf-8"))
     data["cases"].pop()
     with pytest.raises(DatasetError, match="exactly 21"):
         parse_dataset(data)

@@ -1,5 +1,7 @@
 # Phase 3D.1 — audit of `retrieval_cases.json`
 
+See also [../docs/phase-3d-retrieval-evaluation.md](../docs/phase-3d-retrieval-evaluation.md) for the baseline and consultant results.
+
 21 cases, JSON, authored in Phase 3A (`c069ea2`), corrected in Phase 3D.1 after
 validation against the production catalog (75 products). Re-verify with the
 read-only `python -m evaluation.catalog_check` (0 mismatches at time of writing;

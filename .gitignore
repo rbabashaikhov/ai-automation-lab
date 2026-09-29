@@ -26,3 +26,12 @@ tools/n8n-tool/exports/**/raw.json
 
 # Samsung AI Consultant: derived query-embedding cache for retrieval evaluation (regenerable)
 projects/samsung-ai-consultant/evaluation/results/query_embeddings.json
+
+# n8n backups/exports of the temporary evaluation-only workflows (Phase 3D): redundant with the committed
+# evaluation workflow definition, generators and results under projects/samsung-ai-consultant/
+tools/n8n-tool/backups/samsung-rag-evaluation-*/
+tools/n8n-tool/exports/samsung-rag-evaluation-*/
+
+# Generated, evaluation-only n8n workflows (Phase 3D): regenerate with `python -m evaluation.make_llm_workflow [fullcatalog]`
+projects/samsung-ai-consultant/workflows/evaluation-consultant-spike.json
+projects/samsung-ai-consultant/workflows/evaluation-fullcatalog-spike.json

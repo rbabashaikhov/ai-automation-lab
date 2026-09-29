@@ -151,3 +151,14 @@ grants (`SELECT` on `products`/`product_specs`, full CRUD on
   instance, which is a bigger and more persistent state change than
   asking for one manual click; see the conversation's own review of this
   tradeoff. Manual Trigger only, workflow left **inactive**.
+
+## Evaluation-only workflows (temporary, NOT production architecture)
+
+`evaluation-query-embeddings.json` (committed) was used for Phase 3D (see
+[../docs/phase-3d-retrieval-evaluation.md](../docs/phase-3d-retrieval-evaluation.md)). It is an inactive,
+manual-trigger workflow with no database node. The later Phase 3D chat-completion workflows
+(`evaluation-consultant-spike.json`, `evaluation-fullcatalog-spike.json`) are generated, git-ignored
+artifacts: rebuild them with `python -m evaluation.make_llm_workflow [fullcatalog]` from the committed
+`evaluation/results/*_contexts.json`. All three definitions were deployed in turn to the single remote
+workflow `CF5wtjEB9MFR5f0N`, which now holds the full-catalog definition; delete it in the n8n UI when no
+longer needed. They exist for reproducibility only and must not be treated as a design for the Consultant.

@@ -1,0 +1,125 @@
+{
+ "n8n_execution_id": "496",
+ "workflow_id": "CF5wtjEB9MFR5f0N",
+ "model": "gpt-4.1-mini-2025-04-14",
+ "temperature": 0,
+ "chat_calls": 5,
+ "embedding_calls": 0,
+ "usage_total": {
+  "prompt_tokens": 27873,
+  "completion_tokens": 1797,
+  "total_tokens": 29670
+ },
+ "answers": [
+  {
+   "query_index": 1,
+   "query_text": "телевизор для игровой приставки",
+   "model": "gpt-4.1-mini-2025-04-14",
+   "finish_reason": "stop",
+   "usage": {
+    "prompt_tokens": 3694,
+    "completion_tokens": 338,
+    "total_tokens": 4032,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 0,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    }
+   },
+   "answer": "Для игровой приставки рекомендую следующие телевизоры Samsung из каталога:\n\n1. Samsung 32\" QLED Q5FA (модель QE32Q5FAAUXPY) — отличный вариант для компактного пространства. Имеет игровой режим и автопереключение ALLM, что снижает задержки ввода. Экран QLED 32 дюйма с частотой обновления 60 Гц, поддержка HDR10+ и Quantum HDR обеспечат хорошее качество изображения. Цена — 27990 руб.\n\n2. Samsung 50\" Mini LED M70 (модель UE50M70HAUXPY) — более крупный экран 50 дюймов с Mini LED подсветкой, что улучшает контраст и яркость. Есть игровой режим и ALLM, поддержка HDR10+ и Dolby Atmos для качественного звука. Частота обновления 60 Гц. Цена около 45490 руб. Хороший баланс размера и качества.\n\n3. Samsung 115\" TV AI Micro RGB MR95F (модель MRE115MR95FXRU) — для тех, кто хочет максимальный размер и топовые игровые функции. Частота обновления 120 Гц, поддержка FreeSync Premium Pro, Game Motion Plus, ультраширокий обзор в игровом режиме. Звук 70 Вт с Dolby Atmos. Цена высокая — около 2,7 млн руб.\n\nЕсли бюджет ограничен и нужна компактность — выбирайте 32\" QLED. Для более комфортной игры с большим экраном — Mini LED 50\". Для максимального игрового опыта и размера — Micro RGB 115\"."
+  },
+  {
+   "query_index": 2,
+   "query_text": "для светлой комнаты",
+   "model": "gpt-4.1-mini-2025-04-14",
+   "finish_reason": "stop",
+   "usage": {
+    "prompt_tokens": 6200,
+    "completion_tokens": 332,
+    "total_tokens": 6532,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 0,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    }
+   },
+   "answer": "Для светлой комнаты рекомендую следующие модели Samsung из каталога:\n\n1. MRE115MR95FXRU — Телевизор Samsung 115\" TV AI Micro RGB MR95F (2026), 4K серебряный. Эта модель оснащена антибликовым покрытием Anti Reflection, что особенно важно для ярких помещений. Большой экран 115\" и высокая частота обновления 120 Гц обеспечат отличное качество изображения при ярком освещении.\n\n2. MRE75R85HAUXPY — Телевизор Samsung 75\" Micro RGB R85H 4K (2026). Также имеет технологию Micro RGB с поддержкой HDR10+ и антибликовое покрытие, что хорошо подходит для светлых комнат. Размер 75\" — более компактный вариант по сравнению с 115\", при этом цена значительно ниже (около 265 000 руб).\n\n3. UE50M70HAUXPY — Телевизор Samsung 50\" Mini LED M70 4K (2026). Mini LED технология обеспечивает высокую яркость и контрастность, что хорошо для светлых помещений. Размер 50\" подойдет для комнат с ограниченным пространством, а цена более доступна — около 45 000 руб.\n\nВыбор зависит от размера комнаты и бюджета: для очень большой комнаты и максимального качества — MRE115MR95FXRU с антибликовым покрытием; для средней комнаты — MRE75R85HAUXPY; для небольшой комнаты и ограниченного бюджета — UE50M70HAUXPY с Mini LED."
+  },
+  {
+   "query_index": 3,
+   "query_text": "телевизор для фильмов",
+   "model": "gpt-4.1-mini-2025-04-14",
+   "finish_reason": "stop",
+   "usage": {
+    "prompt_tokens": 8152,
+    "completion_tokens": 396,
+    "total_tokens": 8548,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 0,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    }
+   },
+   "answer": "Для просмотра фильмов рекомендую следующие телевизоры из каталога:\n\n1. Samsung QE55LS03HAUXPY (55\", The Frame QLED, 4K, 2026) — отличный выбор для фильмов благодаря большому экрану 55 дюймов, разрешению 4K Ultra HD и поддержке HDR10+, Quantum HDR, Auto HDR Remastering. Есть режим режиссера (Filmmaker Mode) для максимально точной передачи задумки режиссера. Звук мощностью 40 Вт с поддержкой Dolby Atmos и технологиями 360 Audio и Q-Symphony обеспечит качественное звучание. Цена 139990 руб.\n\n2. Samsung QE43LS03HEUXPY (43\", The Frame QLED, 4K, 2026) — чуть меньший экран 43 дюйма, но также 4K, HDR10+, Quantum HDR и режим режиссера. Звук 20 Вт с Dolby Atmos и Q-Symphony. Хороший баланс цены и качества — 84990 руб.\n\n3. Samsung QE32LS03CBUXRU (32\", The Frame QLED, Full HD, 2023) — если нужен компактный телевизор, этот 32-дюймовый с QLED, Full HD, HDR10+ и режимом режиссера подойдет. Звук 20 Вт, есть антибликовое покрытие. Цена 50990 руб. Однако разрешение Full HD, а не 4K.\n\nВыбор зависит от бюджета и предпочтений по размеру экрана. Для лучшего кинотеатрального опыта лучше брать 4K модели с поддержкой HDR и режимом режиссера, например, QE55LS03HAUXPY или QE43LS03HEUXPY. Если важен компактный размер и бюджет, подойдет QE32LS03CBUXRU, но с меньшим разрешением."
+  },
+  {
+   "query_index": 4,
+   "query_text": "хочу хороший звук без отдельного саундбара",
+   "model": "gpt-4.1-mini-2025-04-14",
+   "finish_reason": "stop",
+   "usage": {
+    "prompt_tokens": 3373,
+    "completion_tokens": 352,
+    "total_tokens": 3725,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 0,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    }
+   },
+   "answer": "Для хорошего звука без отдельного саундбара рекомендую следующие модели из каталога:\n\n1. Samsung 114\" Micro LED MS1C (MNA114MS1CCXRU) — обладает мощностью звука 120 Вт, поддерживает Dolby Digital, имеет 6.4.4 канала и встроенный сабвуфер. Это обеспечит очень качественное и объемное звучание без необходимости в саундбаре. Однако цена очень высокая — около 20 млн рублей, и размер экрана 114 дюймов очень большой.\n\n2. Samsung 115\" TV AI Micro RGB MR95F (MRE115MR95FXRU) — мощность звука 70 Вт, поддержка Dolby Atmos, 4.2.2 канала, технологии 360 Audio, Active Voice Amplifier Pro, OTS+ и режим Q-Symphony. Звук объемный и качественный, экран 115 дюймов. Цена около 2.7 млн рублей, что значительно дешевле Micro LED, но все равно высокая.\n\n3. Samsung 43\" FHD F6000 (UE43F6000FUXRU) — мощность звука 20 Вт, поддержка Dolby Digital, технологии адаптивного звука и OTS Lite. Это более доступный вариант с хорошим звуком для своей категории, но мощность и качество звука уступают первым двум моделям.\n\nЕсли бюджет и размер не ограничивают, лучше выбрать одну из первых двух моделей с мощным встроенным звуком. Если нужен более компактный и бюджетный вариант — 43-дюймовый UE43F6000FUXRU подойдет, но звук будет менее мощным."
+  },
+  {
+   "query_index": 5,
+   "query_text": "тонкий телевизор на стену",
+   "model": "gpt-4.1-mini-2025-04-14",
+   "finish_reason": "stop",
+   "usage": {
+    "prompt_tokens": 6454,
+    "completion_tokens": 379,
+    "total_tokens": 6833,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 0,
+     "audio_tokens": 0,
+     "accepted_prediction_tokens": 0,
+     "rejected_prediction_tokens": 0
+    }
+   },
+   "answer": "Для тонкого телевизора на стену из представленных моделей рекомендую:\n\n1. Samsung 32\" серия The Frame QLED Full HD (2023) QE32LS03CBUXRU. Его толщина без подставки всего 2.55 см, что очень тонко и идеально подходит для настенного крепления. Кроме того, в комплекте есть кронштейн SlimFit для крепления на стену. Это QLED-телевизор с хорошим качеством изображения и антибликовым покрытием. Цена 50990 руб. Минус — выше цена по сравнению с другими 32\" моделями.\n\n2. Samsung 115\" Neo QLED 4K QE115QN90FUXRU. Очень тонкий корпус — всего 3.41 см без подставки, что отлично для настенного монтажа. Это премиальный Neo QLED с 4K, 120 Гц, мощным звуком 60 Вт и поддержкой Dolby Atmos. Минус — очень высокая цена (около 1.8 млн руб.) и большой размер.\n\n3. Samsung 32\" HD H5000 UE32H5000FUXRU. Толщина 7.2 см без подставки, что тоже достаточно тонко для настенного крепления. Цена более доступная — 22990 руб. Это LED HD телевизор с Smart TV. Минус — толще и менее продвинутый экран по сравнению с The Frame.\n\nВывод: если нужен максимально тонкий и стильный телевизор для стены — лучше The Frame QE32LS03CBUXRU с толщиной 2.55 см и кронштейном в комплекте. Если бюджет позволяет и нужен большой экран — QE115QN90FUXRU. Для экономии — UE32H5000FUXRU."
+  }
+ ]
+}

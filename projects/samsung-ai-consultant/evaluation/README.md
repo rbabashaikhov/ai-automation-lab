@@ -46,3 +46,10 @@ explicitly asks for list/base/original price (`max_effective_price` in dataset f
     python -m evaluation.catalog_check
 
 Tests: `python -m pytest tests/test_evaluation_*.py`.
+
+## Phase 3D scripts (see [../docs/phase-3d-retrieval-evaluation.md](../docs/phase-3d-retrieval-evaluation.md))
+
+- `run_baseline.py` — 3D.2 baseline (SQL / vector / hybrid), writes `results/baseline_3d2.json`.
+- `consultant_context.py`, `fullcatalog_context.py` — build (never send) the 3D.3 / 3D.4 LLM contexts.
+- `make_embedding_workflow.py`, `make_llm_workflow.py` — generate the temporary evaluation-only n8n workflows.
+- `results/query_embeddings.json` is a derived, git-ignored cache; everything else in `results/` is committed evidence.
