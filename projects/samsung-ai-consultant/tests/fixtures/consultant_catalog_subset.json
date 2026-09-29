@@ -1,0 +1,2503 @@
+{
+ "_meta": {
+  "description": "Curated subset of the production samsung_rag catalog (read-only export, registry-relevant specs only) for Phase 4B disposable-DB tests. effective_price and product_kind were computed by the canonical SQL expressions.",
+  "generated_by": "python -m evaluation.consultant_inventory --fixture",
+  "registry_spec_names": [
+   "Автовключение игрового режима (ALLM)",
+   "Антибликовое покрытие",
+   "Версия HDMI",
+   "Другие технологии оптимизации изображения",
+   "Игровая панель (Game Bar)",
+   "Мощность звука, Вт",
+   "Поддержка форматов звука",
+   "Размер без подставки (ШxВxГ), см",
+   "Режимы просмотра",
+   "Стандарт VESA",
+   "Технология FreeSync",
+   "Технология HDMI ARC"
+  ]
+ },
+ "products": [
+  {
+   "source": "galaxystore",
+   "external_id": "3878118",
+   "model_code": "MNA114MS1CCXRU",
+   "name": "Дисплей Samsung 114\" Micro LED MS1C (2026) серебристый",
+   "category": "Micro LED",
+   "series": "MS1С",
+   "year": 2026,
+   "screen_size_inches": 114.0,
+   "resolution": "4968x2808",
+   "panel_technology": "Micro LED",
+   "refresh_rate_hz": 120,
+   "price": 19999990.0,
+   "sale_price": null,
+   "effective_price": 19999990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/MNA114MS1CCXRU/",
+   "product_kind": "display",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "252.63 x 143.42 x 2.49",
+     "sort_order": 5
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "800x800 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Версия HDMI",
+     "spec_key": "versia_hdmi",
+     "spec_value": "2.1",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Digital",
+     "sort_order": 31
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "120",
+     "sort_order": 32
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "Auto Depth Enhancer",
+     "sort_order": 39
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965363",
+   "model_code": "MRE100R85HUXPY",
+   "name": "Телевизор Samsung 100\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE100R85HUXPY сланцево-черный",
+   "category": "Micro RGB",
+   "series": "R85H",
+   "year": 2026,
+   "screen_size_inches": 100.0,
+   "resolution": "3840x2160",
+   "panel_technology": "Micro RGB",
+   "refresh_rate_hz": 120,
+   "price": 899990.0,
+   "sale_price": null,
+   "effective_price": 899990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/MRE100R85HUXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "2229.8 x 1273.4 x 57.4",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "600x400 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium Pro",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 29
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 41
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "40",
+     "sort_order": 43
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 45
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 51
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3890358",
+   "model_code": "MRE115MR95FXRU",
+   "name": "Телевизор Samsung 115\" TV AI Micro RGB MR95F (2026), 4K серебряный",
+   "category": "Micro RGB",
+   "series": "MR95F",
+   "year": 2026,
+   "screen_size_inches": 115.0,
+   "resolution": "3840x2160",
+   "panel_technology": "Micro RGB",
+   "refresh_rate_hz": 120,
+   "price": 2999990.0,
+   "sale_price": 2699990.0,
+   "effective_price": 2699990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/MRE115MR95FXRU/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "257.4 х 147.8 х 3.57",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "1000x600 мм",
+     "sort_order": 10
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Автовключение игрового режима (ALLM)",
+     "spec_key": "avtovklucenie_igrovogo_rejima_allm",
+     "spec_value": "Да",
+     "sort_order": 21
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium Pro",
+     "sort_order": 24
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 26
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 32
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 49
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "70",
+     "sort_order": 52
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 53
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "AI Motion Enhancer Pro",
+     "sort_order": 59
+    },
+    {
+     "spec_group": "Экран и разрешение",
+     "spec_name": "Антибликовое покрытие",
+     "spec_key": "antiblikovoe_pokrytie",
+     "spec_value": "Anti Reflection",
+     "sort_order": 63
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965359",
+   "model_code": "MRE55R85HAUXPY",
+   "name": "Телевизор Samsung 55\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE55R85HAUXPY сланцево-черный",
+   "category": "Micro RGB",
+   "series": "R85H",
+   "year": 2026,
+   "screen_size_inches": 55.0,
+   "resolution": "3840x2160",
+   "panel_technology": "Micro RGB",
+   "refresh_rate_hz": 120,
+   "price": 179990.0,
+   "sale_price": 139990.0,
+   "effective_price": 139990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/MRE55R85HAUXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "122.4 x 70.8 x 5.2",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "300x200 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium Pro",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 29
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 43
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "30",
+     "sort_order": 45
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 47
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 53
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965361",
+   "model_code": "MRE75R85HAUXPY",
+   "name": "Телевизор Samsung 75\" Micro RGB R85H 4K, Процессор Micro RGB AI Engine, Smart ТВ (2026) MRE75R85HAUXPY сланцево-черный",
+   "category": "Micro RGB",
+   "series": "R85H",
+   "year": 2026,
+   "screen_size_inches": 75.0,
+   "resolution": "3840x2160",
+   "panel_technology": "Micro RGB",
+   "refresh_rate_hz": 120,
+   "price": 339990.0,
+   "sale_price": 264990.0,
+   "effective_price": 264990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/MRE75R85HAUXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "166.66 x 95.78 x 5.23",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "400x300 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium Pro",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 29
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 43
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "30",
+     "sort_order": 45
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 47
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 53
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3877455",
+   "model_code": "QE32LS03CBUXRU",
+   "name": "Телевизор Samsung 32\" серия The Frame QLED Full HD (2023) LS03C",
+   "category": "The Frame",
+   "series": "LS03C",
+   "year": 2026,
+   "screen_size_inches": 32.0,
+   "resolution": "1920x1080",
+   "panel_technology": "QLED",
+   "refresh_rate_hz": 50,
+   "price": 50990.0,
+   "sale_price": null,
+   "effective_price": 50990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE32LS03CBUXRU/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "72.73 x 42.68 x 2.55",
+     "sort_order": 7
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "Нет",
+     "sort_order": 14
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "ARC",
+     "sort_order": 29
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "20",
+     "sort_order": 46
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode); Режим &quot;Кино&quot; (Movie Mode); Естественный режим (Natural Mode); Стандартный режим (Standard Mode)",
+     "sort_order": 47
+    },
+    {
+     "spec_group": "Экран и разрешение",
+     "spec_name": "Антибликовое покрытие",
+     "spec_key": "antiblikovoe_pokrytie",
+     "spec_value": "Anti Reflection",
+     "sort_order": 59
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965368",
+   "model_code": "QE32Q5FAAUXPY",
+   "name": "Телевизор Samsung 32\" QLED Q5FA, Процессор Hyper Real, Smart ТВ (2026) QE32Q5FAAUXPY черный",
+   "category": "Crystal UHD",
+   "series": "Q5FA",
+   "year": 2026,
+   "screen_size_inches": 32.0,
+   "resolution": "1920x1080",
+   "panel_technology": "QLED",
+   "refresh_rate_hz": 60,
+   "price": 27990.0,
+   "sale_price": null,
+   "effective_price": 27990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE32Q5FAAUXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Автовключение игрового режима (ALLM)",
+     "spec_key": "avtovklucenie_igrovogo_rejima_allm",
+     "spec_value": "Да",
+     "sort_order": 9
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 13
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "10",
+     "sort_order": 25
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965575",
+   "model_code": "QE42S90HAEXPY",
+   "name": "Телевизор Samsung 42\" OLED S90H 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE42S90HAEXPY черный графит",
+   "category": "OLED",
+   "series": "S90H",
+   "year": 2026,
+   "screen_size_inches": 42.0,
+   "resolution": "3840x2160",
+   "panel_technology": "OLED",
+   "refresh_rate_hz": 120,
+   "price": 109990.0,
+   "sale_price": null,
+   "effective_price": 109990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE42S90HAEXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "93.44 x 54.26 x 3.95",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "200x200 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 29
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "20",
+     "sort_order": 42
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 44
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "AI Motion Enhancer Pro; Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 50
+    },
+    {
+     "spec_group": "Экран и разрешение",
+     "spec_name": "Антибликовое покрытие",
+     "spec_key": "antiblikovoe_pokrytie",
+     "spec_value": "Да",
+     "sort_order": 55
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965369",
+   "model_code": "QE48S85HAEXPY",
+   "name": "Телевизор Samsung 48\" OLED S85H 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE48S85HAEXPY черный графит",
+   "category": "OLED",
+   "series": "S85H",
+   "year": 2026,
+   "screen_size_inches": 48.0,
+   "resolution": "3840x2160",
+   "panel_technology": "OLED",
+   "refresh_rate_hz": 120,
+   "price": 139990.0,
+   "sale_price": 119990.0,
+   "effective_price": 119990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE48S85HAEXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "106.93 x 61.99 x 3.96",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "300x200 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 29
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 41
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "20",
+     "sort_order": 43
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 45
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 51
+    },
+    {
+     "spec_group": "Экран и разрешение",
+     "spec_name": "Антибликовое покрытие",
+     "spec_key": "antiblikovoe_pokrytie",
+     "spec_value": "Да",
+     "sort_order": 56
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965587",
+   "model_code": "QE55LS03HAUXPY",
+   "name": "Телевизор Samsung 55\" The Frame QLED LS03 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE55LS03HAUXPY черный",
+   "category": "The Frame",
+   "series": "LS03HAUXPY",
+   "year": 2026,
+   "screen_size_inches": 55.0,
+   "resolution": "3840x2160",
+   "panel_technology": "QLED",
+   "refresh_rate_hz": 120,
+   "price": 139990.0,
+   "sale_price": null,
+   "effective_price": 139990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE55LS03HAUXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "123.79 x 70.8.8 x 2.49",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "200x200 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 30
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 42
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "40",
+     "sort_order": 44
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 46
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 52
+    },
+    {
+     "spec_group": "Экран и разрешение",
+     "spec_name": "Антибликовое покрытие",
+     "spec_key": "antiblikovoe_pokrytie",
+     "spec_value": "Да",
+     "sort_order": 57
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965272",
+   "model_code": "QE55QN1EHAUXPY",
+   "name": "Телевизор Samsung 55\" Neo QLED QN1E 4K, Процессор NQ4 AI, Smart ТВ (2026) QE55QN1EHAUXPY титановый серый",
+   "category": "Neo QLED",
+   "series": "QN1E",
+   "year": 2026,
+   "screen_size_inches": 55.0,
+   "resolution": "3840x2160",
+   "panel_technology": "Neo QLED",
+   "refresh_rate_hz": 60,
+   "price": 94990.0,
+   "sale_price": null,
+   "effective_price": 94990.0,
+   "currency": "RUB",
+   "is_available": false,
+   "product_url": "https://galaxystore.ru/product/QE55QN1EHAUXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "200x200 мм",
+     "sort_order": 5
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 14
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 21
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 34
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "20",
+     "sort_order": 36
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 38
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "HDMI Black Level; Real Depth Enhancer",
+     "sort_order": 44
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965355",
+   "model_code": "QE55QN80HAUXPY",
+   "name": "Телевизор Samsung 55\" Neo QLED QN80H 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE55QN80HAUXPY титановый черный",
+   "category": "Neo QLED",
+   "series": "QN80H",
+   "year": 2026,
+   "screen_size_inches": 55.0,
+   "resolution": "3840x2160",
+   "panel_technology": "Neo QLED",
+   "refresh_rate_hz": 120,
+   "price": 129990.0,
+   "sale_price": null,
+   "effective_price": 129990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE55QN80HAUXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "122.4 x 70.6 x 5.2",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "300x200 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium Pro",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 29
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 42
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "30",
+     "sort_order": 44
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 46
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 52
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965370",
+   "model_code": "QE55S85HAEXPY",
+   "name": "Телевизор Samsung 55\" OLED S85H 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE55S85HAEXPY черный графит",
+   "category": "OLED",
+   "series": "S85H",
+   "year": 2026,
+   "screen_size_inches": 55.0,
+   "resolution": "3840x2160",
+   "panel_technology": "OLED",
+   "refresh_rate_hz": 120,
+   "price": 169990.0,
+   "sale_price": 149990.0,
+   "effective_price": 149990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE55S85HAEXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "122.57 x 70.5.6 x 3.39",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "300x200 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 29
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 41
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "20",
+     "sort_order": 43
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 45
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 51
+    },
+    {
+     "spec_group": "Экран и разрешение",
+     "spec_name": "Антибликовое покрытие",
+     "spec_key": "antiblikovoe_pokrytie",
+     "spec_value": "Да",
+     "sort_order": 56
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965582",
+   "model_code": "QE55S95HAUXPY",
+   "name": "Телевизор Samsung 55\" OLED S95H 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE55S95HAUXPY сланцево-черный",
+   "category": "OLED",
+   "series": "S95H",
+   "year": 2026,
+   "screen_size_inches": 55.0,
+   "resolution": "3840x2160",
+   "panel_technology": "OLED",
+   "refresh_rate_hz": 120,
+   "price": 269990.0,
+   "sale_price": 219990.0,
+   "effective_price": 219990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE55S95HAUXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "129.06 x 77.19 x 2.79",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "300x200 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium Pro",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 29
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 41
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "70",
+     "sort_order": 43
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 45
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "AI Motion Enhancer Pro; Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 51
+    },
+    {
+     "spec_group": "Экран и разрешение",
+     "spec_name": "Антибликовое покрытие",
+     "spec_key": "antiblikovoe_pokrytie",
+     "spec_value": "Да",
+     "sort_order": 56
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965356",
+   "model_code": "QE65QN80HAUXPY",
+   "name": "Телевизор Samsung 65\" Neo QLED QN80H 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE65QN80HAUXPY титановый черный",
+   "category": "Neo QLED",
+   "series": "QN80H",
+   "year": 2026,
+   "screen_size_inches": 65.0,
+   "resolution": "3840x2160",
+   "panel_technology": "Neo QLED",
+   "refresh_rate_hz": 120,
+   "price": 159990.0,
+   "sale_price": null,
+   "effective_price": 159990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE65QN80HAUXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "144.29 x 82.92 x 52",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "400x300 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium Pro",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 29
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 42
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "30",
+     "sort_order": 44
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 46
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 52
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965375",
+   "model_code": "QE65S85HAEXPY",
+   "name": "Телевизор Samsung 65\" OLED S85H 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE65S85HAEXPY черный графит",
+   "category": "OLED",
+   "series": "S85H",
+   "year": 2026,
+   "screen_size_inches": 65.0,
+   "resolution": "3840x2160",
+   "panel_technology": "OLED",
+   "refresh_rate_hz": 120,
+   "price": 229990.0,
+   "sale_price": 189990.0,
+   "effective_price": 189990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE65S85HAEXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "144.66 x 82.97 x 3.39",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "300x200 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 29
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 41
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "20",
+     "sort_order": 43
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 45
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 51
+    },
+    {
+     "spec_group": "Экран и разрешение",
+     "spec_name": "Антибликовое покрытие",
+     "spec_key": "antiblikovoe_pokrytie",
+     "spec_value": "Да",
+     "sort_order": 56
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965578",
+   "model_code": "QE65S90HAEXPY",
+   "name": "Телевизор Samsung 65\" OLED S90H 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE65S90HAEXPY черный графит",
+   "category": "OLED",
+   "series": "S90H",
+   "year": 2026,
+   "screen_size_inches": 65.0,
+   "resolution": "3840x2160",
+   "panel_technology": "OLED",
+   "refresh_rate_hz": 120,
+   "price": 289990.0,
+   "sale_price": null,
+   "effective_price": 289990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE65S90HAEXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "144.43 x 83.17 x 3.99",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "300x200 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium Pro",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 29
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "40",
+     "sort_order": 42
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 44
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "AI Motion Enhancer Pro; Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 50
+    },
+    {
+     "spec_group": "Экран и разрешение",
+     "spec_name": "Антибликовое покрытие",
+     "spec_key": "antiblikovoe_pokrytie",
+     "spec_value": "Да",
+     "sort_order": 55
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965583",
+   "model_code": "QE65S95HAUXPY",
+   "name": "Телевизор Samsung 65\" OLED S95H 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE65S95HAUXPY сланцево-черный",
+   "category": "OLED",
+   "series": "S95H",
+   "year": 2026,
+   "screen_size_inches": 65.0,
+   "resolution": "3840x2160",
+   "panel_technology": "OLED",
+   "refresh_rate_hz": 120,
+   "price": 349990.0,
+   "sale_price": 329990.0,
+   "effective_price": 329990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE65S95HAUXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "150.95 x 89.49 x 2.64",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "400x300 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium Pro",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 29
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 41
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "70",
+     "sort_order": 43
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 45
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "AI Motion Enhancer Pro; Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 51
+    },
+    {
+     "spec_group": "Экран и разрешение",
+     "spec_name": "Антибликовое покрытие",
+     "spec_key": "antiblikovoe_pokrytie",
+     "spec_value": "Да",
+     "sort_order": 56
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965589",
+   "model_code": "QE75LS03HWUXPY",
+   "name": "Телевизор Samsung 75\" The Frame NeoQLED LS03 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE75LS03HWUXPY черный",
+   "category": "The Frame",
+   "series": "LS03HWUXPY",
+   "year": 2026,
+   "screen_size_inches": 75.0,
+   "resolution": "3840x2160",
+   "panel_technology": "Neo QLED",
+   "refresh_rate_hz": 120,
+   "price": 299990.0,
+   "sale_price": 249990.0,
+   "effective_price": 249990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE75LS03HWUXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "168.23 x 96.54 x 2.69",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "400x400 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium Pro",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 30
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 43
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "40",
+     "sort_order": 45
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 47
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "AI Motion Enhancer Pro; Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 53
+    },
+    {
+     "spec_group": "Экран и разрешение",
+     "spec_name": "Антибликовое покрытие",
+     "spec_key": "antiblikovoe_pokrytie",
+     "spec_value": "Да",
+     "sort_order": 58
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965353",
+   "model_code": "QE75QN70HAUXPY",
+   "name": "Телевизор Samsung 75\" Neo QLED QN70H 4K, Процессор NQ4 AI, Smart ТВ (2026) QE75QN70HAUXPY черный",
+   "category": "Neo QLED",
+   "series": "QN70H",
+   "year": 2026,
+   "screen_size_inches": 75.0,
+   "resolution": "3840x2160",
+   "panel_technology": "Neo QLED",
+   "refresh_rate_hz": 60,
+   "price": 174990.0,
+   "sale_price": 144990.0,
+   "effective_price": 144990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE75QN70HAUXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "400x400 мм",
+     "sort_order": 7
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 16
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 23
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 36
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "20",
+     "sort_order": 38
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 40
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "HDMI Black Level; Real Depth Enhancer",
+     "sort_order": 46
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965357",
+   "model_code": "QE75QN80HAUXPY",
+   "name": "Телевизор Samsung 75\" Neo QLED QN80H 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE75QN80HAUXPY титановый черный",
+   "category": "Neo QLED",
+   "series": "QN80H",
+   "year": 2026,
+   "screen_size_inches": 75.0,
+   "resolution": "3840x2160",
+   "panel_technology": "Neo QLED",
+   "refresh_rate_hz": 120,
+   "price": 229990.0,
+   "sale_price": 189990.0,
+   "effective_price": 189990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE75QN80HAUXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "166.66 x 95.58 x 5.23",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "400x300 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium Pro",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 29
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 42
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "30",
+     "sort_order": 44
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 46
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 52
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965584",
+   "model_code": "QE77S95HAEXPY",
+   "name": "Телевизор Samsung 77\" OLED S95H 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE77S95HAEXPY сланцево-черный",
+   "category": "OLED",
+   "series": "S95H",
+   "year": 2026,
+   "screen_size_inches": 77.0,
+   "resolution": "3840x2160",
+   "panel_technology": "OLED",
+   "refresh_rate_hz": 120,
+   "price": 519990.0,
+   "sale_price": null,
+   "effective_price": 519990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE77S95HAEXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "191.02 x 112.24 x 2.66",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "400x400 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium Pro",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 29
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 41
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "70",
+     "sort_order": 43
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 45
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "AI Motion Enhancer Pro; Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 51
+    },
+    {
+     "spec_group": "Экран и разрешение",
+     "spec_name": "Антибликовое покрытие",
+     "spec_key": "antiblikovoe_pokrytie",
+     "spec_value": "Да",
+     "sort_order": 56
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965378",
+   "model_code": "QE83S85HAEXPY",
+   "name": "Телевизор Samsung 83\" OLED S85H 4K, Процессор NQ4 AI Gen2, Smart ТВ (2026) QE83S85HAEXPY черный графит",
+   "category": "OLED",
+   "series": "S85H",
+   "year": 2026,
+   "screen_size_inches": 83.0,
+   "resolution": "3840x2160",
+   "panel_technology": "OLED",
+   "refresh_rate_hz": 120,
+   "price": 439990.0,
+   "sale_price": 349990.0,
+   "effective_price": 349990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE83S85HAEXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "184.9 x 105.9 x 3.49",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "400x300 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 29
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 41
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "20",
+     "sort_order": 43
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 45
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 51
+    },
+    {
+     "spec_group": "Экран и разрешение",
+     "spec_name": "Антибликовое покрытие",
+     "spec_key": "antiblikovoe_pokrytie",
+     "spec_value": "Да",
+     "sort_order": 56
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965580",
+   "model_code": "QE83S90HAEXPY",
+   "name": "Телевизор Samsung 83\" OLED S90H 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE83S90HAEXPY черный графит",
+   "category": "OLED",
+   "series": "S90H",
+   "year": 2026,
+   "screen_size_inches": 83.0,
+   "resolution": "3840x2160",
+   "panel_technology": "OLED",
+   "refresh_rate_hz": 120,
+   "price": 499990.0,
+   "sale_price": null,
+   "effective_price": 499990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE83S90HAEXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "185.1 x 106.28 x 4.49",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "400x300 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium Pro",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 29
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "40",
+     "sort_order": 42
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 44
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "AI Motion Enhancer Pro; Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 50
+    },
+    {
+     "spec_group": "Экран и разрешение",
+     "spec_name": "Антибликовое покрытие",
+     "spec_key": "antiblikovoe_pokrytie",
+     "spec_value": "Да",
+     "sort_order": 55
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965585",
+   "model_code": "QE83S95HAEXPY",
+   "name": "Телевизор Samsung 83\" OLED S95H 4K, Процессор NQ4 AI Gen3, Smart ТВ (2026) QE83S95HAEXPY сланцево-черный",
+   "category": "OLED",
+   "series": "S95H",
+   "year": 2026,
+   "screen_size_inches": 83.0,
+   "resolution": "3840x2160",
+   "panel_technology": "OLED",
+   "refresh_rate_hz": 120,
+   "price": 639990.0,
+   "sale_price": null,
+   "effective_price": 639990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/QE83S95HAEXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "191.02 x 112.24 x 2.66",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "400x400 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Технология FreeSync",
+     "spec_key": "tehnologia_freesync",
+     "spec_value": "FreeSync Premium Pro",
+     "sort_order": 20
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 29
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 41
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "70",
+     "sort_order": 43
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 45
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "AI Motion Enhancer Pro; Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate",
+     "sort_order": 51
+    },
+    {
+     "spec_group": "Экран и разрешение",
+     "spec_name": "Антибликовое покрытие",
+     "spec_key": "antiblikovoe_pokrytie",
+     "spec_value": "Да",
+     "sort_order": 56
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3970378",
+   "model_code": "UE27LSM7FAXXPY",
+   "name": "Дисплей Samsung портативный The Movingstyle LSM7F (2026) белый",
+   "category": "The Movingstyle",
+   "series": "The Movingstyle LSM7F",
+   "year": 2026,
+   "screen_size_inches": 27.0,
+   "resolution": "2560x1440",
+   "panel_technology": "LED",
+   "refresh_rate_hz": 120,
+   "price": 124990.0,
+   "sale_price": null,
+   "effective_price": 124990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/UE27LSM7FAXXPY/",
+   "product_kind": "display",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "62.83 x 36.82 x 4.74",
+     "sort_order": 7
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Игровая панель (Game Bar)",
+     "spec_key": "igrovaa_panel_game_bar",
+     "spec_value": "Да",
+     "sort_order": 19
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 26
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 37
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "10",
+     "sort_order": 40
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "Интеллектуальное масштабирование разрешения (AI Upscale)",
+     "sort_order": 45
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3888361",
+   "model_code": "UE32F6000FUXRU",
+   "name": "Телевизор Samsung 32\" FHD F6000, Hyper Real, Smart ТВ (2026) UE32F6000FUXRU",
+   "category": "Full HD",
+   "series": "F6000FUXRU",
+   "year": 2026,
+   "screen_size_inches": 32.0,
+   "resolution": "1920x1080",
+   "panel_technology": "LED",
+   "refresh_rate_hz": 60,
+   "price": 26490.0,
+   "sale_price": 23590.0,
+   "effective_price": 23590.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/UE32F6000FUXRU/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "73.3 x 43.8 x 7.3",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "200x200 мм",
+     "sort_order": 11
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 21
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Digital",
+     "sort_order": 36
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "10",
+     "sort_order": 38
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3888514",
+   "model_code": "UE32H5000FUXRU",
+   "name": "Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) UE32H5000FUXRU",
+   "category": "HD",
+   "series": "H5000FUXRU",
+   "year": 2026,
+   "screen_size_inches": 32.0,
+   "resolution": "1366x768",
+   "panel_technology": "LED",
+   "refresh_rate_hz": 60,
+   "price": 22990.0,
+   "sale_price": null,
+   "effective_price": 22990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/UE32H5000FUXRU/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "73.3 x 43.8 x 7.2",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "200x200 мм",
+     "sort_order": 11
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 22
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "10",
+     "sort_order": 38
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3888367",
+   "model_code": "UE43F6000FUXRU",
+   "name": "Телевизор Samsung 43\" FHD F6000, Hyper Real, Smart ТВ (2026) UE43F6000FUXRU",
+   "category": "Full HD",
+   "series": "F6000FUXRU",
+   "year": 2026,
+   "screen_size_inches": 43.0,
+   "resolution": "1920x1080",
+   "panel_technology": "LED",
+   "refresh_rate_hz": 60,
+   "price": 29990.0,
+   "sale_price": null,
+   "effective_price": 29990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/UE43F6000FUXRU/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "96.5\tx 56.3 x 7.5",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "200x200 мм",
+     "sort_order": 11
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 21
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Digital",
+     "sort_order": 36
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "20",
+     "sort_order": 38
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965056",
+   "model_code": "UE75M70HAUXPY",
+   "name": "Телевизор Samsung 75\" Mini LED M70 4K, Процессор Mini LED, Smart ТВ (2026) UE75M70HAUXPY черный",
+   "category": "Mini LED",
+   "series": "M70",
+   "year": 2026,
+   "screen_size_inches": 75.0,
+   "resolution": "3840x2160",
+   "panel_technology": "Mini LED",
+   "refresh_rate_hz": 60,
+   "price": 109990.0,
+   "sale_price": 94990.0,
+   "effective_price": 94990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/UE75M70HAUXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "166.81 x 95.78 x 7.7",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "400x300 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Автовключение игрового режима (ALLM)",
+     "spec_key": "avtovklucenie_igrovogo_rejima_allm",
+     "spec_value": "Да",
+     "sort_order": 17
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 24
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 35
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "20",
+     "sort_order": 37
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 38
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "HDMI Black Level",
+     "sort_order": 44
+    }
+   ]
+  },
+  {
+   "source": "galaxystore",
+   "external_id": "3965039",
+   "model_code": "UE75U8000HUXPY",
+   "name": "Телевизор Samsung 75\" Crystal UHD U8000 4K, Процессор Crystal, Smart ТВ (2026) UE75U8000HUXPY черный",
+   "category": "Crystal UHD",
+   "series": "U8000HUXPY",
+   "year": 2026,
+   "screen_size_inches": 75.0,
+   "resolution": "3840x2160",
+   "panel_technology": "LED",
+   "refresh_rate_hz": 60,
+   "price": 94990.0,
+   "sale_price": null,
+   "effective_price": 94990.0,
+   "currency": "RUB",
+   "is_available": true,
+   "product_url": "https://galaxystore.ru/product/UE75U8000HUXPY/",
+   "product_kind": "tv",
+   "specs": [
+    {
+     "spec_group": "Размеры и вес",
+     "spec_name": "Размер без подставки (ШxВxГ), см",
+     "spec_key": "razmer_bez_podstavki_sxvxg",
+     "spec_value": "166.81 x 95.78 x 7.7",
+     "sort_order": 6
+    },
+    {
+     "spec_group": "Корпус",
+     "spec_name": "Стандарт VESA",
+     "spec_key": "standart_vesa",
+     "spec_value": "400x300 мм",
+     "sort_order": 12
+    },
+    {
+     "spec_group": "Игровой режим",
+     "spec_name": "Автовключение игрового режима (ALLM)",
+     "spec_key": "avtovklucenie_igrovogo_rejima_allm",
+     "spec_value": "Да",
+     "sort_order": 18
+    },
+    {
+     "spec_group": "Интерфейсы",
+     "spec_name": "Технология HDMI ARC",
+     "spec_key": "tehnologia_hdmi_arc",
+     "spec_value": "eARC",
+     "sort_order": 25
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Поддержка форматов звука",
+     "spec_key": "podderjka_formatov_zvuka",
+     "spec_value": "Dolby Atmos",
+     "sort_order": 37
+    },
+    {
+     "spec_group": "Звук",
+     "spec_name": "Мощность звука, Вт",
+     "spec_key": "mosnost_zvuka",
+     "spec_value": "20",
+     "sort_order": 39
+    },
+    {
+     "spec_group": "Настройка изображения",
+     "spec_name": "Режимы просмотра",
+     "spec_key": "rejimy_prosmotra",
+     "spec_value": "Режим режиссера (Filmmaker Mode)",
+     "sort_order": 41
+    },
+    {
+     "spec_group": "Изображение",
+     "spec_name": "Другие технологии оптимизации изображения",
+     "spec_key": "drugie_tehnologii_optimizacii_izobrajenia",
+     "spec_value": "HDMI Black Level",
+     "sort_order": 47
+    }
+   ]
+  }
+ ]
+}

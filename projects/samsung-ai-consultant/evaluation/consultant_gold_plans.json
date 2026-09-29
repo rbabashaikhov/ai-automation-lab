@@ -1,0 +1,38 @@
+{
+  "_meta": {
+    "description": "Phase 4B hand-authored structured plans (QueryPlanDelta contract, consultant/schemas.py) for the 21 unchanged Phase 3D cases in retrieval_cases.json. They stand in for Phase 4D query understanding so the deterministic core can be evaluated without an LLM. Model references are written as the user wrote them; resolution to products is deterministic (consultant/planning.py).",
+    "authoring_rules": [
+      "Encode only what the query text states; never tune a plan to the case's relevant_product_ids.",
+      "Numbers become constraints exactly as stated (size 65 -> 65..65; 'до N' -> effective_price.max).",
+      "Needs map to registry use cases by name only: игры/приставка/PS5 -> gaming, фильмы -> movies, звук -> sound, светлая комната -> bright_room, тонкий/на стену -> thin_wall, компактный -> compact.",
+      "Superlatives become sort + limit 1; enumerative queries become list; advice-seeking queries become recommend.",
+      "Hybrid cases reuse the case's own structured filters so filter correctness stays comparable with Phase 3D.2.",
+      "A need with no registry mapping and no structured anchor stays free_text_need (SEMANTIC_FALLBACK, not executed in 4B)."
+    ],
+    "registry_version": "features-v1",
+    "profiles_version": "use-cases-v1"
+  },
+  "plans": {
+    "exact-model-code": {"intent": "lookup", "model_refs": [{"text": "QE65S95HAUXPY", "kind": "full"}]},
+    "exact-model-code-with-brand": {"intent": "lookup", "model_refs": [{"text": "QE85QN70HAUXPY", "kind": "full"}]},
+    "exact-lookup-conversational": {"intent": "lookup", "model_refs": [{"text": "UE27LSM7FAXXPY", "kind": "full"}]},
+    "structured-oled-65": {"intent": "list", "constraints": {"panel_technology": ["OLED"], "screen_size_inches": 65}},
+    "structured-neo-qled-75-120hz": {"intent": "list", "constraints": {"panel_technology": ["Neo QLED"], "screen_size_inches": 75, "refresh_rate_hz": 120}},
+    "structured-budget-under-30k": {"intent": "list", "constraints": {"effective_price": {"max": 30000}}},
+    "structured-largest-oled": {"intent": "superlative", "constraints": {"panel_technology": ["OLED"]}, "sort": {"key": "screen_size_inches", "dir": "desc"}, "limit": 1},
+    "semantic-gaming-console": {"intent": "recommend", "use_cases": ["gaming"]},
+    "semantic-bright-room": {"intent": "recommend", "use_cases": ["bright_room"]},
+    "semantic-movies": {"intent": "recommend", "use_cases": ["movies"]},
+    "semantic-sound-without-soundbar": {"intent": "recommend", "use_cases": ["sound"]},
+    "semantic-thin-wall-mount": {"intent": "recommend", "use_cases": ["thin_wall"]},
+    "hybrid-oled-65-ps5": {"intent": "recommend", "constraints": {"panel_technology": ["OLED"], "screen_size_inches": 65}, "use_cases": ["gaming"]},
+    "hybrid-neo-qled-budget-gaming": {"intent": "recommend", "constraints": {"panel_technology": ["Neo QLED"], "effective_price": {"max": 200000}}, "use_cases": ["gaming"]},
+    "hybrid-large-120hz-good-sound": {"intent": "recommend", "constraints": {"screen_size_inches": {"min": 75}, "refresh_rate_hz": 120}, "use_cases": ["sound"]},
+    "difficult-cheapest-superlative": {"intent": "superlative", "sort": {"key": "effective_price", "dir": "asc"}, "limit": 1},
+    "difficult-vrr-buried-in-spec-value": {"intent": "recommend", "features": [{"id": "vrr", "strength": "required"}]},
+    "difficult-budget-vs-large-tradeoff": {"intent": "recommend", "free_text_need": "недорогой телевизор с большой диагональю"},
+    "difficult-stale-year-in-name": {"intent": "list", "constraints": {"category": ["The Frame"]}, "stated_year": 2023},
+    "semantic-portable-kitchen": {"intent": "recommend", "use_cases": ["compact"]},
+    "structured-unavailable-models": {"intent": "list", "constraints": {"is_available": false}}
+  }
+}

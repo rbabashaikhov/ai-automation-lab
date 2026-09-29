@@ -53,3 +53,11 @@ Tests: `python -m pytest tests/test_evaluation_*.py`.
 - `consultant_context.py`, `fullcatalog_context.py` — build (never send) the 3D.3 / 3D.4 LLM contexts.
 - `make_embedding_workflow.py`, `make_llm_workflow.py` — generate the temporary evaluation-only n8n workflows.
 - `results/query_embeddings.json` is a derived, git-ignored cache; everything else in `results/` is committed evidence.
+
+## Phase 4B scripts (see [../docs/PHASE_4B_STRUCTURED_CORE.md](../docs/PHASE_4B_STRUCTURED_CORE.md))
+
+- `consultant_inventory.py` — read-only catalog inventory for the feature registry
+  (`results/consultant_inventory_4b.json`; `--fixture` refreshes `tests/fixtures/consultant_catalog_subset.json`).
+- `consultant_gold_plans.json` — hand-authored structured plans for the 21 unchanged cases.
+- `run_consultant_structured.py` — gold plan → router → structured retrieval → ranking, scored with the
+  unchanged `scoring` gates next to the 3D.2 baseline (`results/structured_core_4b.json`).

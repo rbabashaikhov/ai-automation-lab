@@ -14,9 +14,9 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from .dataset import EvalCase, load_dataset
+from consultant.catalog_repository import EFFECTIVE_PRICE_SQL as EFFECTIVE_PRICE  # the one canonical rule
 
-EFFECTIVE_PRICE = "COALESCE(p.sale_price, p.price)"
+from .dataset import EvalCase, load_dataset
 _EQ = {"model_code": "p.model_code", "panel_technology": "p.panel_technology",
        "refresh_rate_hz": "p.refresh_rate_hz", "screen_size_inches": "p.screen_size_inches",
        "is_available": "p.is_available", "category": "p.category"}

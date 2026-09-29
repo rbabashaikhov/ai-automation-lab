@@ -45,7 +45,9 @@ Phase 3B — Embeddings & Vector Retrieval:      COMPLETE (n8n embeddings workfl
 Phase 3B.1 — Embedding-aware chunk sync:       COMPLETE (incremental rebuild preserves embeddings)
 Phase 3C — Full-catalog RAG indexing:          COMPLETE
 Phase 3D — Retrieval evaluation:               COMPLETE (baseline + consultant spikes; see docs/phase-3d-retrieval-evaluation.md)
-Phase 4 — AI Consultant:                       PLANNED
+Phase 4A — AI Consultant architecture:         COMPLETE (docs/PHASE_4A_AI_CONSULTANT_ARCHITECTURE.md)
+Phase 4B — Structured Consultant core:         COMPLETE (no LLM/embeddings; docs/PHASE_4B_STRUCTURED_CORE.md)
+Phase 4C–4G — Semantic evidence, NLU, answers: PLANNED
 Phase 5 — Evaluation / Observability:          PLANNED
 ```
 
@@ -128,6 +130,7 @@ assumed from memory.
 projects/samsung-ai-consultant/
 ├── db/                 # PostgreSQL + pgvector schema, migrations, local tests
 ├── docs/adr/           # architecture decision records
+├── consultant/          # Phase 4B: deterministic structured Consultant core (Python, read-only)
 ├── evaluation/          # retrieval_cases.json -- Phase 3B evaluation baseline
 ├── ingestion/          # Phase 2: GalaxyStore catalog ingestion pipeline (Python)
 ├── indexing/            # Phase 3A: documents/chunks builder (no embeddings) (Python)
