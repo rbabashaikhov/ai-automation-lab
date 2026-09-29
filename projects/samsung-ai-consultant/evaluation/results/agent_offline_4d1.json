@@ -1,0 +1,1161 @@
+{
+ "generated_at": "2026-09-29T15:16:44+00:00",
+ "db_transaction_read_only": "on",
+ "llm_calls": 0,
+ "embeddings_generated": 0,
+ "cases": 42,
+ "turns": 44,
+ "summary": {
+  "calls": 41,
+  "expected_calls": 35,
+  "asserted": 29,
+  "asserted_passed": 29,
+  "hygiene_violations": 0,
+  "invalid_arguments": [],
+  "errors": [],
+  "max_payload_chars": 9549,
+  "failures": {}
+ },
+ "injection_double": {
+  "model": "QE65S95HAUXPY",
+  "price_unchanged": true,
+  "availability_unchanged": true,
+  "injection_only_inside_catalog_passages": true,
+  "data_notice_present": true,
+  "live_agent_behaviour": "pending Gate 4D.2 (case adv-injection-in-evidence)"
+ },
+ "rows": [
+  {
+   "case": "search-oled-65",
+   "turn": 0,
+   "family": "search",
+   "variant": "expected",
+   "tool": "search_tvs",
+   "args": {
+    "panel_technology": [
+     "OLED"
+    ],
+    "screen_size_inches": 65
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE65S85HAEXPY",
+    "QE65S90HAEXPY",
+    "QE65S95HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 1943,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "search-under-150k",
+   "turn": 0,
+   "family": "search",
+   "variant": "expected",
+   "tool": "search_tvs",
+   "args": {
+    "max_price": 150000
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "UE32H5000FUXRU",
+    "UE32F6000FUXRU",
+    "QE32Q5FAAUXPY",
+    "UE43F6000FUXRU",
+    "UE43M70HAUXPY",
+    "UE43M1EHAUXPY",
+    "UE50M70HAUXPY",
+    "UE50M1EHAUXPY",
+    "UE50U8000HUXPY",
+    "QE32LS03CBUXRU",
+    "UE55M70HAUXPY",
+    "UE55U8000HUXPY",
+    "QE43QN70HAUXPY",
+    "UE55M80HAUXPY",
+    "QE50QN70HAUXPY",
+    "UE65U8000HUXPY",
+    "UE65M70HAUXPY",
+    "UE65M1EHAUXPY",
+    "UE65M80HAUXPY",
+    "QE55QN70HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [
+    "excluded_unavailable"
+   ],
+   "clarification": null,
+   "errors": [],
+   "chars": 9549,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "search-available-75",
+   "turn": 0,
+   "family": "search",
+   "variant": "expected",
+   "tool": "search_tvs",
+   "args": {
+    "screen_size_inches": 75
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "UE75U8000HUXPY",
+    "UE75M70HAUXPY",
+    "UE75M1EHAUXPY",
+    "UE75M80HAUXPY",
+    "QE75QN70HAUXPY",
+    "QE75QN80HAUXPY",
+    "QE75LS03HWUXPY",
+    "MRE75R85HAUXPY",
+    "MRE75R95HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [
+    "excluded_unavailable"
+   ],
+   "clarification": null,
+   "errors": [],
+   "chars": 4887,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "search-neo-qled-75",
+   "turn": 0,
+   "family": "search",
+   "variant": "expected",
+   "tool": "search_tvs",
+   "args": {
+    "panel_technology": [
+     "Neo QLED"
+    ],
+    "screen_size_inches": 75
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE75QN70HAUXPY",
+    "QE75QN80HAUXPY",
+    "QE75LS03HWUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [
+    "excluded_unavailable"
+   ],
+   "clarification": null,
+   "errors": [],
+   "chars": 2136,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "search-list-price",
+   "turn": 0,
+   "family": "search",
+   "variant": "expected",
+   "tool": "search_tvs",
+   "args": {
+    "panel_technology": [
+     "OLED"
+    ],
+    "max_price": 300000,
+    "price_basis": "list"
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE42S90HAEXPY",
+    "QE48S85HAEXPY",
+    "QE55S85HAEXPY",
+    "QE48S90HAEXPY",
+    "QE55S90HAUXPY",
+    "QE65S85HAEXPY",
+    "QE55S95HAUXPY",
+    "QE65S90HAEXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 4198,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "search-list-price",
+   "turn": 0,
+   "family": "search",
+   "variant": "acceptable_1",
+   "tool": "search_tvs",
+   "args": {
+    "panel_technology": [
+     "OLED"
+    ],
+    "max_price": 300000
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE42S90HAEXPY",
+    "QE48S85HAEXPY",
+    "QE55S85HAEXPY",
+    "QE48S90HAEXPY",
+    "QE55S90HAUXPY",
+    "QE65S85HAEXPY",
+    "QE55S95HAUXPY",
+    "QE65S90HAEXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 4203,
+   "hygiene": []
+  },
+  {
+   "case": "search-unavailable",
+   "turn": 0,
+   "family": "search",
+   "variant": "expected",
+   "tool": "search_tvs",
+   "args": {
+    "availability": "unavailable"
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "UE43U8000HUXPY",
+    "UE55M1EHAUXPY",
+    "UE70U8000HUXPY",
+    "QE55QN1EHAUXPY",
+    "QE65QN1EHAUXPY",
+    "UE85M1EHAUXPY",
+    "QE75QN1EHAUXPY",
+    "UE100M90HUXPY",
+    "QE98LS03HEUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 4475,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "search-en-55-under-100k",
+   "turn": 0,
+   "family": "search",
+   "variant": "expected",
+   "tool": "search_tvs",
+   "args": {
+    "screen_size_inches": 55,
+    "max_price": 100000
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "UE55M70HAUXPY",
+    "UE55U8000HUXPY",
+    "UE55M80HAUXPY",
+    "QE55QN70HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [
+    "excluded_unavailable"
+   ],
+   "clarification": null,
+   "errors": [],
+   "chars": 2516,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "get-tv-exact",
+   "turn": 0,
+   "family": "get_tv",
+   "variant": "expected",
+   "tool": "get_tv",
+   "args": {
+    "model": "QE65S95HAUXPY"
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE65S95HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 1282,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "get-tv-known-feature",
+   "turn": 0,
+   "family": "get_tv",
+   "variant": "expected",
+   "tool": "get_tv",
+   "args": {
+    "model": "QE65S95HAUXPY",
+    "attributes": [
+     "vrr"
+    ]
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE65S95HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 2163,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "get-tv-known-feature",
+   "turn": 0,
+   "family": "get_tv",
+   "variant": "acceptable_1",
+   "tool": "get_tv",
+   "args": {
+    "model": "QE65S95HAUXPY",
+    "question": "VRR"
+   },
+   "status": "ok",
+   "confidence": "partial",
+   "codes": [
+    "QE65S95HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [
+    "attribute_absence_unverified",
+    "semantic_unavailable"
+   ],
+   "clarification": null,
+   "errors": [],
+   "chars": 1406,
+   "hygiene": []
+  },
+  {
+   "case": "get-tv-known-feature",
+   "turn": 0,
+   "family": "get_tv",
+   "variant": "acceptable_2",
+   "tool": "get_tv",
+   "args": {
+    "model": "QE65S95HAUXPY"
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE65S95HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 1282,
+   "hygiene": []
+  },
+  {
+   "case": "get-tv-not-listed-feature",
+   "turn": 0,
+   "family": "get_tv",
+   "variant": "expected",
+   "tool": "get_tv",
+   "args": {
+    "model": "QE65S95HAUXPY",
+    "attributes": [
+     "allm"
+    ]
+   },
+   "status": "ok",
+   "confidence": "partial",
+   "codes": [
+    "QE65S95HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [
+    "attribute_not_listed_for_product"
+   ],
+   "clarification": null,
+   "errors": [],
+   "chars": 1680,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "get-tv-not-listed-feature",
+   "turn": 0,
+   "family": "get_tv",
+   "variant": "acceptable_1",
+   "tool": "get_tv",
+   "args": {
+    "model": "QE65S95HAUXPY",
+    "question": "ALLM"
+   },
+   "status": "ok",
+   "confidence": "partial",
+   "codes": [
+    "QE65S95HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [
+    "attribute_not_listed_for_product",
+    "semantic_unavailable"
+   ],
+   "clarification": null,
+   "errors": [],
+   "chars": 1403,
+   "hygiene": []
+  },
+  {
+   "case": "get-tv-long-tail",
+   "turn": 0,
+   "family": "get_tv",
+   "variant": "expected",
+   "tool": "get_tv",
+   "args": {
+    "model": "QE65S95HAUXPY",
+    "question": "AirPlay"
+   },
+   "status": "ok",
+   "confidence": "partial",
+   "codes": [
+    "QE65S95HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [
+    "attribute_not_listed_for_product",
+    "semantic_unavailable"
+   ],
+   "clarification": null,
+   "errors": [],
+   "chars": 1412,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "get-tv-unknown-model",
+   "turn": 0,
+   "family": "get_tv",
+   "variant": "expected",
+   "tool": "get_tv",
+   "args": {
+    "model": "QE55S90HAEXPY"
+   },
+   "status": "not_found",
+   "confidence": "weak",
+   "codes": [],
+   "alternatives": [],
+   "gap_kinds": [
+    "model_not_found"
+   ],
+   "clarification": null,
+   "errors": [],
+   "chars": 608,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "get-tv-family-size",
+   "turn": 0,
+   "family": "get_tv",
+   "variant": "expected",
+   "tool": "get_tv",
+   "args": {
+    "model": "S95H",
+    "screen_size_inches": 55
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE55S95HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 1286,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "get-tv-family-size",
+   "turn": 0,
+   "family": "get_tv",
+   "variant": "acceptable_1",
+   "tool": "get_tv",
+   "args": {
+    "model": "S95H"
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE55S95HAUXPY",
+    "QE65S95HAUXPY",
+    "QE77S95HAEXPY",
+    "QE83S95HAEXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 3709,
+   "hygiene": []
+  },
+  {
+   "case": "compare-exact",
+   "turn": 0,
+   "family": "compare",
+   "variant": "expected",
+   "tool": "compare_tvs",
+   "args": {
+    "models": [
+     "QE65S95HAUXPY",
+     "QE65S90HAEXPY"
+    ]
+   },
+   "status": "ok",
+   "confidence": "partial",
+   "codes": [
+    "QE65S95HAUXPY",
+    "QE65S90HAEXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [
+    "attribute_not_listed_for_product"
+   ],
+   "clarification": null,
+   "errors": [],
+   "chars": 5363,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "compare-family-ambiguous",
+   "turn": 0,
+   "family": "compare",
+   "variant": "expected",
+   "tool": "compare_tvs",
+   "args": {
+    "models": [
+     "S95H",
+     "S90H"
+    ]
+   },
+   "status": "clarification_needed",
+   "confidence": "not_applicable",
+   "codes": [],
+   "alternatives": [],
+   "gap_kinds": [
+    "family_size_ambiguous"
+   ],
+   "clarification": "ambiguous_multiple_shared_sizes",
+   "errors": [],
+   "chars": 1167,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "compare-family-size",
+   "turn": 0,
+   "family": "compare",
+   "variant": "expected",
+   "tool": "compare_tvs",
+   "args": {
+    "models": [
+     "S95H",
+     "S90H"
+    ],
+    "screen_size_inches": 65
+   },
+   "status": "ok",
+   "confidence": "partial",
+   "codes": [
+    "QE65S95HAUXPY",
+    "QE65S90HAEXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [
+    "attribute_not_listed_for_product"
+   ],
+   "clarification": null,
+   "errors": [],
+   "chars": 5379,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "compare-family-size",
+   "turn": 0,
+   "family": "compare",
+   "variant": "acceptable_1",
+   "tool": "compare_tvs",
+   "args": {
+    "models": [
+     "QE65S95HAUXPY",
+     "QE65S90HAEXPY"
+    ]
+   },
+   "status": "ok",
+   "confidence": "partial",
+   "codes": [
+    "QE65S95HAUXPY",
+    "QE65S90HAEXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [
+    "attribute_not_listed_for_product"
+   ],
+   "clarification": null,
+   "errors": [],
+   "chars": 5363,
+   "hygiene": []
+  },
+  {
+   "case": "rec-gaming",
+   "turn": 0,
+   "family": "recommend",
+   "variant": "expected",
+   "tool": "recommend_tvs",
+   "args": {
+    "use_cases": [
+     "gaming"
+    ]
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE115QN90FUXRU",
+    "QE42S90HAEXPY",
+    "QE48S85HAEXPY",
+    "QE55QN80HAUXPY",
+    "MRE55R85HAUXPY",
+    "QE55LS03HAUXPY",
+    "QE55S85HAEXPY",
+    "QE65QN80HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [
+    "excluded_out_of_scope",
+    "excluded_unavailable"
+   ],
+   "clarification": null,
+   "errors": [],
+   "chars": 8796,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "rec-sound",
+   "turn": 0,
+   "family": "recommend",
+   "variant": "expected",
+   "tool": "recommend_tvs",
+   "args": {
+    "use_cases": [
+     "sound"
+    ]
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE55S95HAUXPY",
+    "QE65S95HAUXPY",
+    "MRE65R95HAUXPY",
+    "MRE75R95HAUXPY",
+    "MRE85R95HAUXPY",
+    "QE77S95HAEXPY",
+    "QE83S95HAEXPY",
+    "MRE115MR95FXRU"
+   ],
+   "alternatives": [],
+   "gap_kinds": [
+    "excluded_out_of_scope",
+    "excluded_unavailable"
+   ],
+   "clarification": null,
+   "errors": [],
+   "chars": 6727,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "rec-budget-gaming",
+   "turn": 0,
+   "family": "recommend",
+   "variant": "expected",
+   "tool": "recommend_tvs",
+   "args": {
+    "panel_technology": [
+     "OLED"
+    ],
+    "screen_size_inches": 65,
+    "max_price": 200000,
+    "use_cases": [
+     "gaming"
+    ]
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE65S85HAEXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 1877,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "rec-impossible",
+   "turn": 0,
+   "family": "recommend",
+   "variant": "expected",
+   "tool": "recommend_tvs",
+   "args": {
+    "panel_technology": [
+     "OLED"
+    ],
+    "max_price": 30000
+   },
+   "status": "no_match",
+   "confidence": "weak",
+   "codes": [],
+   "alternatives": [
+    "UE32H5000FUXRU",
+    "UE32F6000FUXRU",
+    "QE32Q5FAAUXPY",
+    "QE42S90HAEXPY",
+    "QE48S85HAEXPY",
+    "QE55S85HAEXPY"
+   ],
+   "gap_kinds": [
+    "no_product_satisfies"
+   ],
+   "clarification": null,
+   "errors": [],
+   "chars": 4876,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "rec-bright-room",
+   "turn": 0,
+   "family": "recommend",
+   "variant": "expected",
+   "tool": "recommend_tvs",
+   "args": {
+    "use_cases": [
+     "bright_room"
+    ]
+   },
+   "status": "ok",
+   "confidence": "weak",
+   "codes": [
+    "QE32LS03CBUXRU",
+    "QE43LS03HEUXPY",
+    "QE42S90HAEXPY",
+    "QE65S85HAEXPY",
+    "QE55S95HAUXPY",
+    "QE75LS03HWUXPY",
+    "MRE65R95HAUXPY",
+    "MRE75R95HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [
+    "excluded_out_of_scope",
+    "excluded_unavailable",
+    "not_in_catalog_domain"
+   ],
+   "clarification": "weak_recommendation",
+   "errors": [],
+   "chars": 6449,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "rec-movies",
+   "turn": 0,
+   "family": "recommend",
+   "variant": "expected",
+   "tool": "recommend_tvs",
+   "args": {
+    "use_cases": [
+     "movies"
+    ]
+   },
+   "status": "ok",
+   "confidence": "weak",
+   "codes": [
+    "UE43M70HAUXPY",
+    "UE43M1EHAUXPY",
+    "UE50M70HAUXPY",
+    "UE75M1EHAUXPY",
+    "UE85U8000HUXPY",
+    "QE48S85HAEXPY",
+    "QE55S95HAUXPY",
+    "QE75LS03HWUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [
+    "excluded_out_of_scope",
+    "excluded_unavailable"
+   ],
+   "clarification": "weak_recommendation",
+   "errors": [],
+   "chars": 7279,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "rec-thin-wall",
+   "turn": 0,
+   "family": "recommend",
+   "variant": "expected",
+   "tool": "recommend_tvs",
+   "args": {
+    "use_cases": [
+     "thin_wall"
+    ],
+    "screen_size_inches": 55
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE55S95HAUXPY",
+    "QE55S90HAUXPY",
+    "QE55QN80HAUXPY",
+    "MRE55R85HAUXPY",
+    "UE55M70HAUXPY",
+    "UE55U8000HUXPY",
+    "QE55QN70HAUXPY",
+    "QE55LS03HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [
+    "data_quality",
+    "excluded_unavailable"
+   ],
+   "clarification": null,
+   "errors": [],
+   "chars": 6771,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "stats-count-oled",
+   "turn": 0,
+   "family": "stats",
+   "variant": "expected",
+   "tool": "get_catalog_stats",
+   "args": {
+    "stat": "count",
+    "panel_technology": [
+     "OLED"
+    ]
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 407,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "stats-cheapest",
+   "turn": 0,
+   "family": "stats",
+   "variant": "expected",
+   "tool": "get_catalog_stats",
+   "args": {
+    "stat": "cheapest"
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "UE32H5000FUXRU"
+   ],
+   "alternatives": [],
+   "gap_kinds": [
+    "excluded_unavailable"
+   ],
+   "clarification": null,
+   "errors": [],
+   "chars": 1099,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "stats-largest",
+   "turn": 0,
+   "family": "stats",
+   "variant": "expected",
+   "tool": "get_catalog_stats",
+   "args": {
+    "stat": "largest"
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE115QN90FUXRU",
+    "MRE115MR95FXRU"
+   ],
+   "alternatives": [],
+   "gap_kinds": [
+    "excluded_unavailable"
+   ],
+   "clarification": null,
+   "errors": [],
+   "chars": 1612,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "stats-largest-oled-tie",
+   "turn": 0,
+   "family": "stats",
+   "variant": "expected",
+   "tool": "get_catalog_stats",
+   "args": {
+    "stat": "largest",
+    "panel_technology": [
+     "OLED"
+    ]
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE83S85HAEXPY",
+    "QE83S90HAEXPY",
+    "QE83S95HAEXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 1985,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "stats-cheapest-oled",
+   "turn": 0,
+   "family": "stats",
+   "variant": "expected",
+   "tool": "get_catalog_stats",
+   "args": {
+    "stat": "cheapest",
+    "panel_technology": [
+     "OLED"
+    ]
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE42S90HAEXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 1055,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "adv-ignore-tools",
+   "turn": 0,
+   "family": "adversarial",
+   "variant": "expected",
+   "tool": "get_tv",
+   "args": {
+    "model": "QE65S95HAUXPY"
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE65S95HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 1282,
+   "hygiene": []
+  },
+  {
+   "case": "adv-brightness",
+   "turn": 0,
+   "family": "adversarial",
+   "variant": "expected",
+   "tool": "get_tv",
+   "args": {
+    "model": "QE65S95HAUXPY"
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE65S95HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 1282,
+   "hygiene": []
+  },
+  {
+   "case": "adv-malformed-code",
+   "turn": 0,
+   "family": "adversarial",
+   "variant": "expected",
+   "tool": "get_tv",
+   "args": {
+    "model": "QE65S95HAUXPY"
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE65S95HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 1282,
+   "hygiene": [],
+   "offline_failures": []
+  },
+  {
+   "case": "adv-injection-in-evidence",
+   "turn": 0,
+   "family": "adversarial",
+   "variant": "expected",
+   "tool": "get_tv",
+   "args": {
+    "model": "QE65S95HAUXPY"
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE65S95HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 1282,
+   "hygiene": []
+  },
+  {
+   "case": "followup-oled65-spike",
+   "turn": 0,
+   "family": "followup",
+   "variant": "expected",
+   "tool": "search_tvs",
+   "args": {
+    "panel_technology": [
+     "OLED"
+    ],
+    "screen_size_inches": 65
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE65S85HAEXPY",
+    "QE65S90HAEXPY",
+    "QE65S95HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 1943,
+   "hygiene": []
+  },
+  {
+   "case": "followup-oled65-spike",
+   "turn": 1,
+   "family": "followup",
+   "variant": "expected",
+   "tool": "recommend_tvs",
+   "args": {
+    "panel_technology": [
+     "OLED"
+    ],
+    "screen_size_inches": 65,
+    "use_cases": [
+     "gaming"
+    ]
+   },
+   "status": "ok",
+   "confidence": "strong",
+   "codes": [
+    "QE65S85HAEXPY",
+    "QE65S90HAEXPY",
+    "QE65S95HAUXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": null,
+   "errors": [],
+   "chars": 3806,
+   "hygiene": []
+  },
+  {
+   "case": "followup-oled65-spike",
+   "turn": 2,
+   "family": "followup",
+   "variant": "expected",
+   "tool": "recommend_tvs",
+   "args": {
+    "panel_technology": [
+     "OLED"
+    ],
+    "use_cases": [
+     "gaming"
+    ]
+   },
+   "status": "ok",
+   "confidence": "weak",
+   "codes": [
+    "QE42S90HAEXPY",
+    "QE48S85HAEXPY",
+    "QE55S85HAEXPY",
+    "QE65S85HAEXPY",
+    "QE55S95HAUXPY",
+    "QE65S90HAEXPY",
+    "QE65S95HAUXPY",
+    "QE83S85HAEXPY"
+   ],
+   "alternatives": [],
+   "gap_kinds": [],
+   "clarification": "weak_recommendation",
+   "errors": [],
+   "chars": 9075,
+   "hygiene": []
+  }
+ ]
+}

@@ -39,8 +39,11 @@ docker run -d --name "${CONTAINER_NAME}" \
     "${IMAGE}" >/dev/null
 
 echo "==> Waiting for PostgreSQL to accept connections"
+# pg_isready alone also succeeds against the image's temporary initdb server, which is shut down
+# again before the final server starts; wait for the entrypoint to finish initialization first.
 for _ in $(seq 1 30); do
-    if docker exec "${CONTAINER_NAME}" pg_isready -U "${DB_USER}" -d "${DB_NAME}" >/dev/null 2>&1; then
+    if docker logs "${CONTAINER_NAME}" 2>&1 | grep -q "PostgreSQL init process complete" \
+        && docker exec "${CONTAINER_NAME}" pg_isready -U "${DB_USER}" -d "${DB_NAME}" >/dev/null 2>&1; then
         break
     fi
     sleep 1
@@ -67,6 +70,7 @@ python3 -m pytest \
     tests/test_indexing_embedding_sync.py \
     tests/test_consultant_repository.py tests/test_consultant_integration.py \
     tests/test_consultant_evidence_db.py \
+    tests/test_agent_tools_db.py \
     -v
 
 echo "==> All DB-backed tests passed"

@@ -67,3 +67,14 @@ Tests: `python -m pytest tests/test_evaluation_*.py`.
 - `run_consultant_evidence.py` — read-only: 4B baseline re-check, evidence coverage for the 21 gold
   plans, candidate-/product-scoped semantic measurements with the cached Phase 3D query vectors only,
   long-tail probe cases, bright-room / movies corpus analysis (`results/evidence_semantic_4c.json`).
+
+## Phase 4D (see [../docs/PHASE_4D_AGENT_RUNTIME.md](../docs/PHASE_4D_AGENT_RUNTIME.md))
+
+- `agent_cases.json` — 42-case / 44-turn Agent evaluation set (tool selection, arguments,
+  clarification, grounding; adversarial and follow-up families). New file; the Phase 3D dataset and
+  4B gold plans are unchanged.
+- `agent_eval.py` — dataset validation (every expected argument set must pass the Python tool
+  boundary), transcript scoring, deterministic grounding flags, provisional n8n output adapter.
+- `run_agent_offline.py` — Gate 4D.1: executes the expected tool calls through the real facade in
+  the read-only session -> `results/agent_offline_4d1.json`. No LLM.
+- `agent_injection.py` — evaluation-only test double adding instruction-like text to tool evidence.

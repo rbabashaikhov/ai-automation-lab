@@ -1,0 +1,114 @@
+"""Generates the n8n workflow ``Samsung — AI Consultant`` (``workflows/ai-consultant.json``).
+
+    python -m consultant.n8n_workflow [--check]
+
+Generated rather than hand-edited so the Agent system prompt (``prompts/agent_system_v1.md``) and
+the tool list (``agent_tools.TOOL_SCHEMAS``) have a single source; ``--check`` fails when the
+committed JSON is stale (also asserted by the unit tests). Deployed with ``tools/n8n-tool``.
+
+Runtime shape (Phase 4D, development only -- never activated, no public webhook):
+
+    Chat Trigger (editor chat, public=false) ─┐
+    Execute Workflow Trigger (evaluation) ────┴─> AI Agent ── OpenAI Chat Model (existing credential)
+                                                     ├──────── Window memory (in-process, per sessionId)
+                                                     └──────── MCP Client Tool "catalog" -> Python MCP server
+
+Credentials are referenced by ``{id, name}`` only. The MCP header-auth credential does not exist
+yet: creating it is part of the Gate 4D.2 infrastructure change (see PHASE_4D_AGENT_RUNTIME.md).
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+import uuid
+from pathlib import Path
+
+from .agent_tools import DEFAULT_MAX_TOOL_CALLS_PER_TURN, TOOL_NAMES
+
+PROJECT = Path(__file__).resolve().parents[1]
+OUT = PROJECT / "workflows" / "ai-consultant.json"
+PROMPT_FILE = Path(__file__).parent / "prompts" / "agent_system_v1.md"
+
+WORKFLOW_NAME = "Samsung — AI Consultant"
+AGENT_MODEL = "gpt-4.1-mini"          # measured via this credential in Phase 3D; temperature 0
+OPENAI_CREDENTIAL = {"id": "mcixQy0sFVXl7nU9", "name": "OpenAI account"}
+MCP_CREDENTIAL = {"id": "PENDING_GATE_4D2", "name": "Samsung Consultant MCP"}
+# Docker bridge gateway of n8n-compose_default on the VPS (read-only inspection, Phase 4D). The
+# server does not run there yet: starting it is the Gate 4D.2 infrastructure change.
+MCP_ENDPOINT = "http://172.18.0.1:8765/mcp"
+MCP_NODE_NAME = "catalog"              # n8n exposes tools as "<node name>_<tool>", e.g. catalog_search_tvs
+# One agent step per tool round plus the final answer; Python enforces the hard per-turn cap.
+AGENT_MAX_ITERATIONS = DEFAULT_MAX_TOOL_CALLS_PER_TURN + 1
+MEMORY_WINDOW = 6
+
+
+def _id(name: str) -> str:
+    return str(uuid.uuid5(uuid.NAMESPACE_URL, f"samsung-ai-consultant/{name}"))
+
+
+def build(prompt: str) -> dict:
+    agent = "Samsung AI Consultant"
+    nodes = [
+        {"id": _id("chat-trigger"), "name": "When chat message received", "webhookId": _id("chat-webhook"),
+         "type": "@n8n/n8n-nodes-langchain.chatTrigger", "typeVersion": 1.4, "position": [-460, -120],
+         "parameters": {"public": False, "options": {}}},
+        {"id": _id("eval-trigger"), "name": "When called by evaluation workflow",
+         "type": "n8n-nodes-base.executeWorkflowTrigger", "typeVersion": 1.1, "position": [-460, 100],
+         "parameters": {"workflowInputs": {"values": [{"name": "chatInput", "type": "string"},
+                                                      {"name": "sessionId", "type": "string"}]}}},
+        {"id": _id("agent"), "name": agent, "type": "@n8n/n8n-nodes-langchain.agent", "typeVersion": 3.1,
+         "position": [-120, 0],
+         "parameters": {"promptType": "define", "text": "={{ $json.chatInput }}",
+                        "options": {"systemMessage": prompt, "maxIterations": AGENT_MAX_ITERATIONS,
+                                    "returnIntermediateSteps": True}}},
+        {"id": _id("openai-model"), "name": "OpenAI Chat Model", "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+         "typeVersion": 1.3, "position": [-260, 240],
+         "parameters": {"model": {"__rl": True, "mode": "list", "value": AGENT_MODEL, "cachedResultName": AGENT_MODEL},
+                        "options": {"temperature": 0}},
+         "credentials": {"openAiApi": OPENAI_CREDENTIAL}},
+        {"id": _id("memory"), "name": "Window memory (per session)",
+         "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow", "typeVersion": 1.3, "position": [-100, 240],
+         "parameters": {"sessionIdType": "customKey", "sessionKey": "={{ $json.sessionId }}",
+                        "contextWindowLength": MEMORY_WINDOW}},
+        {"id": _id("mcp-tool"), "name": MCP_NODE_NAME, "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+         "typeVersion": 1.2, "position": [60, 240],
+         "parameters": {"endpointUrl": MCP_ENDPOINT, "serverTransport": "httpStreamable",
+                        "authentication": "headerAuth", "include": "selected", "includeTools": list(TOOL_NAMES),
+                        "options": {"timeout": 30000}},
+         "credentials": {"httpHeaderAuth": MCP_CREDENTIAL}},
+    ]
+    connections = {
+        "When chat message received": {"main": [[{"node": agent, "type": "main", "index": 0}]]},
+        "When called by evaluation workflow": {"main": [[{"node": agent, "type": "main", "index": 0}]]},
+        "OpenAI Chat Model": {"ai_languageModel": [[{"node": agent, "type": "ai_languageModel", "index": 0}]]},
+        "Window memory (per session)": {"ai_memory": [[{"node": agent, "type": "ai_memory", "index": 0}]]},
+        MCP_NODE_NAME: {"ai_tool": [[{"node": agent, "type": "ai_tool", "index": 0}]]},
+    }
+    settings = {"executionOrder": "v1", "saveManualExecutions": True, "saveDataSuccessExecution": "all",
+                "saveDataErrorExecution": "all", "callerPolicy": "workflowsFromSameOwner"}
+    return {"name": WORKFLOW_NAME, "nodes": nodes, "connections": connections, "settings": settings}
+
+
+def render() -> str:
+    return json.dumps(build(PROMPT_FILE.read_text(encoding="utf-8").strip()), ensure_ascii=False, indent=2) + "\n"
+
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--check", action="store_true", help="fail if the committed workflow JSON is stale")
+    ns = ap.parse_args(argv)
+    text = render()
+    if ns.check:
+        if not OUT.exists() or OUT.read_text(encoding="utf-8") != text:
+            print(f"{OUT} is stale: run python -m consultant.n8n_workflow", file=sys.stderr)
+            return 1
+        return 0
+    OUT.write_text(text, encoding="utf-8")
+    print(f"wrote {OUT.relative_to(PROJECT)}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
