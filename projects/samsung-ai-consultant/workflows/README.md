@@ -44,16 +44,28 @@ response; it is not a reimplementation of the deterministic builder.
 | Node | Responsibility |
 |---|---|
 | `When clicking 'Execute workflow'` | Manual trigger (n8n's Public API has no execute-workflow endpoint — see "Known limitations") |
-| `Indexing scope` | Sets `target_model_code` — currently hardcoded to `QE65S95HAUXPY` (the Phase 3B safety gate) |
-| `Count pending chunks` | `SELECT count(*)::int` of chunks with `embedding IS NULL` for the scoped product — always returns exactly one row, so the next node can reliably branch even when the count is zero (see "Known limitations") |
+| `Count pending chunks` | `SELECT count(*)::int` of chunks catalog-wide with `embedding IS NULL` — always returns exactly one row, so the next node can reliably branch even when the count is zero (see "Known limitations") |
 | `Any pending chunks?` | IF branch on that count |
-| `Get chunks pending embedding` (true branch) | Fetches the actual pending chunk rows (id, content) |
-| `Build embeddings request` | Aggregates all pending chunks into one item: parallel `chunk_id`/`content` arrays, for a single batched OpenAI call |
-| `OpenAI: Create Embeddings` | `POST https://api.openai.com/v1/embeddings`, `model: text-embedding-3-small`, `input:` the content array. Auth: predefined credential type, `OpenAI account` — the key is injected by n8n and never appears in this workflow's JSON |
+| `Get chunks pending embedding` (true branch) | Fetches all catalog-wide pending chunk rows (id, content), `ORDER BY c.id` for deterministic batch order |
+| `Batch pending chunks` | `n8n-nodes-base.splitInBatches` (Loop Over Items), `batchSize: 50` — feeds pending chunks through the embed/persist chain 50 at a time; its `loop` output (index 1) drives `Build embeddings request`, and `Persist embedding` connects back into this node so batch *N*+1 is only requested once batch *N* is fully persisted. Its `done` output (index 0) goes to `Run summary` once all batches finish |
+| `Build embeddings request` | Aggregates the *current batch's* (≤50) pending chunks into one item: parallel `chunk_id`/`content` arrays, for one batched OpenAI call per batch |
+| `OpenAI: Create Embeddings` | `POST https://api.openai.com/v1/embeddings`, `model: text-embedding-3-small`, `input:` the current batch's content array. Auth: predefined credential type, `OpenAI account` — the key is injected by n8n and never appears in this workflow's JSON |
 | `Map embeddings to chunks` | Pairs each returned embedding back to its `chunk_id` by response `index`; **throws** if any vector isn't exactly 1536-dimensional or if the model in the response doesn't match — refuses to persist a wrong-shape vector rather than silently writing one |
-| `Persist embedding` | `UPDATE chunks SET embedding = '...'::vector, embedding_model = '...' WHERE id = ...`, once per chunk |
+| `Persist embedding` | `UPDATE chunks SET embedding = '...'::vector, embedding_model = '...' WHERE id = ...`, once per chunk in the current batch, then loops back to `Batch pending chunks` for the next batch |
 | `No pending chunks` (false branch) | Observable "nothing to do" status/message |
-| `Run summary` | `executeOnce: true` — always runs exactly once regardless of branch, reporting `total_chunks` / `embedded_chunks` / `pending_chunks` for the scoped product |
+| `Run summary` | `executeOnce: true` — always runs exactly once after all batches finish (or immediately on the zero-pending branch), reporting `total_chunks` / `embedded_chunks` / `pending_chunks` per product catalog-wide |
+
+**Phase 3C.E (full-catalog incremental indexing):** the original Phase 3B
+`Indexing scope` node hardcoded `target_model_code = 'QE65S95HAUXPY'` as a
+deliberate single-product safety gate for that phase's acceptance test.
+Phase 3C.E removed that node and the corresponding `p.model_code = ...`
+filters from `Count pending chunks` / `Get chunks pending embedding` /
+`Run summary`, so indexing now runs catalog-wide on `embedding IS NULL`
+alone, and added `Batch pending chunks` (bounded sequential batches of 50)
+so a single run doesn't send the entire pending backlog to OpenAI in one
+HTTP request. A partial failure mid-run leaves already-embedded chunks
+committed; a rerun's `embedding IS NULL` selection naturally picks up only
+what's left, with no separate resume state.
 
 ## `rag-retrieval-smoke-test.json` — node-by-node
 

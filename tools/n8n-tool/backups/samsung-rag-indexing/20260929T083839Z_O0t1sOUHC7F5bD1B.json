@@ -1,5 +1,11 @@
 {
+  "updatedAt": "2026-09-28T19:58:31.822Z",
+  "createdAt": "2026-09-28T19:42:12.949Z",
+  "id": "O0t1sOUHC7F5bD1B",
   "name": "Samsung — RAG Indexing",
+  "description": null,
+  "active": false,
+  "isArchived": false,
   "nodes": [
     {
       "id": "sticky-architecture",
@@ -28,7 +34,7 @@
       "parameters": {
         "width": 620,
         "height": 260,
-        "content": "## Full-catalog incremental indexing (Phase 3C.E)\n\n`Indexing scope`'s Phase 3B single-product safety gate (`target_model_code = 'QE65S95HAUXPY'`) has been removed. `Count pending chunks` / `Get chunks pending embedding` / `Run summary` now select catalog-wide on `chunks.embedding IS NULL` only.\n\nPending chunks are processed in bounded sequential batches of 50 via `Batch pending chunks` (Split In Batches): each batch is embedded and persisted before the next batch is requested from OpenAI, so a partial failure leaves already-embedded chunks committed and a rerun picks up exactly where it left off (`embedding IS NULL` is the sole, self-correcting selector -- no separate resume state needed)."
+        "content": "## Safety gate — single product only\n\n`Indexing scope` below is deliberately hardcoded to one real product (`QE65S95HAUXPY`) for the Phase 3B acceptance test.\n\n**Do not blank/remove this filter to run the full catalog** without explicit re-approval — that is a deliberate future step (Phase 3B full-catalog indexing), reviewed separately per the task brief's review gate. Widening scope is a one-line edit to `Indexing scope` and to the `p.model_code = '...'` filter in `Count pending chunks` / `Get chunks pending embedding` / `Run summary` — not a redesign."
       }
     },
     {
@@ -43,6 +49,29 @@
       "parameters": {}
     },
     {
+      "id": "set-indexing-scope",
+      "name": "Indexing scope",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        200
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "target-model-code",
+              "name": "target_model_code",
+              "type": "string",
+              "value": "QE65S95HAUXPY"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
       "id": "postgres-count-pending-chunks",
       "name": "Count pending chunks",
       "type": "n8n-nodes-base.postgres",
@@ -53,7 +82,7 @@
       ],
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT count(*)::int AS pending_count\nFROM chunks c\nWHERE c.embedding IS NULL;",
+        "query": "SELECT count(*)::int AS pending_count\nFROM chunks c\nJOIN products p ON p.id = c.product_id\nWHERE c.embedding IS NULL\n  AND p.model_code = '{{ $json.target_model_code }}';",
         "options": {}
       },
       "credentials": {
@@ -106,7 +135,7 @@
       ],
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT\n  c.id AS chunk_id,\n  c.document_id,\n  c.product_id,\n  c.content,\n  p.model_code\nFROM chunks c\nJOIN products p ON p.id = c.product_id\nWHERE c.embedding IS NULL\nORDER BY c.id;",
+        "query": "SELECT\n  c.id AS chunk_id,\n  c.document_id,\n  c.product_id,\n  c.content,\n  p.model_code\nFROM chunks c\nJOIN products p ON p.id = c.product_id\nWHERE c.embedding IS NULL\n  AND p.model_code = '{{ $('Indexing scope').item.json.target_model_code }}'\nORDER BY c.id;",
         "options": {}
       },
       "credentials": {
@@ -135,10 +164,16 @@
               "value": "no_pending_chunks"
             },
             {
+              "id": "target",
+              "name": "target_model_code",
+              "type": "string",
+              "value": "={{ $('Indexing scope').item.json.target_model_code }}"
+            },
+            {
               "id": "note",
               "name": "note",
               "type": "string",
-              "value": "No chunks with embedding IS NULL across the catalog -- either everything is already embedded, or documents/chunks haven't been built yet via `python -m indexing build`."
+              "value": "No chunks with embedding IS NULL for this product -- either already fully embedded, or documents/chunks haven't been built yet via `python -m indexing build`."
             }
           ]
         },
@@ -151,7 +186,7 @@
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
       "position": [
-        1040,
+        800,
         60
       ],
       "parameters": {
@@ -175,7 +210,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1280,
+        1040,
         60
       ],
       "parameters": {
@@ -201,7 +236,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1520,
+        1280,
         60
       ],
       "parameters": {
@@ -215,7 +250,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
       "position": [
-        1760,
+        1520,
         60
       ],
       "parameters": {
@@ -237,12 +272,12 @@
       "typeVersion": 2.5,
       "executeOnce": true,
       "position": [
-        2000,
+        1760,
         200
       ],
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT\n  p.model_code,\n  count(*) AS total_chunks,\n  count(*) FILTER (WHERE c.embedding IS NOT NULL) AS embedded_chunks,\n  count(*) FILTER (WHERE c.embedding IS NULL) AS pending_chunks\nFROM chunks c\nJOIN documents d ON d.id = c.document_id\nJOIN products p ON p.id = c.product_id\nGROUP BY p.model_code;",
+        "query": "SELECT\n  p.model_code,\n  count(*) AS total_chunks,\n  count(*) FILTER (WHERE c.embedding IS NOT NULL) AS embedded_chunks,\n  count(*) FILTER (WHERE c.embedding IS NULL) AS pending_chunks\nFROM chunks c\nJOIN documents d ON d.id = c.document_id\nJOIN products p ON p.id = c.product_id\nWHERE p.model_code = '{{ $('Indexing scope').item.json.target_model_code }}'\nGROUP BY p.model_code;",
         "options": {}
       },
       "credentials": {
@@ -251,26 +286,21 @@
           "name": "Samsung RAG PostgreSQL"
         }
       }
-    },
-    {
-      "id": "split-in-batches-pending",
-      "name": "Batch pending chunks",
-      "type": "n8n-nodes-base.splitInBatches",
-      "typeVersion": 3,
-      "position": [
-        560,
-        200
-      ],
-      "parameters": {
-        "batchSize": 50,
-        "options": {
-          "reset": false
-        }
-      }
     }
   ],
   "connections": {
     "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Indexing scope",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Indexing scope": {
       "main": [
         [
           {
@@ -314,7 +344,7 @@
       "main": [
         [
           {
-            "node": "Batch pending chunks",
+            "node": "Build embeddings request",
             "type": "main",
             "index": 0
           }
@@ -358,7 +388,7 @@
       "main": [
         [
           {
-            "node": "Batch pending chunks",
+            "node": "Run summary",
             "type": "main",
             "index": 0
           }
@@ -375,27 +405,38 @@
           }
         ]
       ]
-    },
-    "Batch pending chunks": {
-      "main": [
-        [
-          {
-            "node": "Run summary",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Build embeddings request",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "settings": {
-    "executionOrder": "v1"
-  }
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "ae10d93f-6ee3-41b5-a1df-12ada46dcfc8",
+  "activeVersionId": null,
+  "versionCounter": 4,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-09-28T19:42:12.952Z",
+      "createdAt": "2026-09-28T19:42:12.952Z",
+      "role": "workflow:owner",
+      "workflowId": "O0t1sOUHC7F5bD1B",
+      "projectId": "xUaILlIzDg88e3kj",
+      "project": {
+        "updatedAt": "2026-04-26T16:00:06.646Z",
+        "createdAt": "2026-04-26T15:58:57.181Z",
+        "id": "xUaILlIzDg88e3kj",
+        "name": "Ruslan Babashaikhov <ruslan.babashaikhov@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "cdb0c10f-3865-4b0a-a902-6f2360d56858"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
 }
