@@ -47,7 +47,8 @@ Phase 3C — Full-catalog RAG indexing:          COMPLETE
 Phase 3D — Retrieval evaluation:               COMPLETE (baseline + consultant spikes; see docs/phase-3d-retrieval-evaluation.md)
 Phase 4A — AI Consultant architecture:         COMPLETE (docs/PHASE_4A_AI_CONSULTANT_ARCHITECTURE.md)
 Phase 4B — Structured Consultant core:         COMPLETE (no LLM/embeddings; docs/PHASE_4B_STRUCTURED_CORE.md)
-Phase 4C–4G — Semantic evidence, NLU, answers: PLANNED
+Phase 4C — Evidence & semantic retrieval:      COMPLETE (no LLM/new embeddings; docs/PHASE_4C_EVIDENCE_SEMANTIC.md)
+Phase 4D–4G — NLU, answers, conversation:      PLANNED
 Phase 5 — Evaluation / Observability:          PLANNED
 ```
 

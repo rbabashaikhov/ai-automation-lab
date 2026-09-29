@@ -61,3 +61,9 @@ Tests: `python -m pytest tests/test_evaluation_*.py`.
 - `consultant_gold_plans.json` — hand-authored structured plans for the 21 unchanged cases.
 - `run_consultant_structured.py` — gold plan → router → structured retrieval → ranking, scored with the
   unchanged `scoring` gates next to the 3D.2 baseline (`results/structured_core_4b.json`).
+
+## Phase 4C script (see [../docs/PHASE_4C_EVIDENCE_SEMANTIC.md](../docs/PHASE_4C_EVIDENCE_SEMANTIC.md))
+
+- `run_consultant_evidence.py` — read-only: 4B baseline re-check, evidence coverage for the 21 gold
+  plans, candidate-/product-scoped semantic measurements with the cached Phase 3D query vectors only,
+  long-tail probe cases, bright-room / movies corpus analysis (`results/evidence_semantic_4c.json`).

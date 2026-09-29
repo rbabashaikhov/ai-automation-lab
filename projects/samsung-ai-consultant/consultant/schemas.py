@@ -345,6 +345,16 @@ class SpecRow:
     spec_value: Optional[str]
 
 
+@dataclass(frozen=True)
+class ChunkRow:
+    """A chunk as stored (Phase 4C). ``similarity`` only for vector retrieval; diagnostic only."""
+    chunk_id: int
+    product_id: int
+    section: str
+    content: str
+    similarity: Optional[float] = None
+
+
 # ---- feature evaluation / ranking -------------------------------------------------------
 
 @dataclass(frozen=True)

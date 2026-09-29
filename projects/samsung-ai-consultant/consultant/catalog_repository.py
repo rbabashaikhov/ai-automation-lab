@@ -14,10 +14,13 @@ Safety rules (Phase 4A §9):
 
 from __future__ import annotations
 
+import math
 from typing import Iterable, Optional, Sequence
 
+from indexing.metadata import SECTION_ORDER
+
 from .schemas import (
-    RESOLUTION_VALUES, Filters, GroupKey, ModelRef, ModelResolution, ProductKind, ProductRow,
+    RESOLUTION_VALUES, ChunkRow, Filters, GroupKey, ModelRef, ModelResolution, ProductKind, ProductRow,
     RefKind, SortDir, SortKey, SpecRow,
 )
 from .vocabulary import CatalogVocabulary, build_vocabulary, nearest_codes, normalize_code
@@ -33,6 +36,12 @@ PRODUCT_KIND_SQL = ("CASE WHEN starts_with(p.name, 'Дисплей') THEN 'displ
 MAX_LIST_LIMIT = 50
 MAX_CANDIDATES = 200
 STATEMENT_TIMEOUT_MS = 5000
+
+# Phase 4C semantic access. Sections are the closed indexing taxonomy (indexing/metadata.py).
+SECTIONS = tuple(SECTION_ORDER)
+EMBEDDING_DIMS = 1536
+MAX_CHUNKS_PER_QUERY = MAX_CANDIDATES * len(SECTIONS)
+GLOBAL_MATCH_COUNT = 5000       # above the ~514-chunk corpus: exact scan returns everything (Phase 3D)
 
 _RANGE_COLUMNS = {
     "screen_size_inches": "p.screen_size_inches",
@@ -244,6 +253,94 @@ class CatalogRepository:
                                                         params):
             out[pid].append(SpecRow(pid, group, name, key, value))
         return out
+
+    # ---- Phase 4C: relaxation / coverage helpers -----------------------------------------------
+
+    def nearest(self, filters: Filters, key: SortKey, target: float, limit: int = 3) -> list:
+        """Rows ordered by distance of ``key`` to ``target`` (relaxation of an exact constraint)."""
+        if not isinstance(key, SortKey):
+            raise TypeError("key must be a SortKey enum")
+        where, params = compile_filters(filters)
+        expr = SORT_EXPR[key]
+        return [_row(r) for r in self._fetch(
+            f"SELECT {_PRODUCT_COLUMNS} FROM products p WHERE {where} AND {expr} IS NOT NULL "
+            f"ORDER BY abs({expr} - %s), {_STABLE_ORDER} LIMIT %s",
+            [*params, float(target), max(1, min(int(limit), MAX_LIST_LIMIT))])]
+
+    def spec_coverage(self, spec_names: Sequence[str]) -> int:
+        """Number of catalog products carrying any of ``spec_names``."""
+        return self._fetch("SELECT COUNT(DISTINCT s.product_id) FROM product_specs s WHERE s.spec_name = ANY(%s)",
+                           [list(spec_names)])[0][0]
+
+    def specs_mentioning(self, term: str, limit: int = 5000) -> list:
+        """Catalog spec rows whose ``name: value`` text contains ``term`` (case-insensitive substring;
+        a superset -- ``semantic.mentions`` applies the exact boundary rule). ``term`` is a
+        parameter with LIKE wildcards escaped."""
+        escaped = term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+        rows = self._fetch("SELECT s.product_id, s.spec_group, s.spec_name, s.spec_key, s.spec_value "
+                           "FROM product_specs s WHERE (s.spec_name || ': ' || COALESCE(s.spec_value, '')) ILIKE %s "
+                           "ORDER BY s.product_id, s.id LIMIT %s", [f"%{escaped}%", limit])
+        return [SpecRow(*r) for r in rows]
+
+    # ---- Phase 4C: chunks (sections and vectors) --------------------------------------------------
+
+    @staticmethod
+    def _sections(sections: Optional[Sequence[str]]) -> Optional[list]:
+        if sections is None:
+            return None
+        bad = [s for s in sections if s not in SECTIONS]
+        if bad:
+            raise KeyError(f"unknown section(s) {bad}; allowed {SECTIONS}")
+        return list(sections)
+
+    @staticmethod
+    def _vector_literal(embedding: Sequence[float]) -> str:
+        if len(embedding) != EMBEDDING_DIMS:
+            raise ValueError(f"embedding has {len(embedding)} dims, expected {EMBEDDING_DIMS}")
+        values = [float(x) for x in embedding]
+        if not all(math.isfinite(x) for x in values):
+            raise ValueError("embedding contains non-finite values")
+        return "[" + ",".join(repr(x) for x in values) + "]"
+
+    def chunks_by_section(self, product_ids: Iterable[int], sections: Sequence[str]) -> list:
+        """Deterministic section lookup (no embedding): chunks of ``product_ids`` in ``sections``."""
+        ids = list(product_ids)
+        secs = self._sections(sections)
+        if not ids or not secs:
+            return []
+        rows = self._fetch("SELECT c.id, c.product_id, c.metadata->>'section', c.content FROM chunks c "
+                           "WHERE c.product_id = ANY(%s) AND c.metadata->>'section' = ANY(%s) "
+                           "ORDER BY c.product_id, c.chunk_index, c.id", [ids, secs])
+        return [ChunkRow(r[0], r[1], r[2], r[3]) for r in rows]
+
+    def vector_in_products(self, product_ids: Iterable[int], embedding: Sequence[float],
+                           sections: Optional[Sequence[str]] = None, limit: Optional[int] = None) -> list:
+        """Candidate/product-scoped vector search: only chunks of ``product_ids`` (from structured
+        retrieval), optionally restricted to allowlisted ``sections``. Never filters on chunk price
+        or availability metadata. Similarity = 1 - cosine distance (as ``match_product_chunks``)."""
+        ids = list(product_ids)
+        if not ids:
+            return []
+        lit = self._vector_literal(embedding)
+        secs = self._sections(sections)
+        sql = ("SELECT c.id, c.product_id, c.metadata->>'section', c.content, 1 - (c.embedding <=> %s::vector) "
+               "FROM chunks c WHERE c.product_id = ANY(%s) AND c.embedding IS NOT NULL")
+        params: list = [lit, ids]
+        if secs is not None:
+            sql += " AND c.metadata->>'section' = ANY(%s)"
+            params.append(secs)
+        cap = MAX_CHUNKS_PER_QUERY if limit is None else max(1, min(int(limit), MAX_CHUNKS_PER_QUERY))
+        rows = self._fetch(sql + " ORDER BY c.embedding <=> %s::vector, c.id LIMIT %s", [*params, lit, cap])
+        return [ChunkRow(r[0], r[1], r[2], r[3], float(r[4])) for r in rows]
+
+    def vector_global(self, embedding: Sequence[float], available_only: Optional[bool] = True) -> list:
+        """Global semantic fallback through the unchanged ``match_product_chunks``. Only its
+        availability filter is used -- never its list-price filters."""
+        lit = self._vector_literal(embedding)
+        rows = self._fetch("SELECT m.chunk_id, m.product_id, m.metadata->>'section', m.content, m.similarity "
+                           "FROM match_product_chunks(%s::vector, %s, filter_is_available => %s) m",
+                           [lit, GLOBAL_MATCH_COUNT, available_only])
+        return [ChunkRow(r[0], r[1], r[2], r[3], float(r[4])) for r in rows]
 
     # ---- model / family resolution -----------------------------------------------------------
 

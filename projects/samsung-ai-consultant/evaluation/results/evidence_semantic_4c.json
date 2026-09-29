@@ -1,0 +1,1685 @@
+{
+ "generated_at": "2026-09-29T14:05:29+00:00",
+ "db_transaction_read_only": "on",
+ "openai_requests": 0,
+ "embeddings_generated": 0,
+ "cached_embedding_lookups": {
+  "hits": 32,
+  "misses": 10
+ },
+ "A_phase4b_baseline": {
+  "recomputed": {
+   "cases": 6,
+   "structured_4b": {
+    "hit@1": 0.3333,
+    "hit@3": 0.5,
+    "hit@5": 0.6667,
+    "mrr": 0.4583
+   },
+   "vector_3d2": {
+    "hit@1": 0.1667,
+    "hit@3": 0.1667,
+    "hit@5": 0.1667,
+    "mrr": 0.21
+   }
+  },
+  "committed": {
+   "cases": 6,
+   "structured_4b": {
+    "hit@1": 0.3333,
+    "hit@3": 0.5,
+    "hit@5": 0.6667,
+    "mrr": 0.4583
+   },
+   "vector_3d2": {
+    "hit@1": 0.1667,
+    "hit@3": 0.1667,
+    "hit@5": 0.1667,
+    "mrr": 0.21
+   }
+  },
+  "unchanged": true
+ },
+ "B_evidence_coverage": [
+  {
+   "id": "exact-model-code",
+   "family": "sql_sufficient",
+   "route": "SQL_LOOKUP",
+   "confidence": "strong",
+   "confidence_reasons": [
+    "constraints_and_requested_features_backed_by_catalog_facts"
+   ],
+   "products": 1,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "QE65S95HAUXPY"
+   ],
+   "labelled_total": 1,
+   "features_represented": [],
+   "features_missing": [],
+   "gaps": [],
+   "passages": 1,
+   "passage_paths": [
+    "section_lookup"
+   ],
+   "passage_sections": [
+    "overview"
+   ],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 564,
+   "trimmed_passages": 0,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 2
+  },
+  {
+   "id": "exact-model-code-with-brand",
+   "family": "sql_sufficient",
+   "route": "SQL_LOOKUP",
+   "confidence": "strong",
+   "confidence_reasons": [
+    "constraints_and_requested_features_backed_by_catalog_facts"
+   ],
+   "products": 1,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "QE85QN70HAUXPY"
+   ],
+   "labelled_total": 1,
+   "features_represented": [],
+   "features_missing": [],
+   "gaps": [],
+   "passages": 1,
+   "passage_paths": [
+    "section_lookup"
+   ],
+   "passage_sections": [
+    "overview"
+   ],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 557,
+   "trimmed_passages": 0,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 2
+  },
+  {
+   "id": "exact-lookup-conversational",
+   "family": "sql_sufficient",
+   "route": "SQL_LOOKUP",
+   "confidence": "strong",
+   "confidence_reasons": [
+    "constraints_and_requested_features_backed_by_catalog_facts"
+   ],
+   "products": 1,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "UE27LSM7FAXXPY"
+   ],
+   "labelled_total": 1,
+   "features_represented": [],
+   "features_missing": [],
+   "gaps": [],
+   "passages": 1,
+   "passage_paths": [
+    "section_lookup"
+   ],
+   "passage_sections": [
+    "overview"
+   ],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 492,
+   "trimmed_passages": 0,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 2
+  },
+  {
+   "id": "structured-oled-65",
+   "family": "sql_sufficient",
+   "route": "SQL_FILTER",
+   "confidence": "strong",
+   "confidence_reasons": [
+    "constraints_and_requested_features_backed_by_catalog_facts"
+   ],
+   "products": 3,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "QE65S95HAUXPY",
+    "QE65S85HAEXPY",
+    "QE65S90HAEXPY"
+   ],
+   "labelled_total": 3,
+   "features_represented": [],
+   "features_missing": [],
+   "gaps": [],
+   "passages": 0,
+   "passage_paths": [],
+   "passage_sections": [],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 1210,
+   "trimmed_passages": 0,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 0
+  },
+  {
+   "id": "structured-neo-qled-75-120hz",
+   "family": "sql_sufficient",
+   "route": "SQL_FILTER",
+   "confidence": "strong",
+   "confidence_reasons": [
+    "constraints_and_requested_features_backed_by_catalog_facts"
+   ],
+   "products": 2,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "QE75QN80HAUXPY",
+    "QE75LS03HWUXPY"
+   ],
+   "labelled_total": 2,
+   "features_represented": [],
+   "features_missing": [],
+   "gaps": [],
+   "passages": 0,
+   "passage_paths": [],
+   "passage_sections": [],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 909,
+   "trimmed_passages": 0,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 0
+  },
+  {
+   "id": "structured-budget-under-30k",
+   "family": "sql_sufficient",
+   "route": "SQL_FILTER",
+   "confidence": "strong",
+   "confidence_reasons": [
+    "constraints_and_requested_features_backed_by_catalog_facts"
+   ],
+   "products": 4,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "QE32Q5FAAUXPY",
+    "UE32F6000FUXRU",
+    "UE32H5000FUXRU",
+    "UE43F6000FUXRU"
+   ],
+   "labelled_total": 4,
+   "features_represented": [],
+   "features_missing": [],
+   "gaps": [],
+   "passages": 0,
+   "passage_paths": [],
+   "passage_sections": [],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 1389,
+   "trimmed_passages": 0,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 0
+  },
+  {
+   "id": "structured-largest-oled",
+   "family": "aggregate_not_retrieval",
+   "route": "SQL_AGGREGATE",
+   "confidence": "strong",
+   "confidence_reasons": [
+    "constraints_and_requested_features_backed_by_catalog_facts"
+   ],
+   "products": 3,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "QE83S85HAEXPY",
+    "QE83S95HAEXPY",
+    "QE83S90HAEXPY"
+   ],
+   "labelled_total": 3,
+   "features_represented": [],
+   "features_missing": [],
+   "gaps": [],
+   "passages": 0,
+   "passage_paths": [],
+   "passage_sections": [],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 1142,
+   "trimmed_passages": 0,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 0
+  },
+  {
+   "id": "semantic-gaming-console",
+   "family": "vector_primary",
+   "route": "CONSTRAINT_FIRST",
+   "confidence": "strong",
+   "confidence_reasons": [
+    "constraints_and_requested_features_backed_by_catalog_facts"
+   ],
+   "products": 8,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "QE65QN80HAUXPY",
+    "MRE55R85HAUXPY"
+   ],
+   "labelled_total": 3,
+   "features_represented": [
+    "allm",
+    "freesync_premium",
+    "game_bar",
+    "hz_120",
+    "vrr"
+   ],
+   "features_missing": [],
+   "gaps": [
+    "excluded_out_of_scope",
+    "excluded_unavailable"
+   ],
+   "passages": 3,
+   "passage_paths": [
+    "section_lookup"
+   ],
+   "passage_sections": [
+    "display",
+    "gaming"
+   ],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 5689,
+   "trimmed_passages": 13,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 0
+  },
+  {
+   "id": "semantic-bright-room",
+   "family": "vector_primary",
+   "route": "CONSTRAINT_FIRST",
+   "confidence": "weak",
+   "confidence_reasons": [
+    "top_fit_band_exceeds_shortlist"
+   ],
+   "products": 8,
+   "alternatives": 0,
+   "labelled_in_evidence": [],
+   "labelled_total": 3,
+   "features_represented": [
+    "anti_glare"
+   ],
+   "features_missing": [],
+   "gaps": [
+    "excluded_out_of_scope",
+    "excluded_unavailable",
+    "not_in_catalog_domain"
+   ],
+   "passages": 7,
+   "passage_paths": [
+    "section_lookup"
+   ],
+   "passage_sections": [
+    "display"
+   ],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 5731,
+   "trimmed_passages": 1,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 0
+  },
+  {
+   "id": "semantic-movies",
+   "family": "vector_primary",
+   "route": "CONSTRAINT_FIRST",
+   "confidence": "weak",
+   "confidence_reasons": [
+    "top_fit_band_exceeds_shortlist"
+   ],
+   "products": 8,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "QE55S95HAUXPY"
+   ],
+   "labelled_total": 3,
+   "features_represented": [
+    "dolby_atmos",
+    "filmmaker_mode"
+   ],
+   "features_missing": [],
+   "gaps": [
+    "excluded_out_of_scope",
+    "excluded_unavailable"
+   ],
+   "passages": 10,
+   "passage_paths": [
+    "section_lookup"
+   ],
+   "passage_sections": [
+    "audio",
+    "display"
+   ],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 5928,
+   "trimmed_passages": 6,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 0
+  },
+  {
+   "id": "semantic-sound-without-soundbar",
+   "family": "vector_primary",
+   "route": "CONSTRAINT_FIRST",
+   "confidence": "strong",
+   "confidence_reasons": [
+    "constraints_and_requested_features_backed_by_catalog_facts"
+   ],
+   "products": 8,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "QE65S95HAUXPY",
+    "QE55S95HAUXPY"
+   ],
+   "labelled_total": 2,
+   "features_represented": [
+    "dolby_atmos"
+   ],
+   "features_missing": [],
+   "gaps": [
+    "excluded_out_of_scope",
+    "excluded_unavailable"
+   ],
+   "passages": 8,
+   "passage_paths": [
+    "section_lookup"
+   ],
+   "passage_sections": [
+    "audio"
+   ],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 5172,
+   "trimmed_passages": 0,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 0
+  },
+  {
+   "id": "semantic-thin-wall-mount",
+   "family": "vector_primary",
+   "route": "CONSTRAINT_FIRST",
+   "confidence": "strong",
+   "confidence_reasons": [
+    "constraints_and_requested_features_backed_by_catalog_facts"
+   ],
+   "products": 8,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "QE65S95HAUXPY",
+    "QE55S95HAUXPY",
+    "QE77S95HAEXPY"
+   ],
+   "labelled_total": 3,
+   "features_represented": [
+    "vesa"
+   ],
+   "features_missing": [],
+   "gaps": [
+    "excluded_out_of_scope",
+    "excluded_unavailable"
+   ],
+   "passages": 5,
+   "passage_paths": [
+    "section_lookup"
+   ],
+   "passage_sections": [
+    "physical_design"
+   ],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 5865,
+   "trimmed_passages": 3,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 0
+  },
+  {
+   "id": "hybrid-oled-65-ps5",
+   "family": "hybrid",
+   "route": "CONSTRAINT_FIRST",
+   "confidence": "strong",
+   "confidence_reasons": [
+    "constraints_and_requested_features_backed_by_catalog_facts"
+   ],
+   "products": 3,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "QE65S95HAUXPY",
+    "QE65S85HAEXPY",
+    "QE65S90HAEXPY"
+   ],
+   "labelled_total": 3,
+   "features_represented": [
+    "allm",
+    "freesync_premium",
+    "game_bar",
+    "hz_120",
+    "vrr"
+   ],
+   "features_missing": [],
+   "gaps": [],
+   "passages": 6,
+   "passage_paths": [
+    "section_lookup"
+   ],
+   "passage_sections": [
+    "display",
+    "gaming"
+   ],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 3644,
+   "trimmed_passages": 0,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 0
+  },
+  {
+   "id": "hybrid-neo-qled-budget-gaming",
+   "family": "hybrid",
+   "route": "CONSTRAINT_FIRST",
+   "confidence": "strong",
+   "confidence_reasons": [
+    "constraints_and_requested_features_backed_by_catalog_facts"
+   ],
+   "products": 8,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "QE55QN80HAUXPY",
+    "QE65QN80HAUXPY",
+    "QE75QN80HAUXPY"
+   ],
+   "labelled_total": 3,
+   "features_represented": [
+    "allm",
+    "freesync_premium",
+    "game_bar",
+    "hz_120",
+    "vrr"
+   ],
+   "features_missing": [],
+   "gaps": [
+    "excluded_unavailable"
+   ],
+   "passages": 3,
+   "passage_paths": [
+    "section_lookup"
+   ],
+   "passage_sections": [
+    "display",
+    "gaming"
+   ],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 5701,
+   "trimmed_passages": 13,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 0
+  },
+  {
+   "id": "hybrid-large-120hz-good-sound",
+   "family": "hybrid",
+   "route": "CONSTRAINT_FIRST",
+   "confidence": "strong",
+   "confidence_reasons": [
+    "constraints_and_requested_features_backed_by_catalog_facts"
+   ],
+   "products": 8,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "QE77S95HAEXPY",
+    "QE83S95HAEXPY"
+   ],
+   "labelled_total": 2,
+   "features_represented": [
+    "dolby_atmos"
+   ],
+   "features_missing": [],
+   "gaps": [
+    "excluded_out_of_scope",
+    "excluded_unavailable"
+   ],
+   "passages": 8,
+   "passage_paths": [
+    "section_lookup"
+   ],
+   "passage_sections": [
+    "audio"
+   ],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 5509,
+   "trimmed_passages": 0,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 0
+  },
+  {
+   "id": "difficult-cheapest-superlative",
+   "family": "aggregate_not_retrieval",
+   "route": "SQL_AGGREGATE",
+   "confidence": "strong",
+   "confidence_reasons": [
+    "constraints_and_requested_features_backed_by_catalog_facts"
+   ],
+   "products": 1,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "UE32H5000FUXRU"
+   ],
+   "labelled_total": 1,
+   "features_represented": [],
+   "features_missing": [],
+   "gaps": [
+    "excluded_unavailable"
+   ],
+   "passages": 0,
+   "passage_paths": [],
+   "passage_sections": [],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 408,
+   "trimmed_passages": 0,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 0
+  },
+  {
+   "id": "difficult-vrr-buried-in-spec-value",
+   "family": "difficult_ambiguous",
+   "route": "CONSTRAINT_FIRST",
+   "confidence": "partial",
+   "confidence_reasons": [
+    "required_feature_not_listed"
+   ],
+   "products": 8,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "MRE55R85HAUXPY"
+   ],
+   "labelled_total": 3,
+   "features_represented": [
+    "vrr"
+   ],
+   "features_missing": [],
+   "gaps": [
+    "excluded_out_of_scope",
+    "excluded_unavailable",
+    "required_feature_not_listed"
+   ],
+   "passages": 6,
+   "passage_paths": [
+    "section_lookup"
+   ],
+   "passage_sections": [
+    "display"
+   ],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 5843,
+   "trimmed_passages": 2,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 0
+  },
+  {
+   "id": "difficult-budget-vs-large-tradeoff",
+   "family": "difficult_ambiguous",
+   "route": "SEMANTIC_FALLBACK",
+   "confidence": "weak",
+   "confidence_reasons": [
+    "global_semantic_fallback"
+   ],
+   "products": 8,
+   "alternatives": 0,
+   "labelled_in_evidence": [],
+   "labelled_total": 2,
+   "features_represented": [],
+   "features_missing": [],
+   "gaps": [],
+   "passages": 13,
+   "passage_paths": [
+    "vector"
+   ],
+   "passage_sections": [
+    "gaming",
+    "overview",
+    "physical_design"
+   ],
+   "embedding_lookups": 1,
+   "semantic_path": "global_fallback",
+   "approx_tokens": 5879,
+   "trimmed_passages": 3,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 12
+  },
+  {
+   "id": "difficult-stale-year-in-name",
+   "family": "difficult_ambiguous",
+   "route": "SQL_FILTER",
+   "confidence": "strong",
+   "confidence_reasons": [
+    "constraints_and_requested_features_backed_by_catalog_facts"
+   ],
+   "products": 6,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "QE32LS03CBUXRU"
+   ],
+   "labelled_total": 1,
+   "features_represented": [],
+   "features_missing": [],
+   "gaps": [
+    "excluded_unavailable",
+    "year_mismatch"
+   ],
+   "passages": 0,
+   "passage_paths": [],
+   "passage_sections": [],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 2176,
+   "trimmed_passages": 0,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 0
+  },
+  {
+   "id": "semantic-portable-kitchen",
+   "family": "vector_primary",
+   "route": "CONSTRAINT_FIRST",
+   "confidence": "strong",
+   "confidence_reasons": [
+    "constraints_and_requested_features_backed_by_catalog_facts"
+   ],
+   "products": 8,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "UE32H5000FUXRU",
+    "UE32F6000FUXRU"
+   ],
+   "labelled_total": 3,
+   "features_represented": [],
+   "features_missing": [],
+   "gaps": [
+    "excluded_out_of_scope",
+    "excluded_unavailable"
+   ],
+   "passages": 0,
+   "passage_paths": [],
+   "passage_sections": [],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 2677,
+   "trimmed_passages": 0,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 0
+  },
+  {
+   "id": "structured-unavailable-models",
+   "family": "sql_sufficient",
+   "route": "SQL_FILTER",
+   "confidence": "strong",
+   "confidence_reasons": [
+    "constraints_and_requested_features_backed_by_catalog_facts"
+   ],
+   "products": 9,
+   "alternatives": 0,
+   "labelled_in_evidence": [
+    "QE55QN1EHAUXPY",
+    "QE65QN1EHAUXPY",
+    "QE75QN1EHAUXPY",
+    "QE98LS03HEUXPY",
+    "UE100M90HUXPY",
+    "UE43U8000HUXPY",
+    "UE55M1EHAUXPY",
+    "UE70U8000HUXPY",
+    "UE85M1EHAUXPY"
+   ],
+   "labelled_total": 9,
+   "features_represented": [],
+   "features_missing": [],
+   "gaps": [],
+   "passages": 0,
+   "passage_paths": [],
+   "passage_sections": [],
+   "embedding_lookups": 0,
+   "semantic_path": null,
+   "approx_tokens": 3085,
+   "trimmed_passages": 0,
+   "llm_payload_has_similarity": false,
+   "stale_lines_stripped": 0
+  }
+ ],
+ "C_candidate_scoped_experimental_arm": {
+  "cases": [
+   {
+    "id": "semantic-gaming-console",
+    "family": "vector_primary",
+    "candidates": 64,
+    "escaped_products": 0,
+    "gold_sections": [
+     "display",
+     "gaming"
+    ],
+    "first_gold_section_chunk_rank": 1,
+    "passage_hit@1": true,
+    "passage_hit@3": true,
+    "passage_hit@5": true,
+    "shortlist_passage_section_correct": 0.5,
+    "top_passage_section_correct": 1.0,
+    "structured_4b": {
+     "hit@1": false,
+     "hit@3": false,
+     "hit@5": true,
+     "mrr": 0.2,
+     "first_relevant_rank": 5
+    },
+    "final_4c": {
+     "hit@1": false,
+     "hit@3": false,
+     "hit@5": true,
+     "mrr": 0.25,
+     "first_relevant_rank": 4
+    },
+    "moved_by_tiebreak": 56,
+    "labelled_ranks": {
+     "QE65S95HAUXPY": {
+      "structured": 21,
+      "final": 33
+     },
+     "QE65QN80HAUXPY": {
+      "structured": 8,
+      "final": 21
+     },
+     "MRE55R85HAUXPY": {
+      "structured": 5,
+      "final": 4
+     }
+    },
+    "confidence": "partial",
+    "approx_tokens": 5933
+   },
+   {
+    "id": "semantic-bright-room",
+    "family": "vector_primary",
+    "candidates": 64,
+    "escaped_products": 0,
+    "gold_sections": [
+     "display"
+    ],
+    "first_gold_section_chunk_rank": 78,
+    "passage_hit@1": false,
+    "passage_hit@3": false,
+    "passage_hit@5": false,
+    "shortlist_passage_section_correct": 0.0,
+    "top_passage_section_correct": 0.0,
+    "structured_4b": {
+     "hit@1": false,
+     "hit@3": false,
+     "hit@5": false,
+     "mrr": 0.0227,
+     "first_relevant_rank": 44
+    },
+    "final_4c": {
+     "hit@1": false,
+     "hit@3": false,
+     "hit@5": false,
+     "mrr": 0.0312,
+     "first_relevant_rank": 32
+    },
+    "moved_by_tiebreak": 62,
+    "labelled_ranks": {
+     "QE65QN80HAUXPY": {
+      "structured": 56,
+      "final": 51
+     },
+     "MRE65R85HAUXPY": {
+      "structured": 60,
+      "final": 32
+     },
+     "UE65M80HAUXPY": {
+      "structured": 44,
+      "final": 48
+     }
+    },
+    "confidence": "weak",
+    "approx_tokens": 5837
+   },
+   {
+    "id": "semantic-movies",
+    "family": "vector_primary",
+    "candidates": 64,
+    "escaped_products": 0,
+    "gold_sections": [
+     "audio",
+     "display"
+    ],
+    "first_gold_section_chunk_rank": 1,
+    "passage_hit@1": true,
+    "passage_hit@3": true,
+    "passage_hit@5": true,
+    "shortlist_passage_section_correct": 0.5,
+    "top_passage_section_correct": 1.0,
+    "structured_4b": {
+     "hit@1": false,
+     "hit@3": false,
+     "hit@5": false,
+     "mrr": 0.027,
+     "first_relevant_rank": 37
+    },
+    "final_4c": {
+     "hit@1": false,
+     "hit@3": false,
+     "hit@5": false,
+     "mrr": 0.0312,
+     "first_relevant_rank": 32
+    },
+    "moved_by_tiebreak": 62,
+    "labelled_ranks": {
+     "QE65S95HAUXPY": {
+      "structured": 41,
+      "final": 41
+     },
+     "QE77S90HAUXPY": {
+      "structured": 59,
+      "final": 55
+     },
+     "QE55S95HAUXPY": {
+      "structured": 37,
+      "final": 32
+     }
+    },
+    "confidence": "weak",
+    "approx_tokens": 5755
+   },
+   {
+    "id": "semantic-sound-without-soundbar",
+    "family": "vector_primary",
+    "candidates": 64,
+    "escaped_products": 0,
+    "gold_sections": [
+     "audio"
+    ],
+    "first_gold_section_chunk_rank": 1,
+    "passage_hit@1": true,
+    "passage_hit@3": true,
+    "passage_hit@5": true,
+    "shortlist_passage_section_correct": 0.5,
+    "top_passage_section_correct": 1.0,
+    "structured_4b": {
+     "hit@1": true,
+     "hit@3": true,
+     "hit@5": true,
+     "mrr": 1.0,
+     "first_relevant_rank": 1
+    },
+    "final_4c": {
+     "hit@1": false,
+     "hit@3": true,
+     "hit@5": true,
+     "mrr": 0.5,
+     "first_relevant_rank": 2
+    },
+    "moved_by_tiebreak": 54,
+    "labelled_ranks": {
+     "QE65S95HAUXPY": {
+      "structured": 2,
+      "final": 3
+     },
+     "QE55S95HAUXPY": {
+      "structured": 1,
+      "final": 2
+     }
+    },
+    "confidence": "partial",
+    "approx_tokens": 5934
+   },
+   {
+    "id": "semantic-thin-wall-mount",
+    "family": "vector_primary",
+    "candidates": 64,
+    "escaped_products": 0,
+    "gold_sections": [
+     "physical_design"
+    ],
+    "first_gold_section_chunk_rank": 1,
+    "passage_hit@1": true,
+    "passage_hit@3": true,
+    "passage_hit@5": true,
+    "shortlist_passage_section_correct": 0.5,
+    "top_passage_section_correct": 1.0,
+    "structured_4b": {
+     "hit@1": false,
+     "hit@3": true,
+     "hit@5": true,
+     "mrr": 0.5,
+     "first_relevant_rank": 2
+    },
+    "final_4c": {
+     "hit@1": false,
+     "hit@3": true,
+     "hit@5": true,
+     "mrr": 0.5,
+     "first_relevant_rank": 2
+    },
+    "moved_by_tiebreak": 29,
+    "labelled_ranks": {
+     "QE65S95HAUXPY": {
+      "structured": 2,
+      "final": 2
+     },
+     "QE55S95HAUXPY": {
+      "structured": 8,
+      "final": 8
+     },
+     "QE77S95HAEXPY": {
+      "structured": 3,
+      "final": 3
+     }
+    },
+    "confidence": "partial",
+    "approx_tokens": 5981
+   },
+   {
+    "id": "hybrid-oled-65-ps5",
+    "family": "hybrid",
+    "candidates": 3,
+    "escaped_products": 0,
+    "gold_sections": [
+     "display",
+     "gaming"
+    ],
+    "first_gold_section_chunk_rank": 1,
+    "passage_hit@1": true,
+    "passage_hit@3": true,
+    "passage_hit@5": true,
+    "shortlist_passage_section_correct": 1.0,
+    "top_passage_section_correct": 1.0,
+    "structured_4b": {
+     "hit@1": true,
+     "hit@3": true,
+     "hit@5": true,
+     "mrr": 1.0,
+     "first_relevant_rank": 1
+    },
+    "final_4c": {
+     "hit@1": true,
+     "hit@3": true,
+     "hit@5": true,
+     "mrr": 1.0,
+     "first_relevant_rank": 1
+    },
+    "moved_by_tiebreak": 2,
+    "labelled_ranks": {
+     "QE65S95HAUXPY": {
+      "structured": 3,
+      "final": 1
+     },
+     "QE65S85HAEXPY": {
+      "structured": 1,
+      "final": 3
+     },
+     "QE65S90HAEXPY": {
+      "structured": 2,
+      "final": 2
+     }
+    },
+    "confidence": "partial",
+    "approx_tokens": 3655
+   },
+   {
+    "id": "hybrid-neo-qled-budget-gaming",
+    "family": "hybrid",
+    "candidates": 9,
+    "escaped_products": 0,
+    "gold_sections": [
+     "display",
+     "gaming"
+    ],
+    "first_gold_section_chunk_rank": 1,
+    "passage_hit@1": true,
+    "passage_hit@3": true,
+    "passage_hit@5": true,
+    "shortlist_passage_section_correct": 1.0,
+    "top_passage_section_correct": 1.0,
+    "structured_4b": {
+     "hit@1": true,
+     "hit@3": true,
+     "hit@5": true,
+     "mrr": 1.0,
+     "first_relevant_rank": 1
+    },
+    "final_4c": {
+     "hit@1": true,
+     "hit@3": true,
+     "hit@5": true,
+     "mrr": 1.0,
+     "first_relevant_rank": 1
+    },
+    "moved_by_tiebreak": 8,
+    "labelled_ranks": {
+     "QE55QN80HAUXPY": {
+      "structured": 1,
+      "final": 1
+     },
+     "QE65QN80HAUXPY": {
+      "structured": 2,
+      "final": 3
+     },
+     "QE75QN80HAUXPY": {
+      "structured": 3,
+      "final": 2
+     }
+    },
+    "confidence": "partial",
+    "approx_tokens": 5742
+   },
+   {
+    "id": "hybrid-large-120hz-good-sound",
+    "family": "hybrid",
+    "candidates": 19,
+    "escaped_products": 0,
+    "gold_sections": [
+     "audio"
+    ],
+    "first_gold_section_chunk_rank": 1,
+    "passage_hit@1": true,
+    "passage_hit@3": true,
+    "passage_hit@5": true,
+    "shortlist_passage_section_correct": 0.5,
+    "top_passage_section_correct": 1.0,
+    "structured_4b": {
+     "hit@1": false,
+     "hit@3": true,
+     "hit@5": true,
+     "mrr": 0.3333,
+     "first_relevant_rank": 3
+    },
+    "final_4c": {
+     "hit@1": false,
+     "hit@3": false,
+     "hit@5": true,
+     "mrr": 0.25,
+     "first_relevant_rank": 4
+    },
+    "moved_by_tiebreak": 10,
+    "labelled_ranks": {
+     "QE77S95HAEXPY": {
+      "structured": 3,
+      "final": 5
+     },
+     "QE83S95HAEXPY": {
+      "structured": 4,
+      "final": 4
+     }
+    },
+    "confidence": "partial",
+    "approx_tokens": 5999
+   },
+   {
+    "id": "difficult-vrr-buried-in-spec-value",
+    "family": "difficult_ambiguous",
+    "candidates": 64,
+    "escaped_products": 0,
+    "gold_sections": [
+     "display"
+    ],
+    "first_gold_section_chunk_rank": 1,
+    "passage_hit@1": true,
+    "passage_hit@3": true,
+    "passage_hit@5": true,
+    "shortlist_passage_section_correct": 0.5,
+    "top_passage_section_correct": 1.0,
+    "structured_4b": {
+     "hit@1": false,
+     "hit@3": false,
+     "hit@5": true,
+     "mrr": 0.2,
+     "first_relevant_rank": 5
+    },
+    "final_4c": {
+     "hit@1": true,
+     "hit@3": true,
+     "hit@5": true,
+     "mrr": 1.0,
+     "first_relevant_rank": 1
+    },
+    "moved_by_tiebreak": 31,
+    "labelled_ranks": {
+     "QE65S95HAUXPY": {
+      "structured": 21,
+      "final": 28
+     },
+     "QE55S95HAUXPY": {
+      "structured": 15,
+      "final": 20
+     },
+     "MRE55R85HAUXPY": {
+      "structured": 5,
+      "final": 1
+     }
+    },
+    "confidence": "partial",
+    "approx_tokens": 5788
+   },
+   {
+    "id": "semantic-portable-kitchen",
+    "family": "vector_primary",
+    "candidates": 64,
+    "escaped_products": 0,
+    "gold_sections": [],
+    "first_gold_section_chunk_rank": null,
+    "passage_hit@1": false,
+    "passage_hit@3": false,
+    "passage_hit@5": false,
+    "shortlist_passage_section_correct": null,
+    "top_passage_section_correct": null,
+    "structured_4b": {
+     "hit@1": true,
+     "hit@3": true,
+     "hit@5": true,
+     "mrr": 1.0,
+     "first_relevant_rank": 1
+    },
+    "final_4c": {
+     "hit@1": true,
+     "hit@3": true,
+     "hit@5": true,
+     "mrr": 1.0,
+     "first_relevant_rank": 1
+    },
+    "moved_by_tiebreak": 43,
+    "labelled_ranks": {
+     "UE27LSM7FAXXPY": {
+      "structured": null,
+      "final": null
+     },
+     "UE32H5000FUXRU": {
+      "structured": 1,
+      "final": 1
+     },
+     "UE32F6000FUXRU": {
+      "structured": 2,
+      "final": 2
+     }
+    },
+    "confidence": "partial",
+    "approx_tokens": 5774
+   }
+  ],
+  "vector_primary_structured_4b": {
+   "hit@1": 0.3333,
+   "hit@3": 0.5,
+   "hit@5": 0.6667,
+   "mrr": 0.4583
+  },
+  "vector_primary_final_4c": {
+   "hit@1": 0.1667,
+   "hit@3": 0.5,
+   "hit@5": 0.6667,
+   "mrr": 0.3854
+  },
+  "hybrid_structured_4b": {
+   "hit@1": 0.6667,
+   "hit@3": 1.0,
+   "hit@5": 1.0,
+   "mrr": 0.7778
+  },
+  "hybrid_final_4c": {
+   "hit@1": 0.6667,
+   "hit@3": 0.6667,
+   "hit@5": 1.0,
+   "mrr": 0.75
+  },
+  "escape_violations": 0
+ },
+ "D_product_scoped_sections": [
+  {
+   "query": "хочу хороший звук без отдельного саундбара",
+   "gold_section": "audio",
+   "products_with_section": 75,
+   "section_rank1_rate": 1.0,
+   "section_top3_rate": 1.0,
+   "mean_section_rank": 1,
+   "signal_line": "Мощность звука",
+   "products_with_line": 75,
+   "line_rank1_rate": 1.0
+  },
+  {
+   "query": "телевизор для игровой приставки",
+   "gold_section": "gaming",
+   "products_with_section": 64,
+   "section_rank1_rate": 1.0,
+   "section_top3_rate": 1.0,
+   "mean_section_rank": 1,
+   "signal_line": null,
+   "products_with_line": 0,
+   "line_rank1_rate": null
+  },
+  {
+   "query": "тонкий телевизор на стену",
+   "gold_section": "physical_design",
+   "products_with_section": 75,
+   "section_rank1_rate": 0.893,
+   "section_top3_rate": 0.96,
+   "mean_section_rank": 1.23,
+   "signal_line": "Размер без подставки",
+   "products_with_line": 59,
+   "line_rank1_rate": 0.966
+  },
+  {
+   "query": "телевизор с поддержкой VRR (Variable Refresh Rate)",
+   "gold_section": "display",
+   "products_with_section": 75,
+   "section_rank1_rate": 0.88,
+   "section_top3_rate": 1.0,
+   "mean_section_rank": 1.12,
+   "signal_line": "Variable Refresh Rate",
+   "products_with_line": 34,
+   "line_rank1_rate": 0.971
+  },
+  {
+   "query": "для светлой комнаты",
+   "gold_section": "display",
+   "products_with_section": 75,
+   "section_rank1_rate": 0.0,
+   "section_top3_rate": 0.013,
+   "mean_section_rank": 4.63,
+   "signal_line": "Антибликовое покрытие",
+   "products_with_line": 27,
+   "line_rank1_rate": 0.0
+  }
+ ],
+ "E_product_scoped_probes": {
+  "cases": [
+   {
+    "model_code": "MRE115MR95FXRU",
+    "need": "AirPlay",
+    "route": "PRODUCT_SCOPED_SEMANTIC",
+    "truth_listed": true,
+    "probe": "mentioned",
+    "all_terms_matched": true,
+    "semantic_unavailable": true,
+    "matched_spec_facts": [
+     "Поддержка приложения AirPlay: Да"
+    ]
+   },
+   {
+    "model_code": "QE65S95HAUXPY",
+    "need": "AirPlay",
+    "route": "PRODUCT_SCOPED_SEMANTIC",
+    "truth_listed": false,
+    "probe": "verified_not_listed",
+    "all_terms_matched": false,
+    "semantic_unavailable": true,
+    "matched_spec_facts": []
+   },
+   {
+    "model_code": "QE65S95HAUXPY",
+    "need": "Bixby",
+    "route": "PRODUCT_SCOPED_SEMANTIC",
+    "truth_listed": false,
+    "probe": "absence_unverified",
+    "all_terms_matched": false,
+    "semantic_unavailable": true,
+    "matched_spec_facts": []
+   },
+   {
+    "model_code": "QE65S95HAUXPY",
+    "need": "голосовой помощник",
+    "route": "PRODUCT_SCOPED_SEMANTIC",
+    "truth_listed": true,
+    "probe": "absence_unverified",
+    "all_terms_matched": false,
+    "semantic_unavailable": true,
+    "matched_spec_facts": []
+   },
+   {
+    "model_code": "MNA114MS1CCXRU",
+    "need": "HDMI 2.1",
+    "route": "PRODUCT_SCOPED_SEMANTIC",
+    "truth_listed": true,
+    "probe": "mentioned",
+    "all_terms_matched": true,
+    "semantic_unavailable": true,
+    "matched_spec_facts": [
+     "HDMI: 8 шт",
+     "Версия HDMI: 2.1"
+    ]
+   },
+   {
+    "model_code": "QE65S95HAUXPY",
+    "need": "HDMI 2.1",
+    "route": "PRODUCT_SCOPED_SEMANTIC",
+    "truth_listed": false,
+    "probe": "mentioned",
+    "all_terms_matched": false,
+    "semantic_unavailable": true,
+    "matched_spec_facts": [
+     "HDMI: 4 шт",
+     "Технология HDMI ARC: eARC",
+     "Технология Anynet+ (HDMI-CEC): Да",
+     "Другие технологии оптимизации изображения: AI Motion Enhancer Pro; Интеллектуальное масштабирование разрешения (AI Upscale); HDMI Black Level; Real Depth Enhancer; Variable Refresh Rate"
+    ]
+   },
+   {
+    "model_code": "UE27LSM7FAXXPY",
+    "need": "USB-C",
+    "route": "PRODUCT_SCOPED_SEMANTIC",
+    "truth_listed": true,
+    "probe": "mentioned",
+    "all_terms_matched": true,
+    "semantic_unavailable": true,
+    "matched_spec_facts": [
+     "Комплектация: Пульт дистанционного управления, Кабель USB-C, Руководство пользователя",
+     "USB-C: 2 шт"
+    ]
+   },
+   {
+    "model_code": "QE65S95HAUXPY",
+    "need": "USB-C",
+    "route": "PRODUCT_SCOPED_SEMANTIC",
+    "truth_listed": false,
+    "probe": "verified_not_listed",
+    "all_terms_matched": false,
+    "semantic_unavailable": true,
+    "matched_spec_facts": []
+   },
+   {
+    "model_code": "MRE100R85HUXPY",
+    "need": "Wi-Fi 6E",
+    "route": "PRODUCT_SCOPED_SEMANTIC",
+    "truth_listed": true,
+    "probe": "mentioned",
+    "all_terms_matched": true,
+    "semantic_unavailable": true,
+    "matched_spec_facts": [
+     "Поддержка Wi-Fi: Да",
+     "Стандарты Wi-Fi: Wi-Fi 6E"
+    ]
+   },
+   {
+    "model_code": "QE43QN70HAUXPY",
+    "need": "Wi-Fi 6E",
+    "route": "PRODUCT_SCOPED_SEMANTIC",
+    "truth_listed": false,
+    "probe": "mentioned",
+    "all_terms_matched": false,
+    "semantic_unavailable": true,
+    "matched_spec_facts": [
+     "Поддержка Wi-Fi: Да",
+     "Стандарты Wi-Fi: Wi-Fi 5"
+    ]
+   }
+  ],
+  "verified_present": 4,
+  "verified_absent": 2,
+  "unverified": 2,
+  "partial_mentions": 2,
+  "false_absence": 0,
+  "false_full_presence": 0
+ },
+ "F_corpus_analysis": {
+  "bright_room": {
+   "labels": [
+    "QE65QN80HAUXPY",
+    "MRE65R85HAUXPY",
+    "UE65M80HAUXPY"
+   ],
+   "terms": [
+    {
+     "term": "ярк",
+     "products": 0,
+     "labelled_products": 0,
+     "labelled_total": 3
+    },
+    {
+     "term": "brightness",
+     "products": 0,
+     "labelled_products": 0,
+     "labelled_total": 3
+    },
+    {
+     "term": "nits",
+     "products": 0,
+     "labelled_products": 0,
+     "labelled_total": 3
+    },
+    {
+     "term": "кд/м",
+     "products": 0,
+     "labelled_products": 0,
+     "labelled_total": 3
+    },
+    {
+     "term": "Антибликов",
+     "products": 27,
+     "labelled_products": 0,
+     "labelled_total": 3
+    },
+    {
+     "term": "Anti Reflection",
+     "products": 3,
+     "labelled_products": 0,
+     "labelled_total": 3
+    },
+    {
+     "term": "Supreme UHD Dimming",
+     "products": 35,
+     "labelled_products": 3,
+     "labelled_total": 3
+    },
+    {
+     "term": "Mini LED",
+     "products": 31,
+     "labelled_products": 2,
+     "labelled_total": 3
+    },
+    {
+     "term": "Quantum Mini LED",
+     "products": 14,
+     "labelled_products": 1,
+     "labelled_total": 3
+    },
+    {
+     "term": "Micro Dimming",
+     "products": 25,
+     "labelled_products": 1,
+     "labelled_total": 3
+    },
+    {
+     "term": "Self-illuminating",
+     "products": 15,
+     "labelled_products": 0,
+     "labelled_total": 3
+    }
+   ],
+   "semantic_within_candidates": {
+    "all_non_overview": {
+     "label_semantic_ranks": {
+      "QE65QN80HAUXPY": 32,
+      "MRE65R85HAUXPY": 7,
+      "UE65M80HAUXPY": 29
+     },
+     "top5": [
+      "MRE115MR95FXRU",
+      "MRE75R85HAUXPY",
+      "MRE55R85HAUXPY",
+      "MRE100R85HUXPY",
+      "MRE85R85HAUXPY"
+     ],
+     "similarity_top1": 0.2486,
+     "similarity_10th": 0.2333,
+     "similarity_spread_top1_minus_median": 0.0589
+    },
+    "display": {
+     "label_semantic_ranks": {
+      "QE65QN80HAUXPY": 41,
+      "MRE65R85HAUXPY": 11,
+      "UE65M80HAUXPY": 24
+     },
+     "top5": [
+      "UE43M70HAUXPY",
+      "UE50M70HAUXPY",
+      "MRE75R85HAUXPY",
+      "UE75M70HAUXPY",
+      "MRE100R85HUXPY"
+     ],
+     "similarity_top1": 0.2086,
+     "similarity_10th": 0.2033,
+     "similarity_spread_top1_minus_median": 0.0281
+    },
+    "audio": {
+     "label_semantic_ranks": {
+      "QE65QN80HAUXPY": 42,
+      "MRE65R85HAUXPY": 14,
+      "UE65M80HAUXPY": 24
+     },
+     "top5": [
+      "UE50M70HAUXPY",
+      "UE43M70HAUXPY",
+      "UE75M70HAUXPY",
+      "UE55M70HAUXPY",
+      "UE85M70HAUXPY"
+     ],
+     "similarity_top1": 0.235,
+     "similarity_10th": 0.2218,
+     "similarity_spread_top1_minus_median": 0.0375
+    }
+   },
+   "candidates": 64
+  },
+  "movies": {
+   "labels": [
+    "QE65S95HAUXPY",
+    "QE77S90HAUXPY",
+    "QE55S95HAUXPY"
+   ],
+   "terms": [
+    {
+     "term": "Filmmaker",
+     "products": 69,
+     "labelled_products": 3,
+     "labelled_total": 3
+    },
+    {
+     "term": "Кино",
+     "products": 1,
+     "labelled_products": 0,
+     "labelled_total": 3
+    },
+    {
+     "term": "Movie",
+     "products": 1,
+     "labelled_products": 0,
+     "labelled_total": 3
+    },
+    {
+     "term": "Dolby Atmos",
+     "products": 62,
+     "labelled_products": 2,
+     "labelled_total": 3
+    },
+    {
+     "term": "Dolby Vision",
+     "products": 0,
+     "labelled_products": 0,
+     "labelled_total": 3
+    },
+    {
+     "term": "IMAX",
+     "products": 0,
+     "labelled_products": 0,
+     "labelled_total": 3
+    },
+    {
+     "term": "HDR10+",
+     "products": 75,
+     "labelled_products": 3,
+     "labelled_total": 3
+    },
+    {
+     "term": "Q-Symphony",
+     "products": 71,
+     "labelled_products": 3,
+     "labelled_total": 3
+    },
+    {
+     "term": "360 Audio",
+     "products": 36,
+     "labelled_products": 3,
+     "labelled_total": 3
+    },
+    {
+     "term": "Perceptional Color Mapping",
+     "products": 15,
+     "labelled_products": 3,
+     "labelled_total": 3
+    },
+    {
+     "term": "Мощность звука, Вт: 70",
+     "products": 8,
+     "labelled_products": 2,
+     "labelled_total": 3
+    }
+   ],
+   "semantic_within_candidates": {
+    "all_non_overview": {
+     "label_semantic_ranks": {
+      "QE65S95HAUXPY": 51,
+      "QE77S90HAUXPY": 31,
+      "QE55S95HAUXPY": 42
+     },
+     "top5": [
+      "QE32LS03CBUXRU",
+      "QE55LS03HAUXPY",
+      "QE43LS03HEUXPY",
+      "QE65LS03HAUXPY",
+      "UE43F6000FUXRU"
+     ],
+     "similarity_top1": 0.498,
+     "similarity_10th": 0.4825,
+     "similarity_spread_top1_minus_median": 0.065
+    },
+    "display": {
+     "label_semantic_ranks": {
+      "QE65S95HAUXPY": 50,
+      "QE77S90HAUXPY": 29,
+      "QE55S95HAUXPY": 40
+     },
+     "top5": [
+      "QE32LS03CBUXRU",
+      "QE55LS03HAUXPY",
+      "QE43LS03HEUXPY",
+      "QE65LS03HAUXPY",
+      "QE75LS03HWUXPY"
+     ],
+     "similarity_top1": 0.498,
+     "similarity_10th": 0.4651,
+     "similarity_spread_top1_minus_median": 0.0513
+    },
+    "audio": {
+     "label_semantic_ranks": {
+      "QE65S95HAUXPY": 51,
+      "QE77S90HAUXPY": 57,
+      "QE55S95HAUXPY": 39
+     },
+     "top5": [
+      "QE32LS03CBUXRU",
+      "QE43LS03HEUXPY",
+      "QE75LS03HWUXPY",
+      "QE55LS03HAUXPY",
+      "QE85LS03HWUXPY"
+     ],
+     "similarity_top1": 0.4712,
+     "similarity_10th": 0.4452,
+     "similarity_spread_top1_minus_median": 0.0497
+    }
+   },
+   "candidates": 64
+  }
+ }
+}
