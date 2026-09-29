@@ -1,0 +1,123 @@
+{
+  "name": "Samsung — RAG Evaluation Query Embeddings",
+  "nodes": [
+    {
+      "id": "sticky-purpose",
+      "name": "Sticky Note: Purpose",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        -260
+      ],
+      "parameters": {
+        "width": 720,
+        "height": 200,
+        "content": "TEMPORARY evaluation-only workflow (Phase 3D.2). Embeds the 12 evaluation queries with text-embedding-3-small and returns the vectors. No database node, no writes. Delete after use. Not a production Samsung workflow."
+      }
+    },
+    {
+      "id": "manual-trigger",
+      "name": "When clicking ‘Execute workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "code-emit-queries",
+      "name": "Emit evaluation queries",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        0
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "// Phase 3D evaluation queries, generated from evaluation/retrieval_cases.json.\nconst queries = [\n  \"телевизор для игровой приставки\",\n  \"для светлой комнаты\",\n  \"телевизор для фильмов\",\n  \"хочу хороший звук без отдельного саундбара\",\n  \"тонкий телевизор на стену\",\n  \"OLED 65 дюймов для PS5\",\n  \"Neo QLED до 200 тысяч для игр\",\n  \"большой телевизор 120 Гц с хорошим звуком\",\n  \"телевизор с поддержкой VRR (Variable Refresh Rate)\",\n  \"недорогой телевизор с большой диагональю\",\n  \"телевизор Samsung The Frame 2023 года\",\n  \"компактный телевизор на кухню\"\n];\nreturn queries.map((query_text, i) => ({ json: { query_index: i + 1, query_text } }));"
+      }
+    },
+    {
+      "id": "http-openai-embed-eval-query",
+      "name": "OpenAI: Embed query",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -160,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/embeddings",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: \"text-embedding-3-small\", input: $json.query_text }) }}",
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "mcixQy0sFVXl7nU9",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "id": "code-validate-embedding",
+      "name": "Validate embedding",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        0
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const EXPECTED_DIMENSIONS = 1536;\nconst entry = ($json.data || [])[0];\nconst vector = entry && entry.embedding;\n\nif (!Array.isArray(vector) || vector.length !== EXPECTED_DIMENSIONS) {\n  throw new Error(\n    `Query embedding: unexpected dimension ${vector ? vector.length : 'missing'} (expected ${EXPECTED_DIMENSIONS})`\n  );\n}\n\nconst src = $('Emit evaluation queries').item.json;\nreturn [{\n  json: {\n    query_index: src.query_index,\n    query_text: src.query_text,\n    model: $json.model,\n    dimensions: vector.length,\n    embedding: vector,\n  },\n}];"
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Emit evaluation queries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Emit evaluation queries": {
+      "main": [
+        [
+          {
+            "node": "OpenAI: Embed query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI: Embed query": {
+      "main": [
+        [
+          {
+            "node": "Validate embedding",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

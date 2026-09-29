@@ -23,3 +23,6 @@ tools/n8n-tool/exports/**/raw.json
 
 # OS
 .DS_Store
+
+# Samsung AI Consultant: derived query-embedding cache for retrieval evaluation (regenerable)
+projects/samsung-ai-consultant/evaluation/results/query_embeddings.json

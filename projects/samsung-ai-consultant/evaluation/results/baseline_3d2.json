@@ -1,0 +1,2288 @@
+{
+ "generated_at": "2026-09-29T11:17:28+00:00",
+ "db_transaction_read_only": "on",
+ "products": 75,
+ "chunks": 514,
+ "chunks_without_embedding": 0,
+ "embedding_model": "text-embedding-3-small",
+ "openai_requests": 0,
+ "query_texts_embedded": 0,
+ "cases": [
+  {
+   "id": "exact-model-code",
+   "family": "sql_sufficient",
+   "query": "QE65S95HAUXPY",
+   "filters": {
+    "model_code": "QE65S95HAUXPY"
+   },
+   "expected": [
+    "QE65S95HAUXPY"
+   ],
+   "mechanism": "sql",
+   "actual": [
+    "QE65S95HAUXPY"
+   ],
+   "status": "pass",
+   "metrics": {
+    "mechanism_used": "sql",
+    "expected_mechanism": "sql_sufficient",
+    "precision": 1.0,
+    "recall": 1.0
+   },
+   "checks": [
+    [
+     "set_match",
+     true,
+     "missing=[] unexpected=[]"
+    ]
+   ]
+  },
+  {
+   "id": "exact-model-code-with-brand",
+   "family": "sql_sufficient",
+   "query": "Samsung QE85QN70HAUXPY",
+   "filters": {
+    "model_code": "QE85QN70HAUXPY"
+   },
+   "expected": [
+    "QE85QN70HAUXPY"
+   ],
+   "mechanism": "sql",
+   "actual": [
+    "QE85QN70HAUXPY"
+   ],
+   "status": "pass",
+   "metrics": {
+    "mechanism_used": "sql",
+    "expected_mechanism": "sql_sufficient",
+    "precision": 1.0,
+    "recall": 1.0
+   },
+   "checks": [
+    [
+     "set_match",
+     true,
+     "missing=[] unexpected=[]"
+    ]
+   ]
+  },
+  {
+   "id": "exact-lookup-conversational",
+   "family": "sql_sufficient",
+   "query": "расскажи про модель UE27LSM7FAXXPY",
+   "filters": {
+    "model_code": "UE27LSM7FAXXPY"
+   },
+   "expected": [
+    "UE27LSM7FAXXPY"
+   ],
+   "mechanism": "sql",
+   "actual": [
+    "UE27LSM7FAXXPY"
+   ],
+   "status": "pass",
+   "metrics": {
+    "mechanism_used": "sql",
+    "expected_mechanism": "sql_sufficient",
+    "precision": 1.0,
+    "recall": 1.0
+   },
+   "checks": [
+    [
+     "set_match",
+     true,
+     "missing=[] unexpected=[]"
+    ]
+   ]
+  },
+  {
+   "id": "structured-oled-65",
+   "family": "sql_sufficient",
+   "query": "OLED 65 дюймов",
+   "filters": {
+    "panel_technology": "OLED",
+    "screen_size_inches": 65
+   },
+   "expected": [
+    "QE65S95HAUXPY",
+    "QE65S85HAEXPY",
+    "QE65S90HAEXPY"
+   ],
+   "mechanism": "sql",
+   "actual": [
+    "QE65S85HAEXPY",
+    "QE65S90HAEXPY",
+    "QE65S95HAUXPY"
+   ],
+   "status": "pass",
+   "metrics": {
+    "mechanism_used": "sql",
+    "expected_mechanism": "sql_sufficient",
+    "precision": 1.0,
+    "recall": 1.0
+   },
+   "checks": [
+    [
+     "set_match",
+     true,
+     "missing=[] unexpected=[]"
+    ]
+   ]
+  },
+  {
+   "id": "structured-neo-qled-75-120hz",
+   "family": "sql_sufficient",
+   "query": "Neo QLED 75 дюймов 120 Гц",
+   "filters": {
+    "panel_technology": "Neo QLED",
+    "screen_size_inches": 75,
+    "refresh_rate_hz": 120
+   },
+   "expected": [
+    "QE75QN80HAUXPY",
+    "QE75LS03HWUXPY"
+   ],
+   "mechanism": "sql",
+   "actual": [
+    "QE75LS03HWUXPY",
+    "QE75QN80HAUXPY"
+   ],
+   "status": "pass",
+   "metrics": {
+    "mechanism_used": "sql",
+    "expected_mechanism": "sql_sufficient",
+    "precision": 1.0,
+    "recall": 1.0
+   },
+   "checks": [
+    [
+     "set_match",
+     true,
+     "missing=[] unexpected=[]"
+    ]
+   ]
+  },
+  {
+   "id": "structured-budget-under-30k",
+   "family": "sql_sufficient",
+   "query": "телевизор до 30000 рублей",
+   "filters": {
+    "max_effective_price": 30000
+   },
+   "expected": [
+    "QE32Q5FAAUXPY",
+    "UE32F6000FUXRU",
+    "UE32H5000FUXRU",
+    "UE43F6000FUXRU"
+   ],
+   "mechanism": "sql",
+   "actual": [
+    "QE32Q5FAAUXPY",
+    "UE32F6000FUXRU",
+    "UE32H5000FUXRU",
+    "UE43F6000FUXRU"
+   ],
+   "status": "pass",
+   "metrics": {
+    "mechanism_used": "sql",
+    "expected_mechanism": "sql_sufficient",
+    "precision": 1.0,
+    "recall": 1.0
+   },
+   "checks": [
+    [
+     "set_match",
+     true,
+     "missing=[] unexpected=[]"
+    ]
+   ]
+  },
+  {
+   "id": "structured-largest-oled",
+   "family": "aggregate_not_retrieval",
+   "query": "самый большой OLED телевизор",
+   "filters": {
+    "panel_technology": "OLED",
+    "order_by": "screen_size_inches DESC",
+    "limit": 1
+   },
+   "expected": [
+    "QE83S85HAEXPY",
+    "QE83S95HAEXPY",
+    "QE83S90HAEXPY"
+   ],
+   "mechanism": "sql",
+   "actual": [
+    "QE83S85HAEXPY",
+    "QE83S90HAEXPY",
+    "QE83S95HAEXPY"
+   ],
+   "status": "pass",
+   "metrics": {
+    "mechanism_used": "sql",
+    "expected_mechanism": "aggregate_not_retrieval",
+    "precision": 1.0,
+    "recall": 1.0
+   },
+   "checks": [
+    [
+     "set_match",
+     true,
+     "missing=[] unexpected=[]"
+    ],
+    [
+     "no_vector_retrieval",
+     true,
+     "mechanism_used=sql"
+    ]
+   ]
+  },
+  {
+   "id": "semantic-gaming-console",
+   "family": "vector_primary",
+   "query": "телевизор для игровой приставки",
+   "filters": {},
+   "expected": [
+    "QE65S95HAUXPY",
+    "QE65QN80HAUXPY",
+    "MRE55R85HAUXPY"
+   ],
+   "unfiltered_top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "QE32Q5FAAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965368"
+     },
+     "section": "gaming",
+     "similarity": 0.4842
+    },
+    {
+     "rank": 2,
+     "model_code": "MRE115MR95FXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3890358"
+     },
+     "section": "gaming",
+     "similarity": 0.4797
+    },
+    {
+     "rank": 3,
+     "model_code": "UE50M70HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965052"
+     },
+     "section": "gaming",
+     "similarity": 0.478
+    },
+    {
+     "rank": 4,
+     "model_code": "UE43M70HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965050"
+     },
+     "section": "gaming",
+     "similarity": 0.478
+    },
+    {
+     "rank": 5,
+     "model_code": "QE115QN90FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3889456"
+     },
+     "section": "gaming",
+     "similarity": 0.4743
+    }
+   ],
+   "mechanism": "vector",
+   "top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "QE32Q5FAAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965368"
+     },
+     "section": "gaming",
+     "similarity": 0.4842
+    },
+    {
+     "rank": 2,
+     "model_code": "MRE115MR95FXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3890358"
+     },
+     "section": "gaming",
+     "similarity": 0.4797
+    },
+    {
+     "rank": 3,
+     "model_code": "UE50M70HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965052"
+     },
+     "section": "gaming",
+     "similarity": 0.478
+    },
+    {
+     "rank": 4,
+     "model_code": "UE43M70HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965050"
+     },
+     "section": "gaming",
+     "similarity": 0.478
+    },
+    {
+     "rank": 5,
+     "model_code": "QE115QN90FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3889456"
+     },
+     "section": "gaming",
+     "similarity": 0.4743
+    }
+   ],
+   "top5_products": [
+    "QE32Q5FAAUXPY",
+    "MRE115MR95FXRU",
+    "UE50M70HAUXPY",
+    "UE43M70HAUXPY",
+    "QE115QN90FUXRU"
+   ],
+   "expected_product_ranks": {
+    "QE65S95HAUXPY": 68,
+    "QE65QN80HAUXPY": 52,
+    "MRE55R85HAUXPY": 14
+   },
+   "status": "fail",
+   "metrics": {
+    "mechanism_used": "vector",
+    "expected_mechanism": "vector_primary",
+    "hit@1": false,
+    "hit@3": false,
+    "hit@5": false,
+    "mrr": 0.07142857142857142,
+    "first_relevant_rank": 14,
+    "product_chunk_rank": 14,
+    "section_chunk_rank": null,
+    "best_relevant_similarity": 0.4673414750249014
+   },
+   "checks": [
+    [
+     "expected_in_top_5",
+     false,
+     "first_rank=14"
+    ]
+   ]
+  },
+  {
+   "id": "semantic-bright-room",
+   "family": "vector_primary",
+   "query": "для светлой комнаты",
+   "filters": {},
+   "expected": [
+    "QE65QN80HAUXPY",
+    "MRE65R85HAUXPY",
+    "UE65M80HAUXPY"
+   ],
+   "unfiltered_top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "MNA114MS1CCXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3878118"
+     },
+     "section": "physical_design",
+     "similarity": 0.2955
+    },
+    {
+     "rank": 2,
+     "model_code": "MNA114MS1CCXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3878118"
+     },
+     "section": "connectivity",
+     "similarity": 0.2668
+    },
+    {
+     "rank": 3,
+     "model_code": "UE27LSM7FAXXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3970378"
+     },
+     "section": "physical_design",
+     "similarity": 0.2633
+    },
+    {
+     "rank": 4,
+     "model_code": "MNA114MS1CCXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3878118"
+     },
+     "section": "smart_features",
+     "similarity": 0.256
+    },
+    {
+     "rank": 5,
+     "model_code": "MNA114MS1CCXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3878118"
+     },
+     "section": "audio",
+     "similarity": 0.2509
+    }
+   ],
+   "mechanism": "vector",
+   "top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "MNA114MS1CCXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3878118"
+     },
+     "section": "physical_design",
+     "similarity": 0.2955
+    },
+    {
+     "rank": 2,
+     "model_code": "MNA114MS1CCXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3878118"
+     },
+     "section": "connectivity",
+     "similarity": 0.2668
+    },
+    {
+     "rank": 3,
+     "model_code": "UE27LSM7FAXXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3970378"
+     },
+     "section": "physical_design",
+     "similarity": 0.2633
+    },
+    {
+     "rank": 4,
+     "model_code": "MNA114MS1CCXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3878118"
+     },
+     "section": "smart_features",
+     "similarity": 0.256
+    },
+    {
+     "rank": 5,
+     "model_code": "MNA114MS1CCXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3878118"
+     },
+     "section": "audio",
+     "similarity": 0.2509
+    }
+   ],
+   "top5_products": [
+    "MNA114MS1CCXRU",
+    "MNA114MS1CCXRU",
+    "UE27LSM7FAXXPY",
+    "MNA114MS1CCXRU",
+    "MNA114MS1CCXRU"
+   ],
+   "expected_product_ranks": {
+    "QE65QN80HAUXPY": 37,
+    "MRE65R85HAUXPY": 9,
+    "UE65M80HAUXPY": 34
+   },
+   "status": "fail",
+   "metrics": {
+    "mechanism_used": "vector",
+    "expected_mechanism": "vector_primary",
+    "hit@1": false,
+    "hit@3": false,
+    "hit@5": false,
+    "mrr": 0.1111111111111111,
+    "first_relevant_rank": 9,
+    "product_chunk_rank": 13,
+    "section_chunk_rank": null,
+    "best_relevant_similarity": 0.23591025796043597
+   },
+   "checks": [
+    [
+     "expected_in_top_5",
+     false,
+     "first_rank=9"
+    ]
+   ]
+  },
+  {
+   "id": "semantic-movies",
+   "family": "vector_primary",
+   "query": "телевизор для фильмов",
+   "filters": {},
+   "expected": [
+    "QE65S95HAUXPY",
+    "QE77S90HAUXPY",
+    "QE55S95HAUXPY"
+   ],
+   "unfiltered_top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "display",
+     "similarity": 0.498
+    },
+    {
+     "rank": 2,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "connectivity",
+     "similarity": 0.4917
+    },
+    {
+     "rank": 3,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "physical_design",
+     "similarity": 0.4913
+    },
+    {
+     "rank": 4,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "overview",
+     "similarity": 0.4905
+    },
+    {
+     "rank": 5,
+     "model_code": "QE55LS03HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965587"
+     },
+     "section": "display",
+     "similarity": 0.49
+    }
+   ],
+   "mechanism": "vector",
+   "top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "display",
+     "similarity": 0.498
+    },
+    {
+     "rank": 2,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "connectivity",
+     "similarity": 0.4917
+    },
+    {
+     "rank": 3,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "physical_design",
+     "similarity": 0.4913
+    },
+    {
+     "rank": 4,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "overview",
+     "similarity": 0.4905
+    },
+    {
+     "rank": 5,
+     "model_code": "QE55LS03HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965587"
+     },
+     "section": "display",
+     "similarity": 0.49
+    }
+   ],
+   "top5_products": [
+    "QE32LS03CBUXRU",
+    "QE32LS03CBUXRU",
+    "QE32LS03CBUXRU",
+    "QE32LS03CBUXRU",
+    "QE55LS03HAUXPY"
+   ],
+   "expected_product_ranks": {
+    "QE65S95HAUXPY": 57,
+    "QE77S90HAUXPY": 34,
+    "QE55S95HAUXPY": 46
+   },
+   "status": "fail",
+   "metrics": {
+    "mechanism_used": "vector",
+    "expected_mechanism": "vector_primary",
+    "hit@1": false,
+    "hit@3": false,
+    "hit@5": false,
+    "mrr": 0.029411764705882353,
+    "first_relevant_rank": 34,
+    "product_chunk_rank": 115,
+    "section_chunk_rank": null,
+    "best_relevant_similarity": 0.44829763402164535
+   },
+   "checks": [
+    [
+     "expected_in_top_5",
+     false,
+     "first_rank=34"
+    ]
+   ]
+  },
+  {
+   "id": "semantic-sound-without-soundbar",
+   "family": "vector_primary",
+   "query": "хочу хороший звук без отдельного саундбара",
+   "filters": {},
+   "expected": [
+    "QE65S95HAUXPY",
+    "QE55S95HAUXPY"
+   ],
+   "unfiltered_top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "UE27LSM7FAXXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3970378"
+     },
+     "section": "audio",
+     "similarity": 0.4103
+    },
+    {
+     "rank": 2,
+     "model_code": "MNA114MS1CCXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3878118"
+     },
+     "section": "audio",
+     "similarity": 0.385
+    },
+    {
+     "rank": 3,
+     "model_code": "UE32H5000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888514"
+     },
+     "section": "audio",
+     "similarity": 0.3501
+    },
+    {
+     "rank": 4,
+     "model_code": "UE43F6000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888367"
+     },
+     "section": "audio",
+     "similarity": 0.3366
+    },
+    {
+     "rank": 5,
+     "model_code": "MRE115MR95FXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3890358"
+     },
+     "section": "audio",
+     "similarity": 0.3365
+    }
+   ],
+   "mechanism": "vector",
+   "top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "UE27LSM7FAXXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3970378"
+     },
+     "section": "audio",
+     "similarity": 0.4103
+    },
+    {
+     "rank": 2,
+     "model_code": "MNA114MS1CCXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3878118"
+     },
+     "section": "audio",
+     "similarity": 0.385
+    },
+    {
+     "rank": 3,
+     "model_code": "UE32H5000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888514"
+     },
+     "section": "audio",
+     "similarity": 0.3501
+    },
+    {
+     "rank": 4,
+     "model_code": "UE43F6000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888367"
+     },
+     "section": "audio",
+     "similarity": 0.3366
+    },
+    {
+     "rank": 5,
+     "model_code": "MRE115MR95FXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3890358"
+     },
+     "section": "audio",
+     "similarity": 0.3365
+    }
+   ],
+   "top5_products": [
+    "UE27LSM7FAXXPY",
+    "MNA114MS1CCXRU",
+    "UE32H5000FUXRU",
+    "UE43F6000FUXRU",
+    "MRE115MR95FXRU"
+   ],
+   "expected_product_ranks": {
+    "QE65S95HAUXPY": 46,
+    "QE55S95HAUXPY": 34
+   },
+   "status": "fail",
+   "metrics": {
+    "mechanism_used": "vector",
+    "expected_mechanism": "vector_primary",
+    "hit@1": false,
+    "hit@3": false,
+    "hit@5": false,
+    "mrr": 0.029411764705882353,
+    "first_relevant_rank": 34,
+    "product_chunk_rank": 34,
+    "section_chunk_rank": null,
+    "best_relevant_similarity": 0.3091427863265388
+   },
+   "checks": [
+    [
+     "expected_in_top_5",
+     false,
+     "first_rank=34"
+    ]
+   ]
+  },
+  {
+   "id": "semantic-thin-wall-mount",
+   "family": "vector_primary",
+   "query": "тонкий телевизор на стену",
+   "filters": {},
+   "expected": [
+    "QE65S95HAUXPY",
+    "QE55S95HAUXPY",
+    "QE77S95HAEXPY"
+   ],
+   "unfiltered_top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "UE32H5000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888514"
+     },
+     "section": "physical_design",
+     "similarity": 0.4662
+    },
+    {
+     "rank": 2,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "physical_design",
+     "similarity": 0.4646
+    },
+    {
+     "rank": 3,
+     "model_code": "UE32F6000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888361"
+     },
+     "section": "physical_design",
+     "similarity": 0.4516
+    },
+    {
+     "rank": 4,
+     "model_code": "UE43F6000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888367"
+     },
+     "section": "physical_design",
+     "similarity": 0.4467
+    },
+    {
+     "rank": 5,
+     "model_code": "UE32H5000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888514"
+     },
+     "section": "audio",
+     "similarity": 0.4462
+    }
+   ],
+   "mechanism": "vector",
+   "top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "UE32H5000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888514"
+     },
+     "section": "physical_design",
+     "similarity": 0.4662
+    },
+    {
+     "rank": 2,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "physical_design",
+     "similarity": 0.4646
+    },
+    {
+     "rank": 3,
+     "model_code": "UE32F6000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888361"
+     },
+     "section": "physical_design",
+     "similarity": 0.4516
+    },
+    {
+     "rank": 4,
+     "model_code": "UE43F6000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888367"
+     },
+     "section": "physical_design",
+     "similarity": 0.4467
+    },
+    {
+     "rank": 5,
+     "model_code": "UE32H5000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888514"
+     },
+     "section": "audio",
+     "similarity": 0.4462
+    }
+   ],
+   "top5_products": [
+    "UE32H5000FUXRU",
+    "QE32LS03CBUXRU",
+    "UE32F6000FUXRU",
+    "UE43F6000FUXRU",
+    "UE32H5000FUXRU"
+   ],
+   "expected_product_ranks": {
+    "QE65S95HAUXPY": 64,
+    "QE55S95HAUXPY": 61,
+    "QE77S95HAEXPY": 53
+   },
+   "status": "fail",
+   "metrics": {
+    "mechanism_used": "vector",
+    "expected_mechanism": "vector_primary",
+    "hit@1": false,
+    "hit@3": false,
+    "hit@5": false,
+    "mrr": 0.018867924528301886,
+    "first_relevant_rank": 53,
+    "product_chunk_rank": 121,
+    "section_chunk_rank": null,
+    "best_relevant_similarity": 0.4071086034207043
+   },
+   "checks": [
+    [
+     "expected_in_top_5",
+     false,
+     "first_rank=53"
+    ]
+   ]
+  },
+  {
+   "id": "hybrid-oled-65-ps5",
+   "family": "hybrid",
+   "query": "OLED 65 дюймов для PS5",
+   "filters": {
+    "panel_technology": "OLED",
+    "screen_size_inches": 65
+   },
+   "expected": [
+    "QE65S95HAUXPY",
+    "QE65S85HAEXPY",
+    "QE65S90HAEXPY"
+   ],
+   "sql_candidates": {
+    "count": 3,
+    "products": [
+     "QE65S85HAEXPY",
+     "QE65S90HAEXPY",
+     "QE65S95HAUXPY"
+    ]
+   },
+   "sql_only_discriminates": false,
+   "unfiltered_top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "QE65S95HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965583"
+     },
+     "section": "gaming",
+     "similarity": 0.6258
+    },
+    {
+     "rank": 2,
+     "model_code": "QE65S90HAEXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965578"
+     },
+     "section": "gaming",
+     "similarity": 0.6102
+    },
+    {
+     "rank": 3,
+     "model_code": "QE65S95HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965583"
+     },
+     "section": "display",
+     "similarity": 0.6099
+    },
+    {
+     "rank": 4,
+     "model_code": "QE55S95HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965582"
+     },
+     "section": "gaming",
+     "similarity": 0.608
+    },
+    {
+     "rank": 5,
+     "model_code": "QE65S85HAEXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965375"
+     },
+     "section": "gaming",
+     "similarity": 0.6071
+    }
+   ],
+   "mechanism": "hybrid",
+   "top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "QE65S95HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965583"
+     },
+     "section": "gaming",
+     "similarity": 0.6258
+    },
+    {
+     "rank": 2,
+     "model_code": "QE65S90HAEXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965578"
+     },
+     "section": "gaming",
+     "similarity": 0.6102
+    },
+    {
+     "rank": 3,
+     "model_code": "QE65S95HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965583"
+     },
+     "section": "display",
+     "similarity": 0.6099
+    },
+    {
+     "rank": 4,
+     "model_code": "QE65S85HAEXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965375"
+     },
+     "section": "gaming",
+     "similarity": 0.6071
+    },
+    {
+     "rank": 5,
+     "model_code": "QE65S85HAEXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965375"
+     },
+     "section": "display",
+     "similarity": 0.5974
+    }
+   ],
+   "top5_products": [
+    "QE65S95HAUXPY",
+    "QE65S90HAEXPY",
+    "QE65S95HAUXPY",
+    "QE65S85HAEXPY",
+    "QE65S85HAEXPY"
+   ],
+   "expected_product_ranks": {
+    "QE65S95HAUXPY": 1,
+    "QE65S85HAEXPY": 3,
+    "QE65S90HAEXPY": 2
+   },
+   "status": "pass",
+   "metrics": {
+    "mechanism_used": "hybrid",
+    "expected_mechanism": "sql_plus_vector",
+    "hit@1": true,
+    "hit@3": true,
+    "hit@5": true,
+    "mrr": 1.0,
+    "first_relevant_rank": 1,
+    "product_chunk_rank": 1,
+    "section_chunk_rank": null,
+    "best_relevant_similarity": 0.6257936515782523
+   },
+   "checks": [
+    [
+     "expected_in_top_5",
+     true,
+     "first_rank=1"
+    ],
+    [
+     "filter_correctness",
+     true,
+     "outside=[] excluded=[]"
+    ]
+   ]
+  },
+  {
+   "id": "hybrid-neo-qled-budget-gaming",
+   "family": "hybrid",
+   "query": "Neo QLED до 200 тысяч для игр",
+   "filters": {
+    "panel_technology": "Neo QLED",
+    "max_effective_price": 200000
+   },
+   "expected": [
+    "QE55QN80HAUXPY",
+    "QE65QN80HAUXPY",
+    "QE75QN80HAUXPY"
+   ],
+   "sql_candidates": {
+    "count": 12,
+    "products": [
+     "QE43QN70HAUXPY",
+     "QE50QN70HAUXPY",
+     "QE55QN1EHAUXPY",
+     "QE55QN70HAUXPY",
+     "QE55QN80HAUXPY",
+     "QE65QN1EHAUXPY",
+     "QE65QN70HAUXPY",
+     "QE65QN80HAUXPY",
+     "QE75QN1EHAUXPY",
+     "QE75QN70HAUXPY",
+     "QE75QN80HAUXPY",
+     "QE85QN70HAUXPY"
+    ]
+   },
+   "sql_only_discriminates": true,
+   "unfiltered_top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "QE100QN80HUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965358"
+     },
+     "section": "gaming",
+     "similarity": 0.569
+    },
+    {
+     "rank": 2,
+     "model_code": "QE50QN70HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965350"
+     },
+     "section": "gaming",
+     "similarity": 0.5554
+    },
+    {
+     "rank": 3,
+     "model_code": "QE55QN80HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965355"
+     },
+     "section": "gaming",
+     "similarity": 0.5522
+    },
+    {
+     "rank": 4,
+     "model_code": "QE55QN1EHAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965272"
+     },
+     "section": "gaming",
+     "similarity": 0.5521
+    },
+    {
+     "rank": 5,
+     "model_code": "QE55QN70HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965351"
+     },
+     "section": "gaming",
+     "similarity": 0.5498
+    }
+   ],
+   "mechanism": "hybrid",
+   "top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "QE50QN70HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965350"
+     },
+     "section": "gaming",
+     "similarity": 0.5554
+    },
+    {
+     "rank": 2,
+     "model_code": "QE55QN80HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965355"
+     },
+     "section": "gaming",
+     "similarity": 0.5522
+    },
+    {
+     "rank": 3,
+     "model_code": "QE55QN1EHAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965272"
+     },
+     "section": "gaming",
+     "similarity": 0.5521
+    },
+    {
+     "rank": 4,
+     "model_code": "QE55QN70HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965351"
+     },
+     "section": "gaming",
+     "similarity": 0.5498
+    },
+    {
+     "rank": 5,
+     "model_code": "QE75QN80HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965357"
+     },
+     "section": "gaming",
+     "similarity": 0.5461
+    }
+   ],
+   "top5_products": [
+    "QE50QN70HAUXPY",
+    "QE55QN80HAUXPY",
+    "QE55QN1EHAUXPY",
+    "QE55QN70HAUXPY",
+    "QE75QN80HAUXPY"
+   ],
+   "expected_product_ranks": {
+    "QE55QN80HAUXPY": 2,
+    "QE65QN80HAUXPY": 9,
+    "QE75QN80HAUXPY": 5
+   },
+   "status": "pass",
+   "metrics": {
+    "mechanism_used": "hybrid",
+    "expected_mechanism": "sql_plus_vector",
+    "hit@1": false,
+    "hit@3": true,
+    "hit@5": true,
+    "mrr": 0.5,
+    "first_relevant_rank": 2,
+    "product_chunk_rank": 2,
+    "section_chunk_rank": null,
+    "best_relevant_similarity": 0.5522452054596766
+   },
+   "checks": [
+    [
+     "expected_in_top_5",
+     true,
+     "first_rank=2"
+    ],
+    [
+     "filter_correctness",
+     true,
+     "outside=[] excluded=[]"
+    ]
+   ]
+  },
+  {
+   "id": "hybrid-large-120hz-good-sound",
+   "family": "hybrid",
+   "query": "большой телевизор 120 Гц с хорошим звуком",
+   "filters": {
+    "min_screen_size_inches": 75,
+    "refresh_rate_hz": 120
+   },
+   "expected": [
+    "QE77S95HAEXPY",
+    "QE83S95HAEXPY"
+   ],
+   "sql_candidates": {
+    "count": 22,
+    "products": [
+     "MNA114MS1CCXRU",
+     "MRE100R85HUXPY",
+     "MRE115MR95FXRU",
+     "MRE75R85HAUXPY",
+     "MRE75R95HAUXPY",
+     "MRE85R85HAUXPY",
+     "MRE85R95HAUXPY",
+     "QE100QN80HUXPY",
+     "QE115QN90FUXRU",
+     "QE75LS03HWUXPY",
+     "QE75QN80HAUXPY",
+     "QE77S85HAEXPY",
+     "QE77S90HAUXPY",
+     "QE77S95HAEXPY",
+     "QE83S85HAEXPY",
+     "QE83S90HAEXPY",
+     "QE83S95HAEXPY",
+     "QE85LS03HWUXPY",
+     "QE98LS03HEUXPY",
+     "UE100M90HUXPY",
+     "UE75M80HAUXPY",
+     "UE85M80HAUXPY"
+    ]
+   },
+   "sql_only_discriminates": true,
+   "unfiltered_top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "UE32H5000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888514"
+     },
+     "section": "audio",
+     "similarity": 0.5927
+    },
+    {
+     "rank": 2,
+     "model_code": "MRE115MR95FXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3890358"
+     },
+     "section": "audio",
+     "similarity": 0.5891
+    },
+    {
+     "rank": 3,
+     "model_code": "UE100M90HUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965347"
+     },
+     "section": "audio",
+     "similarity": 0.5759
+    },
+    {
+     "rank": 4,
+     "model_code": "MRE100R85HUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965363"
+     },
+     "section": "audio",
+     "similarity": 0.5759
+    },
+    {
+     "rank": 5,
+     "model_code": "QE115QN90FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3889456"
+     },
+     "section": "audio",
+     "similarity": 0.5697
+    }
+   ],
+   "mechanism": "hybrid",
+   "top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "MRE115MR95FXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3890358"
+     },
+     "section": "audio",
+     "similarity": 0.5891
+    },
+    {
+     "rank": 2,
+     "model_code": "UE100M90HUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965347"
+     },
+     "section": "audio",
+     "similarity": 0.5759
+    },
+    {
+     "rank": 3,
+     "model_code": "MRE100R85HUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965363"
+     },
+     "section": "audio",
+     "similarity": 0.5759
+    },
+    {
+     "rank": 4,
+     "model_code": "QE115QN90FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3889456"
+     },
+     "section": "audio",
+     "similarity": 0.5697
+    },
+    {
+     "rank": 5,
+     "model_code": "QE100QN80HUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965358"
+     },
+     "section": "audio",
+     "similarity": 0.5685
+    }
+   ],
+   "top5_products": [
+    "MRE115MR95FXRU",
+    "UE100M90HUXPY",
+    "MRE100R85HUXPY",
+    "QE115QN90FUXRU",
+    "QE100QN80HUXPY"
+   ],
+   "expected_product_ranks": {
+    "QE77S95HAEXPY": 19,
+    "QE83S95HAEXPY": 18
+   },
+   "status": "fail",
+   "metrics": {
+    "mechanism_used": "hybrid",
+    "expected_mechanism": "sql_plus_vector",
+    "hit@1": false,
+    "hit@3": false,
+    "hit@5": false,
+    "mrr": 0.05555555555555555,
+    "first_relevant_rank": 18,
+    "product_chunk_rank": 18,
+    "section_chunk_rank": null,
+    "best_relevant_similarity": 0.5488531456467967
+   },
+   "checks": [
+    [
+     "expected_in_top_5",
+     false,
+     "first_rank=18"
+    ],
+    [
+     "filter_correctness",
+     true,
+     "outside=[] excluded=[]"
+    ]
+   ]
+  },
+  {
+   "id": "difficult-cheapest-superlative",
+   "family": "aggregate_not_retrieval",
+   "query": "самый дешёвый телевизор",
+   "filters": {
+    "order_by": "effective_price ASC",
+    "limit": 1
+   },
+   "expected": [
+    "UE32H5000FUXRU"
+   ],
+   "mechanism": "sql",
+   "actual": [
+    "UE32H5000FUXRU"
+   ],
+   "status": "pass",
+   "metrics": {
+    "mechanism_used": "sql",
+    "expected_mechanism": "aggregate_not_retrieval",
+    "precision": 1.0,
+    "recall": 1.0
+   },
+   "checks": [
+    [
+     "set_match",
+     true,
+     "missing=[] unexpected=[]"
+    ],
+    [
+     "no_vector_retrieval",
+     true,
+     "mechanism_used=sql"
+    ]
+   ]
+  },
+  {
+   "id": "difficult-vrr-buried-in-spec-value",
+   "family": "difficult_ambiguous",
+   "query": "телевизор с поддержкой VRR (Variable Refresh Rate)",
+   "filters": {},
+   "expected": [
+    "QE65S95HAUXPY",
+    "QE55S95HAUXPY",
+    "MRE55R85HAUXPY"
+   ],
+   "unfiltered_top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "MRE55R85HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965359"
+     },
+     "section": "display",
+     "similarity": 0.5434
+    },
+    {
+     "rank": 2,
+     "model_code": "UE32H5000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888514"
+     },
+     "section": "display",
+     "similarity": 0.542
+    },
+    {
+     "rank": 3,
+     "model_code": "MRE55R85HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965359"
+     },
+     "section": "gaming",
+     "similarity": 0.5337
+    },
+    {
+     "rank": 4,
+     "model_code": "MRE85R85HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965362"
+     },
+     "section": "display",
+     "similarity": 0.5323
+    },
+    {
+     "rank": 5,
+     "model_code": "MRE100R85HUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965363"
+     },
+     "section": "display",
+     "similarity": 0.5305
+    }
+   ],
+   "mechanism": "vector",
+   "top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "MRE55R85HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965359"
+     },
+     "section": "display",
+     "similarity": 0.5434
+    },
+    {
+     "rank": 2,
+     "model_code": "UE32H5000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888514"
+     },
+     "section": "display",
+     "similarity": 0.542
+    },
+    {
+     "rank": 3,
+     "model_code": "MRE55R85HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965359"
+     },
+     "section": "gaming",
+     "similarity": 0.5337
+    },
+    {
+     "rank": 4,
+     "model_code": "MRE85R85HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965362"
+     },
+     "section": "display",
+     "similarity": 0.5323
+    },
+    {
+     "rank": 5,
+     "model_code": "MRE100R85HUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965363"
+     },
+     "section": "display",
+     "similarity": 0.5305
+    }
+   ],
+   "top5_products": [
+    "MRE55R85HAUXPY",
+    "UE32H5000FUXRU",
+    "MRE55R85HAUXPY",
+    "MRE85R85HAUXPY",
+    "MRE100R85HUXPY"
+   ],
+   "expected_product_ranks": {
+    "QE65S95HAUXPY": 53,
+    "QE55S95HAUXPY": 32,
+    "MRE55R85HAUXPY": 1
+   },
+   "status": "informational",
+   "metrics": {
+    "mechanism_used": "vector",
+    "expected_mechanism": "vector_primary",
+    "hit@1": true,
+    "hit@3": true,
+    "hit@5": true,
+    "mrr": 1.0,
+    "first_relevant_rank": 1,
+    "product_chunk_rank": 1,
+    "section_chunk_rank": null,
+    "best_relevant_similarity": 0.5434235818600344
+   },
+   "checks": [
+    [
+     "expected_in_top_5",
+     true,
+     "first_rank=1"
+    ]
+   ]
+  },
+  {
+   "id": "difficult-budget-vs-large-tradeoff",
+   "family": "difficult_ambiguous",
+   "query": "недорогой телевизор с большой диагональю",
+   "filters": {},
+   "expected": [
+    "UE75U8000HUXPY",
+    "UE65U8000HUXPY"
+   ],
+   "unfiltered_top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "UE32H5000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888514"
+     },
+     "section": "overview",
+     "similarity": 0.5241
+    },
+    {
+     "rank": 2,
+     "model_code": "QE115QN90FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3889456"
+     },
+     "section": "overview",
+     "similarity": 0.517
+    },
+    {
+     "rank": 3,
+     "model_code": "MRE115MR95FXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3890358"
+     },
+     "section": "overview",
+     "similarity": 0.5136
+    },
+    {
+     "rank": 4,
+     "model_code": "UE85M80HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965271"
+     },
+     "section": "physical_design",
+     "similarity": 0.5074
+    },
+    {
+     "rank": 5,
+     "model_code": "UE85M80HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965271"
+     },
+     "section": "overview",
+     "similarity": 0.5061
+    }
+   ],
+   "mechanism": "vector",
+   "top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "UE32H5000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888514"
+     },
+     "section": "overview",
+     "similarity": 0.5241
+    },
+    {
+     "rank": 2,
+     "model_code": "QE115QN90FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3889456"
+     },
+     "section": "overview",
+     "similarity": 0.517
+    },
+    {
+     "rank": 3,
+     "model_code": "MRE115MR95FXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3890358"
+     },
+     "section": "overview",
+     "similarity": 0.5136
+    },
+    {
+     "rank": 4,
+     "model_code": "UE85M80HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965271"
+     },
+     "section": "physical_design",
+     "similarity": 0.5074
+    },
+    {
+     "rank": 5,
+     "model_code": "UE85M80HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965271"
+     },
+     "section": "overview",
+     "similarity": 0.5061
+    }
+   ],
+   "top5_products": [
+    "UE32H5000FUXRU",
+    "QE115QN90FUXRU",
+    "MRE115MR95FXRU",
+    "UE85M80HAUXPY",
+    "UE85M80HAUXPY"
+   ],
+   "expected_product_ranks": {
+    "UE75U8000HUXPY": 49,
+    "UE65U8000HUXPY": 72
+   },
+   "status": "informational",
+   "metrics": {
+    "mechanism_used": "vector",
+    "expected_mechanism": "sql_plus_vector",
+    "hit@1": false,
+    "hit@3": false,
+    "hit@5": false,
+    "mrr": 0.02040816326530612,
+    "first_relevant_rank": 49,
+    "product_chunk_rank": 112,
+    "section_chunk_rank": null,
+    "best_relevant_similarity": 0.48028065773312334
+   },
+   "checks": [
+    [
+     "expected_in_top_5",
+     false,
+     "first_rank=49"
+    ]
+   ]
+  },
+  {
+   "id": "difficult-stale-year-in-name",
+   "family": "difficult_ambiguous",
+   "query": "телевизор Samsung The Frame 2023 года",
+   "filters": {
+    "category": "The Frame"
+   },
+   "expected": [
+    "QE32LS03CBUXRU"
+   ],
+   "sql_candidates": {
+    "count": 7,
+    "products": [
+     "QE32LS03CBUXRU",
+     "QE43LS03HEUXPY",
+     "QE55LS03HAUXPY",
+     "QE65LS03HAUXPY",
+     "QE75LS03HWUXPY",
+     "QE85LS03HWUXPY",
+     "QE98LS03HEUXPY"
+    ]
+   },
+   "sql_only_discriminates": true,
+   "unfiltered_top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "display",
+     "similarity": 0.7789
+    },
+    {
+     "rank": 2,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "overview",
+     "similarity": 0.7754
+    },
+    {
+     "rank": 3,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "physical_design",
+     "similarity": 0.769
+    },
+    {
+     "rank": 4,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "smart_features",
+     "similarity": 0.7631
+    },
+    {
+     "rank": 5,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "connectivity",
+     "similarity": 0.7446
+    }
+   ],
+   "mechanism": "hybrid",
+   "top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "display",
+     "similarity": 0.7789
+    },
+    {
+     "rank": 2,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "overview",
+     "similarity": 0.7754
+    },
+    {
+     "rank": 3,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "physical_design",
+     "similarity": 0.769
+    },
+    {
+     "rank": 4,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "smart_features",
+     "similarity": 0.7631
+    },
+    {
+     "rank": 5,
+     "model_code": "QE32LS03CBUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3877455"
+     },
+     "section": "connectivity",
+     "similarity": 0.7446
+    }
+   ],
+   "top5_products": [
+    "QE32LS03CBUXRU",
+    "QE32LS03CBUXRU",
+    "QE32LS03CBUXRU",
+    "QE32LS03CBUXRU",
+    "QE32LS03CBUXRU"
+   ],
+   "expected_product_ranks": {
+    "QE32LS03CBUXRU": 1
+   },
+   "status": "informational",
+   "metrics": {
+    "mechanism_used": "hybrid",
+    "expected_mechanism": "sql_plus_vector",
+    "hit@1": true,
+    "hit@3": true,
+    "hit@5": true,
+    "mrr": 1.0,
+    "first_relevant_rank": 1,
+    "product_chunk_rank": 1,
+    "section_chunk_rank": null,
+    "best_relevant_similarity": 0.7788743100815284
+   },
+   "checks": [
+    [
+     "expected_in_top_5",
+     true,
+     "first_rank=1"
+    ]
+   ]
+  },
+  {
+   "id": "semantic-portable-kitchen",
+   "family": "vector_primary",
+   "query": "компактный телевизор на кухню",
+   "filters": {
+    "max_screen_size_inches": 32
+   },
+   "expected": [
+    "UE27LSM7FAXXPY",
+    "UE32H5000FUXRU",
+    "UE32F6000FUXRU"
+   ],
+   "supplementary_sql_candidates": {
+    "count": 5,
+    "products": [
+     "QE32LS03CBUXRU",
+     "QE32Q5FAAUXPY",
+     "UE27LSM7FAXXPY",
+     "UE32F6000FUXRU",
+     "UE32H5000FUXRU"
+    ]
+   },
+   "unfiltered_top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "UE32H5000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888514"
+     },
+     "section": "physical_design",
+     "similarity": 0.4909
+    },
+    {
+     "rank": 2,
+     "model_code": "UE32H5000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888514"
+     },
+     "section": "smart_features",
+     "similarity": 0.4761
+    },
+    {
+     "rank": 3,
+     "model_code": "UE43F6000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888367"
+     },
+     "section": "physical_design",
+     "similarity": 0.475
+    },
+    {
+     "rank": 4,
+     "model_code": "UE32H5000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888514"
+     },
+     "section": "connectivity",
+     "similarity": 0.4746
+    },
+    {
+     "rank": 5,
+     "model_code": "UE50M70HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965052"
+     },
+     "section": "physical_design",
+     "similarity": 0.4722
+    }
+   ],
+   "mechanism": "vector",
+   "top5_chunks": [
+    {
+     "rank": 1,
+     "model_code": "UE32H5000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888514"
+     },
+     "section": "physical_design",
+     "similarity": 0.4909
+    },
+    {
+     "rank": 2,
+     "model_code": "UE32H5000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888514"
+     },
+     "section": "smart_features",
+     "similarity": 0.4761
+    },
+    {
+     "rank": 3,
+     "model_code": "UE43F6000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888367"
+     },
+     "section": "physical_design",
+     "similarity": 0.475
+    },
+    {
+     "rank": 4,
+     "model_code": "UE32H5000FUXRU",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3888514"
+     },
+     "section": "connectivity",
+     "similarity": 0.4746
+    },
+    {
+     "rank": 5,
+     "model_code": "UE50M70HAUXPY",
+     "identity": {
+      "source": "galaxystore",
+      "external_id": "3965052"
+     },
+     "section": "physical_design",
+     "similarity": 0.4722
+    }
+   ],
+   "top5_products": [
+    "UE32H5000FUXRU",
+    "UE32H5000FUXRU",
+    "UE43F6000FUXRU",
+    "UE32H5000FUXRU",
+    "UE50M70HAUXPY"
+   ],
+   "expected_product_ranks": {
+    "UE27LSM7FAXXPY": 75,
+    "UE32H5000FUXRU": 1,
+    "UE32F6000FUXRU": 5
+   },
+   "supplementary_with_case_filter_top5_products": [
+    "UE32H5000FUXRU",
+    "UE32F6000FUXRU",
+    "QE32LS03CBUXRU",
+    "QE32Q5FAAUXPY",
+    "UE27LSM7FAXXPY"
+   ],
+   "status": "pass",
+   "metrics": {
+    "mechanism_used": "vector",
+    "expected_mechanism": "vector_primary",
+    "hit@1": true,
+    "hit@3": true,
+    "hit@5": true,
+    "mrr": 1.0,
+    "first_relevant_rank": 1,
+    "product_chunk_rank": 1,
+    "section_chunk_rank": null,
+    "best_relevant_similarity": 0.49094690024733123
+   },
+   "checks": [
+    [
+     "expected_in_top_5",
+     true,
+     "first_rank=1"
+    ]
+   ]
+  },
+  {
+   "id": "structured-unavailable-models",
+   "family": "sql_sufficient",
+   "query": "какие модели сейчас нет в наличии",
+   "filters": {
+    "is_available": false
+   },
+   "expected": [
+    "QE55QN1EHAUXPY",
+    "QE65QN1EHAUXPY",
+    "QE75QN1EHAUXPY",
+    "QE98LS03HEUXPY",
+    "UE100M90HUXPY",
+    "UE43U8000HUXPY",
+    "UE55M1EHAUXPY",
+    "UE70U8000HUXPY",
+    "UE85M1EHAUXPY"
+   ],
+   "mechanism": "sql",
+   "actual": [
+    "QE55QN1EHAUXPY",
+    "QE65QN1EHAUXPY",
+    "QE75QN1EHAUXPY",
+    "QE98LS03HEUXPY",
+    "UE100M90HUXPY",
+    "UE43U8000HUXPY",
+    "UE55M1EHAUXPY",
+    "UE70U8000HUXPY",
+    "UE85M1EHAUXPY"
+   ],
+   "status": "pass",
+   "metrics": {
+    "mechanism_used": "sql",
+    "expected_mechanism": "sql_sufficient",
+    "precision": 1.0,
+    "recall": 1.0
+   },
+   "checks": [
+    [
+     "set_match",
+     true,
+     "missing=[] unexpected=[]"
+    ]
+   ]
+  }
+ ],
+ "summary": {
+  "overall": {
+   "cases": 21,
+   "run": 21,
+   "pass": 12,
+   "fail": 6,
+   "informational": 3,
+   "not_run": 0,
+   "pass_rate": 0.6667,
+   "rank_cases": 12,
+   "mrr": 0.403,
+   "hit@1": 0.3333,
+   "hit@3": 0.4167,
+   "hit@5": 0.4167
+  },
+  "by_family": {
+   "sql_sufficient": {
+    "cases": 7,
+    "run": 7,
+    "pass": 7,
+    "fail": 0,
+    "informational": 0,
+    "not_run": 0,
+    "pass_rate": 1.0,
+    "rank_cases": 0,
+    "mrr": null,
+    "hit@1": null,
+    "hit@3": null,
+    "hit@5": null
+   },
+   "vector_primary": {
+    "cases": 6,
+    "run": 6,
+    "pass": 1,
+    "fail": 5,
+    "informational": 0,
+    "not_run": 0,
+    "pass_rate": 0.1667,
+    "rank_cases": 6,
+    "mrr": 0.21,
+    "hit@1": 0.1667,
+    "hit@3": 0.1667,
+    "hit@5": 0.1667
+   },
+   "hybrid": {
+    "cases": 3,
+    "run": 3,
+    "pass": 2,
+    "fail": 1,
+    "informational": 0,
+    "not_run": 0,
+    "pass_rate": 0.6667,
+    "rank_cases": 3,
+    "mrr": 0.5185,
+    "hit@1": 0.3333,
+    "hit@3": 0.6667,
+    "hit@5": 0.6667
+   },
+   "difficult_ambiguous": {
+    "cases": 3,
+    "run": 3,
+    "pass": 0,
+    "fail": 0,
+    "informational": 3,
+    "not_run": 0,
+    "pass_rate": null,
+    "rank_cases": 3,
+    "mrr": 0.6735,
+    "hit@1": 0.6667,
+    "hit@3": 0.6667,
+    "hit@5": 0.6667
+   },
+   "aggregate_not_retrieval": {
+    "cases": 2,
+    "run": 2,
+    "pass": 2,
+    "fail": 0,
+    "informational": 0,
+    "not_run": 0,
+    "pass_rate": 1.0,
+    "rank_cases": 0,
+    "mrr": null,
+    "hit@1": null,
+    "hit@3": null,
+    "hit@5": null
+   }
+  }
+ }
+}
