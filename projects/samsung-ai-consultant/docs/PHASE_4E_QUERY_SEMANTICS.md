@@ -3,7 +3,8 @@
 Status: **Gate 4E.1 evaluated (isolated spike, not integrated).** Recommendation: `4E.1 ACCEPT — READY
 FOR MINIMAL RUNTIME INTEGRATION`, scoped as described in §9.
 
-Gate 4E.2 (semantic guard) is recorded at the end of this document: `4E.2 HOLD — REVIEW REQUIRED`.
+Gate 4E.2 (semantic guard) is recorded at the end of this document: offline `4E.2 HOLD — REVIEW REQUIRED`, then
+live activation and the 42-case confirmation: `4E.2 ACCEPT — READY FOR GIT FINALIZATION` (§13).
 
 Baseline: `main == origin/main == e333dadee058b1ce2ff33c8bcc6d2434298f5579` (Phase 4D accepted).
 Branch: `feature/samsung-ai-consultant-intent-semantics`.
@@ -534,3 +535,226 @@ The guard is ~200 lines of pure functions.
 
   An approved activation gate would verify the last item first, then run the frozen 42-case
   confirmation.
+
+---
+
+# Gate 4E.2 — live activation and final 42-case confirmation
+
+Status: **the guard is active on the live Agent → n8n → MCP → Python path, and the frozen 42-case
+confirmation has been run.** Recommendation: `4E.2 ACCEPT — READY FOR GIT FINALIZATION` (§13.10).
+The guard (`semantic_guard.py`, commit `d7de999`) was frozen; the only change is transport.
+
+## 13.1 n8n data path (verified before any change)
+
+- The deployed workflow `4d8mXFWGpS5P4t1L` was diff-identical to the committed artifact.
+- In a recorded 4D.2E execution (sub-execution 811), the Agent's input item is exactly
+  `{chatInput, sessionId}` from the evaluation trigger; the chat trigger emits the same fields.
+- The Agent's sub-nodes (memory, `catalog`) receive only an `inputOverride` from the Agent. Their
+  parameters resolve against the Agent's input item: the memory node's `={{ $json.sessionId }}`
+  already worked in 4D (turn 2 of the follow-up case loaded turn 1).
+- **Expressions:** message `$json.chatInput`; conversation `$json.sessionId`; turn `$execution.id`
+  (unchanged since 4D.2B-R).
+- The endpoint URL itself is not recorded in n8n run data, so resolution was proven on the server
+  side (§13.4).
+
+## 13.2 Workflow change (the only change to n8n behaviour)
+
+```text
+- =http://samsung-consultant:8765/mcp?turn={{ $execution.id }}
++ =http://samsung-consultant:8765/mcp?turn={{ $execution.id }}&conv={{ encodeURIComponent($json.sessionId) }}&q={{ encodeURIComponent($json.chatInput) }}
+```
+
+- Generated from `consultant/n8n_workflow.py` (commit `657e0e4`); `n8n-tool validate` OK.
+- Deployed with `n8n-tool workflows update` at 18:40:31Z (backup
+  `tools/n8n-tool/backups/samsung-ai-consultant/20260930T184031Z_4d8mXFWGpS5P4t1L.json`).
+- The workflow is still inactive and diff-identical to the repository.
+- The pinning unit test was updated to the new expression.
+
+## 13.3 Privacy and logging
+
+- **Application logs:**
+  - `q` appears only as `q=[redacted]` in request lines, including requests that end in an error,
+    because `log_error` goes through the same `log_message`;
+  - the `tool_call` line holds argument names, values and reason codes, never text;
+  - `log.exception` paths log tracebacks, not the request URL.
+- **Checked on the live containers:**
+  - the smoke container and production both had **0** occurrences of user text in their logs, raw
+    or percent-encoded (Cyrillic words, "PS5", `%D0`/`%D1`);
+  - after the run, 482/482 MCP POSTs carried `conv` + `q` and all were redacted.
+- **`ConversationStore`:** keeps `MessageEvidence` only: numbers, feature ids, implied use cases, a
+  flag. No text is kept (tested), and it is in memory only.
+- **Outside the application's control:**
+  - n8n itself stores full execution data, including the user message (`saveDataSuccessExecution:
+    all`, unchanged since 4D);
+  - if n8n's MCP client ever fails, its error message could contain the endpoint URL, `q`
+    included, in n8n's execution data or container log. This was not observed.
+  - The URL travels only inside the Docker network `n8n-compose_default`, over plain HTTP, as in 4D.
+  - Docker's json-file log driver keeps only what the application writes.
+
+## 13.4 Smoke test (before the production deploy)
+
+A **temporary container** `samsung-consultant-4e2smoke` ran the new image with the production env
+file, network and hardening, and no ports. It was removed afterwards. Production was not touched.
+
+- **Boundary** (`mcp_probe.js`, from the n8n container): unchanged from 4D.
+  - health 200; auth 401/401/200; five closed read-only tools; `attributes` 14/14;
+  - `agent-result-v2`; `invalid_arguments`; cap `ok ok ok limit`; keyless call refused.
+- **Guard** (`guard_probe.js`, new, from the n8n container):
+
+| Probe | Result |
+|---|---|
+| PS5 args `{gaming, required [hdmi_2_1]}`, no `q` | 4D path: required kept → `no_match` |
+| same, `q`="Посоветуй телевизор для PS5." + `conv` | `hdmi_2_1` removed, `not_applied` → `ok`, 8 products |
+| same, `q`="…обязательно HDMI 2.1." | **kept** → `no_match` (hdmi_2_1 listed for 1/75, a display) |
+| `q` without `conv` | `report_only`, arguments unchanged |
+| "до 150 тысяч" + `max_price 150000` | kept |
+| "для кино с хорошей картинкой" + `max_price 150000` | removed, `not_applied` |
+
+- **Real Agent path:** a temporary smoke driver ran the committed workflow inline, pointed at the
+  smoke host, with two turns. The Consultant's request lines carried `conv=e42smoke-0001` (the exact
+  `sessionId`) and `q=[redacted]` on every request of both turns, and the guard ran on both calls.
+  - Turn 2 ("Нужен OLED до 200 тысяч, обязательно с HDMI 2.1."): the Agent proposed
+    `{OLED, max_price 200000, required [hdmi_2_1]}`, and the guard kept it (`unchanged`). That is only
+    possible if the stored evidence holds an HDMI 2.1 mention and the number 200, which come only
+    from turn 2's text. The right message reached Python.
+  - Turn 1: the Agent proposed `{use_cases [gaming]}` (no invention), and the guard returned
+    `unchanged`.
+
+## 13.5 Build and deploy
+
+| Item | Value |
+|---|---|
+| Image | `samsung-consultant:4e2`, revision label `657e0e4cb6b0609be54b5fd267354e8abd0ee7c0` |
+| Image id | VPS `sha256:ca59d16f40eabaf9847254145cb0cfd6142f4eed0cb01f3db61b2ad4ba6f90b7` (local build `sha256:56a00a86…`; the stores differ, the revision label is the identity) |
+| Tool-schema hash | `4645dac666b7ce5e`: container == local == 4D.2E |
+| Deploy | `docker compose up -d` in `/root/samsung-consultant` at **2026-09-30T18:39:27Z**. Only the image tag changed (`compose.yml.4d2d.bak` kept). Container started 18:39:38Z, `healthy` |
+| Isolation | no published port, no host listener on 8765, `traefik.enable=false`, `n8n-compose_default` only |
+| Other containers | n8n, postgres, redis and traefik not restarted (identical `StartedAt`, 0 restarts) |
+| Post-deploy | `mcp_probe.js` and `guard_probe.js` on production give results identical to the smoke container. `verify_readonly`: writes denied; known PUBLIC `TEMP` residual unchanged |
+| Rollback | workflow backup `20260930T184031Z` **first**, then `4d2d`, because the old image logs full request lines (deploy README) |
+
+## 13.6 Final 42-case confirmation (`evaluation/results/agent_eval_4e2.json`)
+
+- **Frozen and identical to 4D.2E:**
+  - dataset, prompt v3, scorer and live tooling (sha256 equal to the 4D.2E record);
+  - `gpt-4.1-mini` at T=0, memory window 6, the five tools, ≤3 calls per turn;
+  - Core and catalog: 75/66, md5 `7c1acf94…`, 4151 specs, 514 chunks, identical before and after.
+- **Changed:** only the endpoint line and the image (the guard).
+- **Procedure:** as in 4D.2E. One temporary driver was updated per case, with `sessionId`
+  `e42-<case>`, and deleted afterwards. There was one run per case: **44/44 executions succeeded,
+  0 retries, 0 infrastructure errors**.
+
+| Metric | 4D.2E | **4E.2** |
+|---|---|---|
+| Turns / cases passed (manual) | 42/44 / 40/42 | **44/44 / 42/42** |
+| Turns passed (automated) | 40/44 | 41/44 |
+| Tool-needed accuracy | 44/44 | 41/41 headline + 3/3 follow-up turns handled (1 without a tool, see below) |
+| Tool selection exact / exact-or-acceptable (headline) | — | 0.938 / 1.0 |
+| Invented arguments (all categories) | 2 turns | **0** |
+| Consultant calls / max per turn / blocked | 35 / 1 / 0 | 34 / 1 / 0 |
+| `invalid_arguments` / execution errors | 0 / 0 | 0 / 0 |
+| Clarification correctness | 2/2 | 1.0 (0 unnecessary) |
+| Fabricated models / prices / features / unsupported numbers | 0/0/0/0 | **0/0/0/0** |
+| Mislabelled prices / unsupported comparatives / lost gaps / leaks | 0/0/0/0 | **0/0/0/0** |
+| Per-product claims checked / issues | — | 181 / **0** |
+| **Guard:** calls seen / unchanged / modified / false modifications | — | **34 / 34 / 0 / 0** |
+| Guard-induced validation failures | — | **0** |
+| Latency median / p90 / max | 6.0 / 8.0 / 9.4 s | 6.0 / 9.0 / 11.3 s |
+| Cost (n8n estimate) | ≈ $0.09 | ≈ $0.08 |
+
+**Differences from 4D.2E**, each reviewed:
+
+| Turn | 4D.2E | 4E.2 | Verdict |
+|---|---|---|---|
+| `rec-gaming` | `{gaming, required [hdmi_2_1]}` → `no_match` (fail) | `{gaming}` → `ok`, 3 grounded gaming TVs | **improved**; the Agent did not invent HDMI 2.1 (model variance, not a guard effect) |
+| `followup-oled65-spike[2]` "А подешевле?" | invented `max_price 150000` → `no_match` (fail) | **no tool call**; answer from this session's turn 1/2 results: S85H 189 990 ₽, the cheapest 65" OLED, features grounded; no invented budget | **improved** at answer level. Automated fail: the label expects `recommend_tvs` (acceptable `search_tvs`) |
+| `search-available-75` | `sort price_asc` | `limit 5` | pass (Agent argument variation) |
+| `compare-exact` | `+ screen_size_inches 65` | without it | pass |
+| `rec-sound` | `+ preferred [sound_power_w]` | `use_cases [sound]` only | pass |
+| `no-tool-capabilities` | pass | automated flag on a capabilities description | pass (scorer false positive) |
+| `stats-largest-oled-tie` | automated fail (category label) | the same | pass (as in 4D.2E) |
+| `adv-invent-price` | automated fail (regex) | automated pass | pass |
+
+- **Regressions:** none at answer level.
+- **Explicit constraints:** the guard modified nothing, so every explicit constraint the Agent
+  passed reached the Core unchanged. The analyzer's only "missing explicit" flags are
+  `stats-cheapest-oled` and `stats-largest-oled-tie`: the Agent passed OLED as `category` instead
+  of `panel_technology`, the same arguments as in 4D.2E, selecting the same 15 products. The guard
+  does not touch either field. That covers budgets, size, minimum-size
+  wording, list-price wording, availability, model codes, family + size, carried OLED / 65 / gaming
+  in the follow-up, and `thin_wall`. The dataset has no `compact` and no explicit VRR / 120 Hz /
+  HDMI 2.1 case: those are covered by the smoke probes, the smoke Agent turn (explicit HDMI 2.1 kept
+  live) and the 22 supplementary replay cases.
+
+## 13.7 The two known corrections at runtime
+
+- **Correction capacity** is proven on the deployed runtime over the real transport: the production
+  guard probe gives `hdmi_2_1` removed → `ok`, and an invented `max_price` removed.
+- **In this run the Agent did not produce either invention** (0 invented arguments in 44 turns;
+  also 0 in the two smoke turns). So there was nothing for the guard to correct, and both turns
+  pass for that reason.
+- **Therefore not observed live:**
+  - a guard modification on an Agent-originated call;
+  - how the Agent phrases an answer after `request.not_applied`.
+
+## 13.8 Restart check (G2), on the smoke container, not production
+
+| Step | Result |
+|---|---|
+| Turn 1 "Хочу OLED до 200 тысяч." + `{OLED, max_price 200000}` | unchanged |
+| Turn 2 "А какой лучше для игр?", carried budget | unchanged (evidence from turn 1) |
+| `docker restart`, then turn 3, same conversation and carried budget | **`max_price 200000` removed**, `not_applied` reported, 8 products instead of 6 |
+
+The limitation is confirmed as documented. After a restart, a budget the user stated earlier is lost
+for later turns. The Agent is told through `not_applied`; it is not silently kept, but the user's
+constraint is not applied either. Production was not restarted for this check.
+
+## 13.9 Tests and replays (after the transport change)
+
+- `python3 -m pytest -q`: **694 passed, 0 failed, 117 skipped**.
+- `DOCKER_HOST=unix:///var/run/docker.sock bash tests/run_db_tests.sh`: **123 passed**.
+- `python -m consultant.n8n_workflow --check`: clean.
+- Guard replay: 35 calls, 33 unchanged, 2 intended modifications, 0 false modifications, 0
+  validation failures; 22/22 supplementary.
+- Semantic gold: 30/30, 0 invented hard filters.
+
+## 13.10 Cleanup, safety and recommendation
+
+**Cleanup:**
+- smoke container removed;
+- smoke driver `jC4zA5VJbU8LLkdw` and evaluation driver `AuxjdJenkgfThOGb` deleted (the delete
+  helper refuses any workflow not named "temporary, safe to delete");
+- local temporary-driver backups removed;
+- production `samsung-consultant:4e2` healthy, 0 restarts, no ports, no host listener;
+- older images `4d2d`/`4d2b`/`4d2a` kept for rollback.
+
+**Unrelated observation (not caused by this gate):** workflow `SuperRAG Agent` (`4psiovLFSioIEzD9`,
+inactive, no executions) changed at 18:53:40Z, between the pre-run snapshot and cleanup.
+- Its `OpenRouter Chat Model` node now has a credential reference; the 28 September export had none.
+- This gate's only n8n calls in that window were a GET and a DELETE on the temporary driver.
+- It was left untouched and needs the owner's confirmation.
+
+**Safety:** DB schema, catalog, embeddings, credentials, n8n credentials, Traefik and other
+containers were untouched. The only n8n changes were the Consultant workflow endpoint and the two
+temporary drivers, both deleted.
+
+**`4E.2 ACCEPT — READY FOR GIT FINALIZATION`.**
+- **Every ACCEPT condition holds:**
+  - the message reliably reaches the guard (every request of the run; proven by the smoke evidence
+    chain);
+  - no raw text is persisted or logged by the Consultant;
+  - the smoke tests passed;
+  - the full live 42-case confirmation was completed: 44/44 manual, no answer-level regression,
+    0 false modifications, 0 guard-induced validation failures;
+  - explicit constraints survived;
+  - tests passed;
+  - production is healthy;
+  - temporary infrastructure was cleaned up.
+- **The two known cases are correct at runtime,** with no hard constraint that the user never
+  stated reaching the Core. In this run that happened because the Agent did not repeat the
+  inventions. The guard's correction was demonstrated on the deployed runtime by the boundary probe,
+  not by an Agent-originated call.
+- **Open items:**
+  - the Agent's handling of `not_applied` is unobserved live;
+  - G2, restart loses evidence;
+  - the unrelated SuperRAG change.

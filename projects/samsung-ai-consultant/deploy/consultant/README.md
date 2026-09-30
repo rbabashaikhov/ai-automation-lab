@@ -18,6 +18,7 @@ n8n ──MCP + Bearer token──> samsung-consultant:8765 ──read-only role
 | `provision_env.py` | Generates the DB password and MCP token into `consultant.env`; emits the SCRAM verifier / token only into pipes |
 | `create_consultant_role.sql`, `verify_consultant_role.sql` | Least-privilege read-only role `samsung_consultant` and its verification |
 | `verify_readonly.py` | Write-denial check run inside the container with its own role |
+| `guard_probe.js` | Gate 4E.2 semantic-guard probe run with Node inside the n8n container: guard decisions over the real MCP boundary (PS5 without/with message, explicit HDMI 2.1, report-only without `conv`, explicit vs invented budget) and the two halves of the in-memory restart check |
 | `mcp_probe.js` | Boundary probe run with Node inside the n8n container: health, 401 without or with a wrong token, authenticated `tools/list` + closed-schema check, one deterministic call; since 4D.2B-R also the per-turn cap across four fresh sessions (`ok ok ok tool_call_limit_reached`) and refusal of a call without `?turn=`; since 4D.2D also the result contract and the `attributes` limit |
 
 ## Runbook (as executed in Gate 4D.2A)
@@ -28,8 +29,8 @@ and the scripts. Commands run as root on the VPS unless marked *local*.
 ```bash
 # local: build from the deployed commit and ship the image (no registry, no repo on the VPS)
 docker build -f deploy/consultant/Dockerfile --label org.opencontainers.image.revision=$(git rev-parse HEAD) \
-  -t samsung-consultant:4d2d .                                       # 4D.2D: revision 472c53c
-docker save samsung-consultant:4d2d -o consultant.tar && gzip consultant.tar      # a piped save|ssh stalled in 4D.2B-R
+  -t samsung-consultant:4e2 .                                        # 4E.2: revision 657e0e4 (4D.2D: 4d2d / 472c53c)
+docker save samsung-consultant:4e2 -o consultant.tar && gzip consultant.tar      # a piped save|ssh stalled in 4D.2B-R
 scp consultant.tar.gz n8n-vps:/root/ && ssh n8n-vps 'gunzip -c /root/consultant.tar.gz | docker load && rm /root/consultant.tar.gz'
 
 python3 provision_env.py init-env consultant.env                       # secrets generated here, never printed
@@ -42,11 +43,18 @@ docker compose -f compose.yml up -d                                      # creat
 python3 provision_env.py mcp-token consultant.env \
   | docker exec -i n8n-compose-n8n-1 node -e "$(cat mcp_probe.js)" http://samsung-consultant:8765
 docker exec -i samsung-consultant python - < verify_readonly.py
+python3 provision_env.py mcp-token consultant.env \
+  | docker exec -i n8n-compose-n8n-1 node -e "$(cat guard_probe.js)" http://samsung-consultant:8765   # 4E.2 guard
 ss -ltnup | grep 8765 || echo "no host listener";  docker port samsung-consultant
 ```
 
 The n8n Header Auth credential (`Authorization: Bearer <token>`) is created through the n8n
 public API. The token is piped from `provision_env.py mcp-token` and never displayed.
+
+**Rollback of Gate 4E.2 (order matters):** first restore the Consultant workflow backup
+`tools/n8n-tool/backups/samsung-ai-consultant/20260930T184031Z_4d8mXFWGpS5P4t1L.json` (endpoint without `conv`/`q`),
+**then** set `image: samsung-consultant:4d2d` (`compose.yml.4d2d.bak` on the VPS) and `up -d`. The `4d2d` server logs the
+full request line, so it must never receive `q` (the user's message).
 
 **Rollback:**
 1. `docker compose -f compose.yml down` and `docker image rm samsung-consultant:4d2d`. To go back one gate, set
