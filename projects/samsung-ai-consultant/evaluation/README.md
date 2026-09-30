@@ -74,7 +74,11 @@ Tests: `python -m pytest tests/test_evaluation_*.py`.
   clarification, grounding; adversarial and follow-up families). New file; the Phase 3D dataset and
   4B gold plans are unchanged.
 - `agent_eval.py` — dataset validation (every expected argument set must pass the Python tool
-  boundary), transcript scoring, deterministic grounding flags, provisional n8n output adapter.
+  boundary), transcript scoring, deterministic grounding flags (since 4D.2B-R also: catalog claims
+  without tool evidence, group claims, availability mismatches, invented arguments), and the n8n
+  output adapter (verified on real executions in 4D.2B).
+- `results/agent_smoke_4d2b.json` — Gate 4D.2B live smoke and the 4D.2B-R reruns plus policy
+  probes (compact transcripts, scores, held-out probe registration, runtime cap test).
 - `run_agent_offline.py` — Gate 4D.1: executes the expected tool calls through the real facade in
   the read-only session -> `results/agent_offline_4d1.json`. No LLM.
 - `agent_injection.py` — evaluation-only test double adding instruction-like text to tool evidence.

@@ -39,9 +39,19 @@ them:
 - 4A's "handles + price placeholders + post-answer validator" (G2/§14) moves to Phase 4E. In 4D,
   grounding is enforced by the result contract, the system prompt, and an offline grounding
   scorer. See PHASE_4D_AGENT_RUNTIME.md for what that does and does not guarantee.
-- The unbounded-loop objection: at most **3 domain-tool calls per user turn**. Python enforces this
-  per MCP session (one session = one Agent run), and it is configurable
-  (`CONSULTANT_MAX_TOOL_CALLS_PER_TURN`). Agent `maxIterations` = 4 in n8n.
+- The unbounded-loop objection: at most **3 domain-tool calls per user turn**, configurable
+  (`CONSULTANT_MAX_TOOL_CALLS_PER_TURN`). Agent `maxIterations` = 4 in n8n (a bound on model rounds,
+  not on calls: one round may carry parallel calls).
+  - **Correction (Gate 4D.2B-R):** the 4D.1 assumption "one MCP session = one Agent run" is false on
+    n8n 2.17.7. Agent v3 runs every tool call as a separate engine action, and the MCP Client Tool
+    opens a new MCP session for each (observed live: 3 sessions for a one-call turn). A per-session
+    cap never binds.
+  - **Enforcement point:** the turn is carried in the endpoint URL,
+    `/mcp?turn={{ $execution.id }}`: one n8n execution is one user message, and the LLM cannot
+    change the URL. The Python server counts `tools/call` per turn key across sessions, atomically
+    for parallel calls, and in the container (`--require-turn-key`) refuses tool calls without a
+    key. An execution that processes several items (a batch Execute Workflow call) shares one
+    budget: stricter, never looser. No orchestration component was added.
 
 ## Decision 2: the Agent → Python boundary: MCP Streamable HTTP vs typed HTTP tools
 

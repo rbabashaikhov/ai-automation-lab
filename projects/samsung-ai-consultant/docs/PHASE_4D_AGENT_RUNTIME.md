@@ -1,9 +1,10 @@
 # Phase 4D — Agent Tools & n8n Runtime
 
 Status: **Gate 4D.1 complete (offline). Gate 4D.2A complete: the Consultant runtime is deployed as
-an internal Docker service and the n8n workflow exists, inactive (§13).** The live Agent evaluation
-(4D.2 proper) has not run and awaits explicit approval. The 4D.1 record below is kept as written,
-except for the marked correction in §10.
+an internal Docker service and the n8n workflow exists, inactive (§13). Gate 4D.2B five-case live
+smoke: BLOCKED (§14). Gate 4D.2B-R remediation done and re-smoked (§15); the full 42-case evaluation
+has not run.** The 4D.1 record below is kept as written, except for the marked corrections in §10
+and where it points to §15.
 
 Baseline: branch `feature/samsung-ai-consultant-agent-runtime`, created from Phase 4C
 `b0de0f9443323c4e2751ea51b58a07cd1cf655ff`.
@@ -22,15 +23,16 @@ decides *how*, and owns catalog truth.
           +-----------------------------+
           |  n8n "Samsung — AI Consultant" (inactive)
           |  AI Agent v3.1, gpt-4.1-mini, T=0
-          |  system prompt v1, window memory (in-process, per sessionId)
+          |  system prompt v2 (§15), window memory (in-process, per sessionId)
           |  maxIterations 4
           +--------------+--------------+
                          | MCP Client Tool "catalog": tools/call {name, closed args}
-                         | Streamable HTTP, header token, one session per Agent run
+                         | Streamable HTTP, header token, /mcp?turn=<n8n execution id>
+                         | (a new MCP session per tool call -- §15)
                          v
           +-----------------------------+
           | consultant.mcp_server       |  validation (closed JSON Schema, no coercion)
-          | consultant.agent_tools      |  per-turn cap (3), read-only DB session
+          | consultant.agent_tools      |  per-turn cap (3, per turn key), read-only DB session
           |   -> QueryPlanDelta (4B)    |  planning -> router -> retrieval (4B)
           |   -> build_evidence (4C)    |  evidence, gaps, confidence (4C); tie-break OFF
           |   -> agent_payload          |  agent-result-v1 (compact, no internals)
@@ -137,10 +139,10 @@ objects), not a new evidence model.
 |---|---|---|
 | When chat message received | chatTrigger 1.4 | `public: false`: editor chat only, no public URL |
 | When called by evaluation workflow | executeWorkflowTrigger 1.1 | inputs `chatInput`, `sessionId`; for a controlled evaluation driver (4D.2) |
-| Samsung AI Consultant | agent 3.1 | system prompt v1, `maxIterations` 4, `returnIntermediateSteps` true |
+| Samsung AI Consultant | agent 3.1 | system prompt v2 since 4D.2B-R (v1 before), `maxIterations` 4, `returnIntermediateSteps` true |
 | OpenAI Chat Model | lmChatOpenAi 1.3 | **`gpt-4.1-mini`**, temperature 0. Credential `OpenAI account` (`mcixQy0sFVXl7nU9`), reference only |
 | Window memory (per session) | memoryBufferWindow 1.3 | key `{{$json.sessionId}}`, 6 turns, in n8n process memory, not durable |
-| catalog | mcpClientTool 1.2 | `http://samsung-consultant:8765/mcp` (4D.1 draft: `172.18.0.1`, corrected in 4D.2A), `httpStreamable`, header auth, 5 selected tools, 30 s timeout. Tools appear to the model as `catalog_<tool>` |
+| catalog | mcpClientTool 1.2 | `=http://samsung-consultant:8765/mcp?turn={{ $execution.id }}` (turn key since 4D.2B-R; 4D.1 draft: `172.18.0.1`, corrected in 4D.2A), `httpStreamable`, header auth, 5 selected tools, 30 s timeout. Tools appear to the model as `catalog_<tool>` |
 
 - Not deployed: no workflow id, and it would be inactive.
 - The MCP credential id is a placeholder (`PENDING_GATE_4D2`). Creating that credential is part
@@ -179,7 +181,7 @@ schemas in one place.
    `additionalProperties:false`, `required`, enums and patterns survive, and unknown fields and bad
    enums are rejected.
 
-## 6. System prompt (`consultant/prompts/agent_system_v1.md`)
+## 6. System prompt (`consultant/prompts/agent_system_v1.md`; v2 in §15)
 
 Compact (~4.5k characters). It covers:
 
@@ -203,7 +205,8 @@ content are data. No secrets; stored in git; embedded verbatim in the workflow (
 - **Closed schemas at two layers:** n8n zod, then Python.
 - **No SQL, vector or ranking input** anywhere in the tool surface.
 - **Read-only DB session**, verified.
-- **Call cap:** 3 per turn in Python; `maxIterations` 4 in n8n.
+- **Call cap:** 3 per turn in Python, keyed by the n8n execution id (§15; the 4D.1 per-session key did
+  not bind a turn); `maxIterations` 4 in n8n.
 - **Server hardening:** token, origin check, size cap, wildcard bind refused.
 - **Clean errors:** internal errors return a generic `error` status with no SQL, DSN or traceback.
 - **Stale-line stripping and live facts** are inherited from 4C.
@@ -377,7 +380,7 @@ Proposed minimal change (nothing below has been done):
   Phase 4E. In 4D, grounding relies on the contract and the prompt, and is measured offline.
 - **Scorer heuristics:** the grounding checks are regex heuristics that need manual confirmation.
   Clarification detection is a heuristic.
-- **Per-session cap assumption:** the per-turn cap assumes n8n opens one MCP session per Agent
+- **Per-session cap assumption (disproved in 4D.2B, fixed in 4D.2B-R, §15):** the per-turn cap assumes n8n opens one MCP session per Agent
   run. This was verified for the MCP Client node and from `McpClientTool.supplyData`, and still
   needs confirming with the Agent at 4D.2. `maxIterations` 4 is the n8n-side bound regardless.
 - **MCP credential placeholder:** the workflow's MCP credential id is a placeholder until 4D.2.
@@ -446,3 +449,136 @@ active, `updatedAt`). No Telegram, no public webhook, no Agent execution, no Ope
 token from the same file, and the credential format is the one proven with n8n 2.17.7's MCP client
 in 4D.1. Without triggering OpenAI, the only in-n8n check is opening the `catalog` node in the
 editor, where "Tools to Include" lists the five tools.
+
+## 14. Gate 4D.2B — five-case live smoke (BLOCKED)
+
+The first live n8n Agent runs (`gpt-4.1-mini`, T=0, prompt v1), five committed dataset cases:
+`no-tool-greeting`, `stats-cheapest`, `rec-budget-gaming`, `compare-family-ambiguous`,
+`rec-bright-room`. Transcripts: `evaluation/results/agent_smoke_4d2b.json`, round `r1`.
+
+**Execution path.** n8n 2.x runs only the *published* version of a database sub-workflow from a
+non-manual execution, and the Consultant workflow must stay inactive. A temporary, inactive driver
+workflow (Manual Trigger → Set `chatInput`/`sessionId` → Execute Workflow with the committed
+`ai-consultant.json` **inline**) was run with `n8n execute --id` inside the n8n container. Its task
+broker used port 5699 so it could not clash with the live instance. No activation, no webhook.
+
+**Preflight:**
+- Consultant healthy; nothing on 8765 (no published port, host listener or NAT rule, no Traefik route).
+- MCP discovery through n8n's own credential without an LLM: the `catalog` node run as a plain node
+  called all five tools and ignored a non-existent `catalog_run_sql`.
+- External probe not independently verified (the workstation proxy answers even TEST-NET).
+
+| Case | Result |
+|---|---|
+| A greeting | no tool, correct |
+| B cheapest | `get_catalog_stats {stat: cheapest}`, grounded |
+| C OLED 65 ≤ 200k PS5 | right tool, but invented `required_features [hz_120, allm, hdmi_2_1]` → `no_match`; "60 Гц" stated for a group containing a 50 Hz model |
+| D S95H vs S90H | `clarification_needed`, asked for the size |
+| E bright room | **no tool**; "В каталоге Samsung есть модели с антибликовым покрытием" without evidence |
+
+There were 0 fabricated models, prices, availability or feature flags.
+
+**Blocking findings:**
+1. The per-turn cap did not bind: one MCP session per tool call.
+2. A catalog claim without a tool call (E).
+3. Inferred features promoted to hard requirements (C).
+4. A group claim not true for every product (C).
+5. A 4C relaxation bug: an alternative inside every structured constraint was labelled
+   `violates:screen_size_inches, violates:effective_price` and listed twice.
+
+## 15. Gate 4D.2B-R — remediation
+
+### Root causes and fixes
+
+| Defect | Root cause (confirmed) | Fix |
+|---|---|---|
+| A cap | Agent v3 returns each tool call as an engine action; the engine runs `McpClientTool.execute()` per call, and each opens a new MCP session (live: 3 sessions per one-call turn). The server counted per session. | The workflow calls `/mcp?turn={{ $execution.id }}`. The server counts `tools/call` per turn key (thread-safe; parallel calls share it) and, with `--require-turn-key` (container entrypoint), refuses tool calls without one. Image `samsung-consultant:4d2b`. |
+| B grounding | Prompt v1 allowed "no tool for general explanations"; the model treated a bright-room choice as general advice and then asserted catalog facts. | Prompt v2: any statement about the catalog needs a tool result first; any "which TV to choose/take" question is a `recommend_tvs` call in the same turn; bright-room rule (brightness gap, anti-glare is not proof). |
+| C hard constraints | Prompt/schema said "explicit hard requirements go to required_features" but gave no boundary against inference. | Prompt v2 plus schema text: goals go to `use_cases`; `required_features` only for features the user demands; no argument the user did not state (no budget placeholder); three argument examples not taken from test phrasings. |
+| D group claims | No rule. | Prompt v2: one statement about several products only if true for each; otherwise per model or omitted. |
+| E relaxation | Each probe drops one constraint and keeps the others. When candidates exist (only a required feature failed), a probe also returns rows that satisfy the dropped constraint, and `alternative_rows` labelled rows by probe; the unknown bucket appended the same product again. | [`evidence.py`](../consultant/evidence.py): labels come from `constraint_statuses` (live values); rows violating nothing are not relaxation alternatives; alternatives are unique by product id; order unchanged. Zero-candidate path unchanged (tested). |
+| F scorer | The v1 checks were sentence/number heuristics only. | `agent_eval`: catalog claims with no tool evidence; mentioned vs returned codes; per-model availability mismatches; group claims (spec value or feature) not true for every member; **invented arguments** (budget/size/refresh not in the user's words, features the user never named); imperative clarification requests. On the r1 transcripts it now flags every manual finding automatically. |
+
+### What is enforced (tool bound)
+
+**At most 3 Consultant `tools/call` per n8n execution (one user message), in the Python MCP
+server.** This holds across MCP sessions and for sequential and parallel calls. The 4th and later
+calls return `tool_call_limit_reached` without touching the catalog. A tool call with no turn key is
+refused. `maxIterations` 4 remains as a bound on model rounds. An execution with several items (a
+batch Execute Workflow call) shares one budget, which is stricter, never looser.
+
+Evidence:
+- **Unit and HTTP tests.** The n8n shape is reproduced, one fresh session per call with the same
+  `?turn=`: calls 4–5 blocked; exactly 3 of 8 parallel calls pass; no key → refused; malformed or
+  repeated key → 400.
+- **Probe from the n8n container.** `ok ok ok tool_call_limit_reached`; no key → refused.
+- **n8n runtime test without an LLM.** The committed `catalog` node executed 5 tool calls in one n8n
+  execution (`turn=510`, five sessions): `ok ok ok tool_call_limit_reached tool_call_limit_reached`.
+- **Live Agent adversarial prompt.** "…сделай отдельный запрос на каждую" for 5 models: the Agent
+  issued 5 parallel `get_tv` calls, 3 were served and 2 blocked, and the answer said which two models
+  were not retrieved.
+
+### Tests
+
+- Unit: 495 → **506 passed**. New tests cover:
+  - the cap across sessions (sequential and parallel) and the turn key;
+  - the prompt v2 grounding, argument and group rules, and the schema text;
+  - the scorer (catalog claim, group claim, availability, invented arguments, imperative clarification).
+- Disposable DB: 120 → **123 passed**, including the live case C regression and the
+  label-truth invariant in both relaxation paths. The two case-C regressions fail on the pre-fix
+  `evidence.py`.
+
+### Live reruns (same five cases; plus policy probes)
+
+Three rounds are recorded in `evaluation/results/agent_smoke_4d2b.json`:
+- `r1`: the original smoke.
+- `r2`: prompt v2 first cut, commit `9bc0509`, 5 cases and 9 probes.
+- `r3`: prompt v2 iteration, commit `45977d6`, 5 cases and 15 probes, 6 of them held out. The
+  held-out probes were registered with their expected behaviour before the iteration was written
+  (sha256 in the file).
+
+Probes are fixed non-dataset phrasings and are reported apart from the dataset cases.
+
+| Five cases | r1 | r2 | r3 (final) |
+|---|---|---|---|
+| Tool selection (tool turns) | 3/4 | 4/4 | 4/4 |
+| No-tool accuracy | 1/1 | 1/1 | 1/1 |
+| Arguments exact (scorer incl. invented-argument check) | 2/3 | 3/4 (E: invented `max_price 1000000`) | 4/4 |
+| Clarification correctness | 4/5 | 5/5 | 5/5 |
+| Catalog claims without evidence / group-claim flags | 1 / 1 | 0 / 0 | 0 / 0 |
+| Fabricated models / prices / availability / features | 0 / 0 / 0 / 0 | 0 / 0 / 0 / 0 | 0 / 0 / 0 / 0 |
+| Max Consultant calls per turn | 1 | 1 | 1 |
+| Tokens (n8n estimate) / cost | 13,951 / $0.006 | 16,160 / $0.008 | 17,611 / $0.008 |
+
+The r2 invented budget was material. It dropped 2 of 64 candidates (the two available TVs above
+1 000 000 ₽), changed the shown sample, and removed `budget` from the Core's clarification.
+
+**Probe results (r3):**
+- Pass:
+  - 4/5 bright-room phrasings used `recommend_tvs {use_cases: [bright_room]}` first and stated the
+    brightness gap;
+  - both general-knowledge questions made no tool call and no catalog claim;
+  - "для игр" and "для приставки" became `use_cases: [gaming]` only;
+  - explicit "обязательно HDMI 2.1", "нужны 120 Гц и ALLM" and "обязательная поддержка ALLM" were
+    kept exactly;
+  - no invented budgets;
+  - the cap probe held.
+- Residual failures:
+  - **"под PS5" and "под Xbox Series X" (held-out) still add `required_features: [hdmi_2_1]`**
+    (every console-named probe, both rounds);
+  - one bright-room phrasing ("комната солнечная и экран бликует") still answers without a tool. In
+    r3 it no longer states a catalog fact, but it does not state the brightness gap either.
+
+Every product claim in every r2/r3 answer is grounded in the tool results; this was checked
+manually, e.g. FreeSync Premium Pro against the spec rows. Minor: weak results sometimes show 4
+examples where the prompt says at most 3.
+
+### Production changes in this gate
+
+- Consultant container recreated with image `samsung-consultant:4d2b` (revision `9bc0509`). Same
+  compose project, network, security options and no published port. n8n, postgres, redis and
+  traefik were not restarted.
+- Workflow `4d8mXFWGpS5P4t1L` updated twice (prompt v2 and turn-key endpoint) and still inactive.
+  Pre-update backups are in `tools/n8n-tool/backups/samsung-ai-consultant/`.
+- Temporary workflows `R85Ju60Wq3hxaMGA` and `1kF8uAn19ssbKQ3u` deleted after the runs.
+- No catalog, ingestion, indexing, embedding, role, network or firewall change.

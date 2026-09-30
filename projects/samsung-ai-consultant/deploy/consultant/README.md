@@ -12,13 +12,13 @@ n8n ──MCP + Bearer token──> samsung-consultant:8765 ──read-only role
 
 | File | Purpose |
 |---|---|
-| `Dockerfile` (+ `Dockerfile.dockerignore`) | `python:3.12-slim-bookworm`, `psycopg2-binary` + `tiktoken` (encoding cached at build), `consultant/` + three `indexing/` modules, uid 10001, healthcheck `/healthz`. Build context: the project directory |
+| `Dockerfile` (+ `Dockerfile.dockerignore`) | `python:3.12-slim-bookworm`, `psycopg2-binary` + `tiktoken` (encoding cached at build), `consultant/` + three `indexing/` modules, uid 10001, healthcheck `/healthz`, entrypoint with `--require-turn-key` (4D.2B-R). Build context: the project directory |
 | `compose.yml` | Separate compose project `samsung-consultant`. It joins `n8n-compose_default` as an **external** network, so deploying it never recreates n8n, postgres, redis or traefik. No `ports`, no Traefik routers, read-only root FS, `cap_drop: ALL`, `no-new-privileges`, no volumes, no socket |
 | `consultant.env.example` | Shape of the VPS-only `consultant.env` (mode 600, git-ignored) |
 | `provision_env.py` | Generates the DB password and MCP token into `consultant.env`; emits the SCRAM verifier / token only into pipes |
 | `create_consultant_role.sql`, `verify_consultant_role.sql` | Least-privilege read-only role `samsung_consultant` and its verification |
 | `verify_readonly.py` | Write-denial check run inside the container with its own role |
-| `mcp_probe.js` | Boundary probe run with Node inside the n8n container: health, 401 without or with a wrong token, authenticated `tools/list` + closed-schema check, one deterministic call |
+| `mcp_probe.js` | Boundary probe run with Node inside the n8n container: health, 401 without or with a wrong token, authenticated `tools/list` + closed-schema check, one deterministic call; since 4D.2B-R also the per-turn cap across four fresh sessions (`ok ok ok tool_call_limit_reached`) and refusal of a call without `?turn=` |
 
 ## Runbook (as executed in Gate 4D.2A)
 
@@ -28,8 +28,9 @@ and the scripts. Commands run as root on the VPS unless marked *local*.
 ```bash
 # local: build from the deployed commit and ship the image (no registry, no repo on the VPS)
 docker build -f deploy/consultant/Dockerfile --label org.opencontainers.image.revision=$(git rev-parse HEAD) \
-  -t samsung-consultant:4d2a .
-docker save samsung-consultant:4d2a | gzip | ssh n8n-vps 'gunzip | docker load'
+  -t samsung-consultant:4d2b .
+docker save samsung-consultant:4d2b -o consultant.tar && gzip consultant.tar      # a piped save|ssh stalled in 4D.2B-R
+scp consultant.tar.gz n8n-vps:/root/ && ssh n8n-vps 'gunzip -c /root/consultant.tar.gz | docker load && rm /root/consultant.tar.gz'
 
 python3 provision_env.py init-env consultant.env                       # secrets generated here, never printed
 python3 provision_env.py psql-preamble consultant.env | cat - create_consultant_role.sql \
@@ -48,7 +49,8 @@ The n8n Header Auth credential (`Authorization: Bearer <token>`) is created thro
 public API. The token is piped from `provision_env.py mcp-token` and never displayed.
 
 **Rollback:**
-1. `docker compose -f compose.yml down` and `docker image rm samsung-consultant:4d2a`.
+1. `docker compose -f compose.yml down` and `docker image rm samsung-consultant:4d2b` (to go back one gate,
+   set `image: samsung-consultant:4d2a` and `up -d`; that image lacks the per-turn key).
 2. Delete the n8n credential and workflow.
 3. As `n8n`, run `DROP OWNED BY samsung_consultant; DROP ROLE samsung_consultant;`.
 4. `shred -u consultant.env`.

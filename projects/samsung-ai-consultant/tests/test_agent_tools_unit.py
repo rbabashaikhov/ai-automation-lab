@@ -638,6 +638,17 @@ def test_scorer_tool_selection_arguments_and_clarification():
     assert h["tool_selection_accuracy"] == 0.0 and h["no_tool_accuracy"] == 0.0 and h["unnecessary_tool_call_rate"] == 0.5
 
 
+def test_clarification_heuristic_accepts_imperative_requests():
+    from evaluation.agent_eval import asked_clarification
+
+    # Gate 4D.2B-R final smoke, case D (a correct clarification without a question mark)
+    assert asked_clarification("Модели S95H и S90H выпускаются в нескольких размерах, включая общие диагонали 55, 65, "
+                               "77 и 83 дюйма. Пожалуйста, уточните диагональ экрана.")
+    assert asked_clarification("Какую диагональ сравнить: 65 или 83?")
+    assert not asked_clarification("Самый дешёвый — UE32H5000FUXRU за 22 990 ₽, в наличии.")
+    assert not asked_clarification("")
+
+
 def test_forbidden_args_and_retry_after_invalid_arguments():
     case = next(c for c in load_cases() if c["id"] == "rec-gaming")
     tr = {"rec-gaming": {"turns": [{"answer": "…", "tool_calls": [
@@ -736,6 +747,35 @@ def test_scorer_availability_and_model_reporting():
     ok = grounding_flags({"tool": "get_tv"}, {"user": "q", "answer": "QE65S95HAUXPY сейчас нет в наличии."}, CATALOG,
                          [result])
     assert ok["availability_mismatches"] == []
+
+
+def test_scorer_flags_invented_arguments():
+    """Real Gate 4D.2B / 4D.2B-R live arguments: invented ones are flagged, stated ones are not."""
+    from evaluation.agent_eval import invented_arguments
+
+    assert invented_arguments({"panel_technology": ["OLED"], "screen_size_inches": 65, "max_price": 200000,
+                               "use_cases": ["gaming"], "required_features": ["hz_120", "allm", "hdmi_2_1"]},
+                              "Хочу OLED 65 дюймов до 200 тысяч для PS5.") == [
+        "required_features:hz_120 not named by the user", "required_features:allm not named by the user",
+        "required_features:hdmi_2_1 not named by the user"]
+    assert invented_arguments({"use_cases": ["bright_room"], "max_price": 1000000},
+                              "Какой телевизор лучше для очень светлой комнаты?") == ["max_price=1e+06 not stated by the user"]
+    assert invented_arguments({"use_cases": ["gaming"], "required_features": ["hdmi_2_1"]},
+                              "Ищу телевизор под Xbox Series X.") == ["required_features:hdmi_2_1 not named by the user"]
+    for args, user in (({"required_features": ["hdmi_2_1"]}, "Посоветуй телевизор, обязательно с HDMI 2.1."),
+                       ({"use_cases": ["gaming"], "required_features": ["hz_120", "allm"]},
+                        "Нужен телевизор для PS5, нужны 120 Гц и ALLM."),
+                       ({"max_price": 150000}, "Какие телевизоры есть до 150 тысяч рублей?"),
+                       ({"screen_size_inches": 55, "max_price": 100000}, "Show me 55 inch TVs under 100k rubles."),
+                       ({"max_price": 1500000}, "Бюджет 1,5 млн"), ({"max_price": 200000}, "до 200 000 ₽"),
+                       ({"use_cases": ["bright_room"]}, "Комната солнечная, экран бликует.")):
+        assert invented_arguments(args, user) == [], (args, user)
+    case = next(c for c in load_cases() if c["id"] == "rec-budget-gaming")
+    tr = {case["id"]: {"turns": [{"answer": "…", "tool_calls": [{"tool": "recommend_tvs", "result": {"status": "ok"},
+        "args": {"panel_technology": ["OLED"], "screen_size_inches": 65, "max_price": 200000, "use_cases": ["gaming"],
+                 "required_features": ["hdmi_2_1"]}}]}]}}
+    run = score_run([case], tr, CATALOG)
+    assert run["turns"][0]["arguments"] == "wrong" and run["headline"]["invented_argument_count"] == 1
 
 
 def test_user_quoted_numbers_and_codes_are_not_fabrications():

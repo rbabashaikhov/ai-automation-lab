@@ -39,6 +39,8 @@ MODEL_CODE = re.compile(r"(?<![A-Za-z0-9])([A-Z]{2,3}\d{2,3}[A-Z][A-Z0-9]{4,11})
 MONEY = re.compile(r"(?<![\d.,])(\d{1,3}(?:[\s  ]\d{3})+|\d{4,})(?:[.,]\d+)?\s*(₽|руб\w*|р\.|rub\b|RUB)", re.I)
 UNIT_NUMBER = re.compile(r"(?<![\d.,])(\d+(?:[.,]\d+)?)\s*(Вт|W\b|Гц|Hz|дюйм\w*|\"|″|см\b|мм\b|кг\b|нит\w*|nits)", re.I)
 QUESTION_TAIL = re.compile(r"\?\s*\W*$")
+# A request phrased as an instruction ("Пожалуйста, уточните диагональ.") is also a clarification.
+CLARIFY_REQUEST = re.compile(r"(?i)\b(уточните|укажите|подскажите|напишите|please (specify|tell me|let me know))\b")
 
 # Answer phrases that preserve each gap kind (Russian first; English for English answers).
 GAP_PHRASES = {
@@ -59,6 +61,15 @@ FEATURE_WORDS = {
     "earc": ("earc",), "anti_glare": ("антиблик", "anti-glare", "anti reflection"), "filmmaker_mode": ("filmmaker",),
     "dolby_atmos": ("atmos",),
 }
+# Words that show the user named a feature (for required/preferred_features). Features without an
+# entry are not judged. Numbers in the user's text also count "200 тысяч"/"200k"/"1,5 млн" forms.
+FEATURE_MENTIONS = {**{k: v for k, v in {
+    "vrr": ("vrr", "variable refresh"), "allm": ("allm",), "freesync_premium": ("freesync",),
+    "freesync_premium_pro": ("freesync premium pro",), "game_bar": ("game bar",), "hdmi_2_1": ("hdmi 2.1", "hdmi2.1"),
+    "earc": ("earc",), "anti_glare": ("антиблик", "anti-glare", "блик"), "filmmaker_mode": ("filmmaker",),
+    "dolby_atmos": ("atmos",), "hz_120": ("120",), "vesa": ("vesa",)}.items()}}
+NUMERIC_ARGS = ("max_price", "min_price", "screen_size_inches", "min_screen_size_inches", "max_screen_size_inches",
+                "min_refresh_rate_hz")
 NEGATION = re.compile(r"(?i)\bне\b|\bнет\b|без\b|отсутств|no data|not listed|неизвестн")
 
 # Gate 4D.2B-R: statements about the actual catalog. Only meaningful when the session has no tool
@@ -201,10 +212,45 @@ def args_match(expected: dict, actual: dict) -> bool:
     return all(k in actual and _norm(actual[k]) == _norm(v) for k, v in expected.items())
 
 
+def _user_numbers(text: str) -> set:
+    """Numbers the user wrote, with thousand/million multipliers ('до 200 тысяч' -> 200000)."""
+    out = set()
+    for m in re.finditer(r"(\d+(?:[.,]\d+)?)\s*(тыс\w*|k\b|к\b|млн\w*|m\b)?", text.replace("\u00a0", " "), re.I):
+        n = float(m.group(1).replace(",", "."))
+        unit = (m.group(2) or "").lower()
+        n *= 1_000_000 if unit.startswith(("млн", "m")) else 1000 if unit else 1
+        out.add(round(n))
+    compact = re.sub(r"(?<=\d)[\s\u00a0](?=\d{3}\b)", "", text)          # "200 000" -> 200000
+    out.update(int(x) for x in re.findall(r"\d+", compact))
+    return out
+
+
+def invented_arguments(args: dict, user_text: str) -> list:
+    """Arguments the user's words do not support (Gate 4D.2B-R): a budget/size/refresh number that is
+    not in the text, or a required/preferred feature the user never named. Use cases are mapped by
+    meaning and are not judged here."""
+    if not isinstance(args, dict):
+        return []
+    low, numbers, out = user_text.lower(), _user_numbers(user_text), []
+    for key in NUMERIC_ARGS:
+        v = args.get(key)
+        if isinstance(v, (int, float)) and round(v) not in numbers:
+            out.append(f"{key}={v:g} not stated by the user")
+    for key in ("required_features", "preferred_features"):
+        for fid in args.get(key) or []:
+            words = FEATURE_MENTIONS.get(fid)
+            if words and not any(w in low for w in words):
+                out.append(f"{key}:{fid} not named by the user")
+    return out
+
+
 def asked_clarification(answer: str) -> bool:
     """Heuristic: the answer ends with a question (reviewed manually in the report)."""
     tail = answer.strip()[-300:]
-    return bool(QUESTION_TAIL.search(tail)) or "?" in tail.splitlines()[-1] if tail else False
+    if not tail:
+        return False
+    last = tail.splitlines()[-1]
+    return bool(QUESTION_TAIL.search(tail)) or "?" in last or bool(CLARIFY_REQUEST.search(last))
 
 
 @dataclass
@@ -223,6 +269,7 @@ class TurnScore:
     clarification_asked: bool
     clarification_ok: bool
     grounding: dict = field(default_factory=dict)
+    invented_arguments: list = field(default_factory=list)
 
 
 def score_turn(case: dict, index: int, spec: dict, turn: dict, catalog_codes: frozenset,
@@ -257,6 +304,13 @@ def score_turn(case: dict, index: int, spec: dict, turn: dict, catalog_codes: fr
             arguments = "wrong"
             notes.append(f"expected {spec['args']}, got {args}")
 
+    session_text = " ".join(turn.get("session_user_text", [turn.get("user", "")]))
+    invented = [f"{c['tool']}: {x}" for c in calls for x in invented_arguments(c.get("args"), session_text)]
+    if invented:
+        notes.extend(f"invented argument: {x}" for x in invented)
+        if arguments in ("exact", "acceptable"):
+            arguments = "wrong"
+
     retries = sum(1 for c in calls if (c.get("result") or {}).get("status") in RETRY_STATUSES)
     needed = 1 if expected is not None or (first is not None and first in acceptable) else 0
     unnecessary = max(0, len(calls) - retries - needed)
@@ -268,6 +322,7 @@ def score_turn(case: dict, index: int, spec: dict, turn: dict, catalog_codes: fr
     score = TurnScore(case["id"], index, case["family"], expected, tools, selection, arguments, notes, len(calls),
                       unnecessary, expected_clar, asked, clar_ok)
     score.grounding = grounding_flags(spec, turn, catalog_codes, session_results)
+    score.invented_arguments = invented
     return score
 
 
@@ -509,6 +564,7 @@ def aggregate(turns: list) -> dict:
         "catalog_claim_without_evidence_count": g("catalog_claims_without_evidence"),
         "availability_mismatch_count": g("availability_mismatches"),
         "aggregate_claim_flag_count": g("aggregate_claim_flags"),
+        "invented_argument_count": sum(len(t.invented_arguments) for t in turns),
         "lost_gap_count": g("lost_gaps") + sum(len(t.grounding.get("missing_required_mentions", [])) for t in turns),
         "forbidden_pattern_hits": g("forbidden_pattern_hits"),
         "failures": [f"{t.case_id}[{t.turn}]" for t in turns

@@ -1,0 +1,1604 @@
+{
+ "_meta": {
+  "description": "Gate 4D.2B live smoke and 4D.2B-R remediation reruns of the n8n AI Agent (gpt-4.1-mini, T=0) over the Consultant MCP tools. Compact transcripts; tokens are n8n's tokenUsageEstimate; cost at gpt-4.1-mini list price. Probes are fixed non-dataset phrasings (policy checks), reported apart from the five dataset cases. Raw executions are not committed.",
+  "driver": "temporary inactive workflow: Manual Trigger -> Set(chatInput, sessionId) -> Execute Workflow with the committed ai-consultant.json inline, run via `n8n execute --id` inside the n8n container (the Consultant workflow stays inactive; n8n 2.x runs only published database sub-workflows from non-manual executions)",
+  "catalog": "75 products / 66 available, products.max(updated_at) 2026-09-28 (unchanged)",
+  "heldout_registration": {
+   "registered_at_utc": "2026-09-30T10:35:36.136891Z",
+   "sha256": "7e14961d063212217b6491e1cb13d38e32a45eb23dff532f7f27fe751d310822",
+   "probes": {
+    "h-bright-south": "У меня в комнате панорамные окна на юг. Какой телевизор взять?",
+    "h-bright-sun": "Подскажи телевизор, который будет нормально смотреться при ярком солнце.",
+    "h-xbox": "Ищу телевизор под Xbox Series X.",
+    "h-console": "Какой телевизор лучше для приставки?",
+    "h-allm-explicit": "Нужен ТВ с обязательной поддержкой ALLM.",
+    "h-general-hz": "Чем 120 Гц лучше 60 Гц?"
+   },
+   "expected": {
+    "h-bright-south": "recommend_tvs {use_cases:[bright_room]} only, no budget/size; brightness gap stated",
+    "h-bright-sun": "recommend_tvs {use_cases:[bright_room]} only; brightness gap stated",
+    "h-xbox": "recommend_tvs {use_cases:[gaming]} only; no required/preferred features",
+    "h-console": "recommend_tvs {use_cases:[gaming]} only",
+    "h-allm-explicit": "recommend_tvs with required_features exactly [allm]",
+    "h-general-hz": "no tool; general explanation without catalog claims"
+   }
+  }
+ },
+ "rounds": {
+  "r1": {
+   "label": "4D.2B smoke (prompt v1, per-session cap)",
+   "commit": "f7c34cf",
+   "image": "samsung-consultant:4d2a",
+   "smoke_cases": [
+    {
+     "id": "no-tool-greeting",
+     "user": "Привет!",
+     "n8n_sub_execution": "501",
+     "latency_s": 5.35,
+     "tokens_estimated": {
+      "promptTokens": 1011,
+      "completionTokens": 11,
+      "totalTokens": 1022
+     },
+     "cost_usd_estimated": 0.00042,
+     "tool_calls": [],
+     "answer": "Привет! Чем могу помочь с телевизорами Samsung?",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "stats-cheapest",
+     "user": "Какой самый дешёвый телевизор?",
+     "n8n_sub_execution": "503",
+     "latency_s": 7.16,
+     "tokens_estimated": {
+      "promptTokens": 2508,
+      "completionTokens": 106,
+      "totalTokens": 2614
+     },
+     "cost_usd_estimated": 0.00117,
+     "tool_calls": [
+      {
+       "tool": "get_catalog_stats",
+       "args": {
+        "stat": "cheapest"
+       },
+       "status": "ok",
+       "confidence": "strong",
+       "gaps": [
+        "excluded_unavailable"
+       ],
+       "products": [
+        "UE32H5000FUXRU"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Самый дешёвый телевизор в каталоге — Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) модель UE32H5000FUXRU. Его цена 22 990 ₽, он в наличии. Разрешение экрана 1366x768, диагональ 32 дюйма, частота обновления 60 Гц. Вот ссылка на товар: https://galaxystore.ru/product/UE32H5000FUXRU/",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "rec-budget-gaming",
+     "user": "Хочу OLED 65 дюймов до 200 тысяч для PS5.",
+     "n8n_sub_execution": "505",
+     "latency_s": 7.13,
+     "tokens_estimated": {
+      "promptTokens": 6348,
+      "completionTokens": 194,
+      "totalTokens": 6542
+     },
+     "cost_usd_estimated": 0.00285,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "panel_technology": [
+         "OLED"
+        ],
+        "screen_size_inches": 65,
+        "max_price": 200000,
+        "use_cases": [
+         "gaming"
+        ],
+        "required_features": [
+         "hz_120",
+         "allm",
+         "hdmi_2_1"
+        ]
+       },
+       "status": "no_match",
+       "confidence": "weak",
+       "gaps": [
+        "required_feature_not_listed",
+        "required_feature_not_listed"
+       ],
+       "products": [],
+       "alternatives": [
+        "UE65U8000HUXPY",
+        "UE65M70HAUXPY",
+        "UE65M1EHAUXPY",
+        "QE65S85HAEXPY",
+        "QE55S85HAEXPY",
+        "QE55S90HAUXPY",
+        "QE65S90HAEXPY",
+        "QE65S95HAUXPY",
+        "QE65S85HAEXPY"
+       ]
+      }
+     ],
+     "answer": "В каталоге нет OLED-телевизоров Samsung 65 дюймов с ценой до 200 тысяч рублей, которые точно подтверждены для PS5 (с частотой 120 Гц, ALLM и HDMI 2.1). \n\nБлижайший вариант — OLED Samsung 65\" S85H (модель QE65S85HAEXPY) за 189 990 ₽, в наличии. По данным каталога, у него есть 120 Гц, VRR, FreeSync Premium и игровая панель, но точные данные по ALLM и HDMI 2.1 не указаны. Вот ссылка на него: https://galaxystore.ru/product/QE65S85HAEXPY/\n\nЕсли готовы рассмотреть другие технологии, есть модели Mini LED и Crystal UHD 65\" дешевле 80 тысяч, но они не OLED и с частотой 60 Гц.\n\nХотите, могу показать эти альтернативы?",
+     "invented_arguments": [
+      "recommend_tvs: required_features:hz_120 not named by the user",
+      "recommend_tvs: required_features:allm not named by the user",
+      "recommend_tvs: required_features:hdmi_2_1 not named by the user"
+     ],
+     "flags": {
+      "aggregate_claim_flags": [
+       "'Если готовы рассмотреть другие технологии, есть модели Mini LED и Crystal UHD 65\" дешевле 80 тысяч, но они не OLED и с ч' states refresh_rate_hz=60 for ['crystal uhd', 'mini led']; differs for [('UE65M1EHAUXPY', 50)]"
+      ]
+     }
+    },
+    {
+     "id": "compare-family-ambiguous",
+     "user": "S95H или S90H — что лучше?",
+     "n8n_sub_execution": "507",
+     "latency_s": 6.72,
+     "tokens_estimated": {
+      "promptTokens": 2582,
+      "completionTokens": 71,
+      "totalTokens": 2653
+     },
+     "cost_usd_estimated": 0.00115,
+     "tool_calls": [
+      {
+       "tool": "compare_tvs",
+       "args": {
+        "models": [
+         "S95H",
+         "S90H"
+        ]
+       },
+       "status": "clarification_needed",
+       "confidence": "not_applicable",
+       "gaps": [
+        "family_size_ambiguous"
+       ],
+       "products": [],
+       "alternatives": []
+      }
+     ],
+     "answer": "Чтобы сравнить Samsung S95H и S90H, нужно уточнить диагональ экрана, так как обе серии имеют несколько размеров с пересекающимися диагоналями: 55, 65, 77 и 83 дюйма. Пожалуйста, укажите, какой размер экрана вас интересует для сравнения?",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "rec-bright-room",
+     "user": "Какой телевизор лучше для очень светлой комнаты?",
+     "n8n_sub_execution": "509",
+     "latency_s": 5.46,
+     "tokens_estimated": {
+      "promptTokens": 1019,
+      "completionTokens": 101,
+      "totalTokens": 1120
+     },
+     "cost_usd_estimated": 0.00057,
+     "tool_calls": [],
+     "answer": "Для очень светлой комнаты обычно рекомендуют телевизоры с высокой яркостью и антибликовым покрытием, чтобы изображение было хорошо видно при ярком освещении. В каталоге Samsung есть модели с антибликовым покрытием, что помогает уменьшить отражения.\n\nЕсли хотите, я могу подобрать для вас телевизоры Samsung с антибликовым покрытием, которые подойдут для светлой комнаты. Уточните, пожалуйста, желаемый размер экрана и бюджет?",
+     "invented_arguments": [],
+     "flags": {
+      "catalog_claims_without_evidence": [
+       "В каталоге Samsung есть модели с антибликовым покрытием, что помогает уменьшить отражения."
+      ]
+     }
+    }
+   ],
+   "probes": [],
+   "smoke_headline": {
+    "turns": 5,
+    "tool_selection_accuracy": 0.75,
+    "tool_selection_exact_or_acceptable": 0.75,
+    "no_tool_accuracy": 1.0,
+    "arguments_exact_rate": 0.667,
+    "arguments_exact_or_acceptable_rate": 0.667,
+    "unnecessary_tool_call_rate": 0.0,
+    "clarification_correctness": 0.8,
+    "avg_tool_calls_per_turn": 0.6,
+    "max_tool_calls_observed": 1,
+    "fabricated_model_count": 0,
+    "fabricated_price_count": 0,
+    "fabricated_feature_count": 0,
+    "unsupported_numeric_claim_count": 0,
+    "catalog_claim_without_evidence_count": 1,
+    "availability_mismatch_count": 0,
+    "aggregate_claim_flag_count": 1,
+    "invented_argument_count": 3,
+    "lost_gap_count": 0,
+    "forbidden_pattern_hits": 0,
+    "failures": [
+     "rec-budget-gaming[0]",
+     "rec-bright-room[0]"
+    ]
+   }
+  },
+  "r2": {
+   "label": "4D.2B-R rerun 1 (prompt v2 first cut, per-turn cap)",
+   "commit": "9bc0509",
+   "image": "samsung-consultant:4d2b",
+   "smoke_cases": [
+    {
+     "id": "no-tool-greeting",
+     "user": "Привет!",
+     "n8n_sub_execution": "512",
+     "latency_s": 4.71,
+     "tokens_estimated": {
+      "promptTokens": 1243,
+      "completionTokens": 11,
+      "totalTokens": 1254
+     },
+     "cost_usd_estimated": 0.00051,
+     "tool_calls": [],
+     "answer": "Привет! Чем могу помочь с телевизорами Samsung?",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "stats-cheapest",
+     "user": "Какой самый дешёвый телевизор?",
+     "n8n_sub_execution": "514",
+     "latency_s": 6.72,
+     "tokens_estimated": {
+      "promptTokens": 2975,
+      "completionTokens": 77,
+      "totalTokens": 3052
+     },
+     "cost_usd_estimated": 0.00131,
+     "tool_calls": [
+      {
+       "tool": "get_catalog_stats",
+       "args": {
+        "stat": "cheapest"
+       },
+       "status": "ok",
+       "confidence": "strong",
+       "gaps": [
+        "excluded_unavailable"
+       ],
+       "products": [
+        "UE32H5000FUXRU"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Самый дешёвый телевизор в каталоге — Телевизор Samsung 32\" HD H5000, Hyper Real, Smart ТВ (2026) модель UE32H5000FUXRU. Его цена 22 990 ₽, он в наличии. Вот ссылка на него: https://galaxystore.ru/product/UE32H5000FUXRU/",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "rec-budget-gaming",
+     "user": "Хочу OLED 65 дюймов до 200 тысяч для PS5.",
+     "n8n_sub_execution": "516",
+     "latency_s": 7.5,
+     "tokens_estimated": {
+      "promptTokens": 3266,
+      "completionTokens": 158,
+      "totalTokens": 3424
+     },
+     "cost_usd_estimated": 0.00156,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "panel_technology": [
+         "OLED"
+        ],
+        "screen_size_inches": 65,
+        "max_price": 200000,
+        "use_cases": [
+         "gaming"
+        ]
+       },
+       "status": "ok",
+       "confidence": "strong",
+       "gaps": [],
+       "products": [
+        "QE65S85HAEXPY"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Для игр на PS5 с OLED телевизором 65 дюймов до 200 тысяч рублей я рекомендую модель Samsung 65\" OLED S85H 4K (QE65S85HAEXPY). \n\n- Цена: 189 990 ₽ (в наличии)\n- Разрешение: 4K (3840x2160)\n- Частота обновления: 120 Гц\n- Поддержка VRR, FreeSync Premium, игровая панель (Game Bar)\n- Процессор NQ4 AI Gen2, Smart ТВ (2026)\n\nЭтот телевизор отлично подходит для игр благодаря высокой частоте обновления и поддержке игровых технологий.\n\nСсылка на товар: https://galaxystore.ru/product/QE65S85HAEXPY/",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "compare-family-ambiguous",
+     "user": "S95H или S90H — что лучше?",
+     "n8n_sub_execution": "518",
+     "latency_s": 5.77,
+     "tokens_estimated": {
+      "promptTokens": 3055,
+      "completionTokens": 76,
+      "totalTokens": 3131
+     },
+     "cost_usd_estimated": 0.00134,
+     "tool_calls": [
+      {
+       "tool": "compare_tvs",
+       "args": {
+        "models": [
+         "S95H",
+         "S90H"
+        ]
+       },
+       "status": "clarification_needed",
+       "confidence": "not_applicable",
+       "gaps": [
+        "family_size_ambiguous"
+       ],
+       "products": [],
+       "alternatives": []
+      }
+     ],
+     "answer": "Модели S95H и S90H выпускаются в нескольких размерах, и для точного сравнения нужно выбрать диагональ экрана. Общие размеры, которые есть у обеих серий: 55, 65, 77 и 83 дюйма. Пожалуйста, уточните, какой размер экрана вас интересует для сравнения?",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "rec-bright-room",
+     "user": "Какой телевизор лучше для очень светлой комнаты?",
+     "n8n_sub_execution": "520",
+     "latency_s": 10.77,
+     "tokens_estimated": {
+      "promptTokens": 4779,
+      "completionTokens": 520,
+      "totalTokens": 5299
+     },
+     "cost_usd_estimated": 0.00274,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "use_cases": [
+         "bright_room"
+        ],
+        "max_price": 1000000
+       },
+       "status": "ok",
+       "confidence": "weak",
+       "gaps": [
+        "not_in_catalog_domain",
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [
+        "QE32LS03CBUXRU",
+        "QE43LS03HEUXPY",
+        "QE42S90HAEXPY",
+        "QE48S85HAEXPY",
+        "QE55LS03HAUXPY",
+        "QE55S85HAEXPY",
+        "QE48S90HAEXPY",
+        "QE55S90HAUXPY"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Для очень светлой комнаты в каталоге есть несколько телевизоров с антибликовым покрытием, что помогает уменьшить отражения. Вот некоторые из них:\n\n1. Samsung 32\" The Frame QLED Full HD (2023) LS03C (QE32LS03CBUXRU) — 50 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE32LS03CBUXRU/)\n2. Samsung 43\" The Frame QLED 4K (2026) QE43LS03HEUXPY — 84 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE43LS03HEUXPY/)\n3. Samsung 42\" OLED S90H 4K (2026) QE42S90HAEXPY — 109 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE42S90HAEXPY/)\n4. Samsung 48\" OLED S85H 4K (2026) QE48S85HAEXPY — 119 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE48S85HAEXPY/)\n5. Samsung 55\" The Frame QLED 4K (2026) QE55LS03HAUXPY — 139 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE55LS03HAUXPY/)\n6. Samsung 55\" OLED S85H 4K (2026) QE55S85HAEXPY — 149 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE55S85HAEXPY/)\n7. Samsung 48\" OLED S90H 4K (2026) QE48S90HAEXPY — 159 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE48S90HAEXPY/)\n8. Samsung 55\" OLED S90H 4K (2026) QE55S90HAUXPY — 169 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE55S90HAUXPY/)\n\nВ каталоге нет данных о яркости (нитах), но антибликовое покрытие помогает уменьшить отражения в светлой комнате. Чтобы сузить выбор, уточните, пожалуйста, желаемый размер экрана и бюджет.",
+     "invented_arguments": [
+      "recommend_tvs: max_price=1e+06 not stated by the user"
+     ],
+     "flags": {}
+    }
+   ],
+   "probes": [
+    {
+     "id": "p-120-allm",
+     "user": "Нужен телевизор для PS5, нужны 120 Гц и ALLM.",
+     "n8n_sub_execution": "537",
+     "latency_s": 52.4,
+     "tokens_estimated": {
+      "promptTokens": 3710,
+      "completionTokens": 229,
+      "totalTokens": 3939
+     },
+     "cost_usd_estimated": 0.00185,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "use_cases": [
+         "gaming"
+        ],
+        "required_features": [
+         "hz_120",
+         "allm"
+        ]
+       },
+       "status": "ok",
+       "confidence": "partial",
+       "gaps": [
+        "required_feature_not_listed",
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [
+        "QE115QN90FUXRU",
+        "MRE115MR95FXRU"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Для PS5 с обязательными 120 Гц и ALLM в наличии есть два телевизора Samsung 115 дюймов:\n\n1. Samsung Neo QLED 4K Smart TV серия 9 QE115QN90FUXRU — 1 799 990 ₽ (был 1 999 990 ₽). Есть 120 Гц, ALLM, VRR, FreeSync Premium Pro, игровая панель. В наличии. Подробнее: https://galaxystore.ru/product/QE115QN90FUXRU/\n\n2. Samsung TV AI Micro RGB MR95F (2026) MRE115MR95FXRU — 2 699 990 ₽ (был 2 999 990 ₽). Есть 120 Гц, ALLM, FreeSync Premium Pro, игровая панель. В наличии. Подробнее: https://galaxystore.ru/product/MRE115MR95FXRU/\n\nВ каталоге есть еще 35 моделей, которые могут подходить, но по ним нет данных о 120 Гц и ALLM. Если нужна другая диагональ или бюджет, уточните.",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "p-bright-1",
+     "user": "Нужен телевизор в гостиную с большими окнами, днём там очень много солнца. Что посоветуешь?",
+     "n8n_sub_execution": "523",
+     "latency_s": 8.84,
+     "tokens_estimated": {
+      "promptTokens": 4876,
+      "completionTokens": 521,
+      "totalTokens": 5397
+     },
+     "cost_usd_estimated": 0.00278,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "use_cases": [
+         "bright_room"
+        ]
+       },
+       "status": "ok",
+       "confidence": "weak",
+       "gaps": [
+        "not_in_catalog_domain",
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [
+        "QE32LS03CBUXRU",
+        "QE43LS03HEUXPY",
+        "QE42S90HAEXPY",
+        "QE65S85HAEXPY",
+        "QE55S95HAUXPY",
+        "QE75LS03HWUXPY",
+        "MRE65R95HAUXPY",
+        "MRE75R95HAUXPY"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Для гостиной с большими окнами и ярким дневным светом я бы рекомендовал телевизоры с антибликовым покрытием. В каталоге есть несколько моделей с такой функцией:\n\n1. Samsung 32\" The Frame QLED Full HD (2023) LS03C — 50 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE32LS03CBUXRU/)\n2. Samsung 43\" The Frame QLED LS03 4K (2026) QE43LS03HEUXPY — 84 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE43LS03HEUXPY/)\n3. Samsung 42\" OLED S90H 4K (2026) QE42S90HAEXPY — 109 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE42S90HAEXPY/)\n4. Samsung 65\" OLED S85H 4K (2026) QE65S85HAEXPY — 189 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE65S85HAEXPY/)\n5. Samsung 55\" OLED S95H 4K (2026) QE55S95HAUXPY — 219 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE55S95HAUXPY/)\n6. Samsung 75\" The Frame NeoQLED LS03 4K (2026) QE75LS03HWUXPY — 249 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE75LS03HWUXPY/)\n7. Samsung 65\" Micro RGB R95H 4K (2026) MRE65R95HAUXPY — 369 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/MRE65R95HAUXPY/)\n8. Samsung 75\" Micro RGB R95H 4K (2026) MRE75R95HAUXPY — 419 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/MRE75R95HAUXPY/)\n\nВсе эти модели имеют антибликовое покрытие, что поможет уменьшить отражения от солнца. Чтобы сузить выбор, скажите, пожалуйста, какой размер экрана и бюджет вас интересуют?",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "p-bright-2",
+     "user": "Какой ТВ выбрать, если комната солнечная и экран бликует?",
+     "n8n_sub_execution": "525",
+     "latency_s": 3.63,
+     "tokens_estimated": {
+      "promptTokens": 1256,
+      "completionTokens": 120,
+      "totalTokens": 1376
+     },
+     "cost_usd_estimated": 0.00069,
+     "tool_calls": [],
+     "answer": "В солнечной комнате с бликами на экране важно выбирать телевизор с антибликовым покрытием или технологией, которая снижает отражения. Такие модели помогают уменьшить блики и улучшить видимость изображения при ярком освещении.\n\nВ каталоге Samsung есть модели с функцией антибликового покрытия (anti_glare). Я могу подобрать для вас телевизоры с этой функцией, чтобы они лучше подходили для солнечной комнаты. Хотите, чтобы я показал такие модели? Если да, укажите, пожалуйста, желаемый размер экрана и бюджет.",
+     "invented_arguments": [],
+     "flags": {
+      "catalog_claims_without_evidence": [
+       "В каталоге Samsung есть модели с функцией антибликового покрытия (anti_glare)."
+      ]
+     }
+    },
+    {
+     "id": "p-bright-3",
+     "user": "Посоветуй телевизор для яркой комнаты.",
+     "n8n_sub_execution": "527",
+     "latency_s": 7.58,
+     "tokens_estimated": {
+      "promptTokens": 4782,
+      "completionTokens": 520,
+      "totalTokens": 5302
+     },
+     "cost_usd_estimated": 0.00274,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "use_cases": [
+         "bright_room"
+        ],
+        "max_price": 300000
+       },
+       "status": "ok",
+       "confidence": "weak",
+       "gaps": [
+        "not_in_catalog_domain",
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [
+        "QE32LS03CBUXRU",
+        "QE43LS03HEUXPY",
+        "QE42S90HAEXPY",
+        "QE48S85HAEXPY",
+        "QE55LS03HAUXPY",
+        "QE55S85HAEXPY",
+        "QE48S90HAEXPY",
+        "QE55S90HAUXPY"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Для яркой комнаты я могу порекомендовать несколько телевизоров Samsung с антибликовым покрытием, которое помогает уменьшить отражения:\n\n1. Samsung 32\" The Frame QLED Full HD (2023) LS03C (QE32LS03CBUXRU) — 50 990 ₽, в наличии.  \n   Подробнее: https://galaxystore.ru/product/QE32LS03CBUXRU/\n\n2. Samsung 43\" The Frame QLED 4K (2026) QE43LS03HEUXPY — 84 990 ₽, в наличии.  \n   Подробнее: https://galaxystore.ru/product/QE43LS03HEUXPY/\n\n3. Samsung 42\" OLED S90H 4K (2026) QE42S90HAEXPY — 109 990 ₽, в наличии.  \n   Подробнее: https://galaxystore.ru/product/QE42S90HAEXPY/\n\n4. Samsung 48\" OLED S85H 4K (2026) QE48S85HAEXPY — 119 990 ₽, в наличии.  \n   Подробнее: https://galaxystore.ru/product/QE48S85HAEXPY/\n\n5. Samsung 55\" The Frame QLED 4K (2026) QE55LS03HAUXPY — 139 990 ₽, в наличии.  \n   Подробнее: https://galaxystore.ru/product/QE55LS03HAUXPY/\n\n6. Samsung 55\" OLED S85H 4K (2026) QE55S85HAEXPY — 149 990 ₽, в наличии.  \n   Подробнее: https://galaxystore.ru/product/QE55S85HAEXPY/\n\n7. Samsung 48\" OLED S90H 4K (2026) QE48S90HAEXPY — 159 990 ₽, в наличии.  \n   Подробнее: https://galaxystore.ru/product/QE48S90HAEXPY/\n\n8. Samsung 55\" OLED S90H 4K (2026) QE55S90HAUXPY — 169 990 ₽, в наличии.  \n   Подробнее: https://galaxystore.ru/product/QE55S90HAUXPY/\n\nВ каталоге нет данных о яркости (нитах), но антибликовое покрытие помогает лучше смотреть телевизор в ярко освещённой комнате.\n\nЧтобы сузить выбор, скажите, пожалуйста, какой размер экрана вам предпочтителен?",
+     "invented_arguments": [
+      "recommend_tvs: max_price=300000 not stated by the user"
+     ],
+     "flags": {}
+    },
+    {
+     "id": "p-cap-adversarial",
+     "user": "Расскажи отдельно про каждую модель, сделай отдельный запрос в каталог на каждую: QE65S95HAUXPY, QE65S90HAEXPY, QE65S85HAEXPY, QE55S95HAUXPY, QE83S95HAEXPY.",
+     "n8n_sub_execution": "539",
+     "latency_s": 9.12,
+     "tokens_estimated": {
+      "promptTokens": 4819,
+      "completionTokens": 406,
+      "totalTokens": 5225
+     },
+     "cost_usd_estimated": 0.00258,
+     "tool_calls": [
+      {
+       "tool": "get_tv",
+       "args": {
+        "model": "QE65S95HAUXPY"
+       },
+       "status": "tool_call_limit_reached",
+       "confidence": null,
+       "gaps": [],
+       "products": [],
+       "alternatives": []
+      },
+      {
+       "tool": "get_tv",
+       "args": {
+        "model": "QE65S90HAEXPY"
+       },
+       "status": "tool_call_limit_reached",
+       "confidence": null,
+       "gaps": [],
+       "products": [],
+       "alternatives": []
+      },
+      {
+       "tool": "get_tv",
+       "args": {
+        "model": "QE65S85HAEXPY"
+       },
+       "status": "ok",
+       "confidence": "strong",
+       "gaps": [],
+       "products": [
+        "QE65S85HAEXPY"
+       ],
+       "alternatives": []
+      },
+      {
+       "tool": "get_tv",
+       "args": {
+        "model": "QE55S95HAUXPY"
+       },
+       "status": "ok",
+       "confidence": "strong",
+       "gaps": [],
+       "products": [
+        "QE55S95HAUXPY"
+       ],
+       "alternatives": []
+      },
+      {
+       "tool": "get_tv",
+       "args": {
+        "model": "QE83S95HAEXPY"
+       },
+       "status": "ok",
+       "confidence": "strong",
+       "gaps": [],
+       "products": [
+        "QE83S95HAEXPY"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Вот информация по моделям из каталога:\n\n1. Samsung QE65S85HAEXPY\n   - Тип: OLED\n   - Диагональ: 65\"\n   - Разрешение: 4K (3840x2160)\n   - Частота обновления: 120 Гц\n   - Процессор: Neural Quantum 4K AI Gen2\n   - Год: 2026\n   - Цена: 189 990 ₽ (была 229 990 ₽)\n   - В наличии\n   - Подробнее: https://galaxystore.ru/product/QE65S85HAEXPY/\n\n2. Samsung QE55S95HAUXPY\n   - Тип: OLED\n   - Диагональ: 55\"\n   - Разрешение: 4K (3840x2160)\n   - Частота обновления: 120 Гц\n   - Процессор: NQ4 AI Gen3\n   - Год: 2026\n   - Цена: 219 990 ₽ (была 269 990 ₽)\n   - В наличии\n   - Подробнее: https://galaxystore.ru/product/QE55S95HAUXPY/\n\n3. Samsung QE83S95HAEXPY\n   - Тип: OLED\n   - Диагональ: 83\"\n   - Разрешение: 4K (3840x2160)\n   - Частота обновления: 120 Гц\n   - Процессор: NQ4 AI Gen3\n   - Год: 2026\n   - Цена: 639 990 ₽\n   - В наличии\n   - Подробнее: https://galaxystore.ru/product/QE83S95HAEXPY/\n\nПо моделям QE65S95HAUXPY и QE65S90HAEXPY данных из каталога сейчас нет, так как достигнут лимит запросов. Если хотите, могу запросить их отдельно.",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "p-games",
+     "user": "Хочу телевизор для игр.",
+     "n8n_sub_execution": "533",
+     "latency_s": 9.38,
+     "tokens_estimated": {
+      "promptTokens": 5576,
+      "completionTokens": 485,
+      "totalTokens": 6061
+     },
+     "cost_usd_estimated": 0.00301,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "use_cases": [
+         "gaming"
+        ]
+       },
+       "status": "ok",
+       "confidence": "strong",
+       "gaps": [
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [
+        "QE115QN90FUXRU",
+        "QE42S90HAEXPY",
+        "QE48S85HAEXPY",
+        "QE55QN80HAUXPY",
+        "MRE55R85HAUXPY",
+        "QE55LS03HAUXPY",
+        "QE55S85HAEXPY",
+        "QE65QN80HAUXPY"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Для игр я могу порекомендовать несколько моделей Samsung с поддержкой 120 Гц, VRR, FreeSync Premium и игровым режимом Game Bar:\n\n1. Samsung Neo QLED 115\" QE115QN90FUXRU — большой экран 115\", 4K, 120 Гц, цена 1 799 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE115QN90FUXRU/\n\n2. Samsung OLED 42\" QE42S90HAEXPY — 4K, 120 Гц, цена 109 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE42S90HAEXPY/\n\n3. Samsung OLED 48\" QE48S85HAEXPY — 4K, 120 Гц, цена 119 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE48S85HAEXPY/\n\n4. Samsung Neo QLED 55\" QE55QN80HAUXPY — 4K, 120 Гц, цена 129 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE55QN80HAUXPY/\n\n5. Samsung Micro RGB 55\" MRE55R85HAUXPY — 4K, 120 Гц, цена 139 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/MRE55R85HAUXPY/\n\n6. Samsung The Frame QLED 55\" QE55LS03HAUXPY — 4K, 120 Гц, цена 139 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE55LS03HAUXPY/\n\n7. Samsung OLED 55\" QE55S85HAEXPY — 4K, 120 Гц, цена 149 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE55S85HAEXPY/\n\n8. Samsung Neo QLED 65\" QE65QN80HAUXPY — 4K, 120 Гц, цена 159 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE65QN80HAUXPY/\n\nЕсли скажете предпочтительный размер экрана и бюджет, помогу сузить выбор.",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "p-general-reflections",
+     "user": "Почему в светлой комнате изображение на экране плохо видно?",
+     "n8n_sub_execution": "529",
+     "latency_s": 4.04,
+     "tokens_estimated": {
+      "promptTokens": 1253,
+      "completionTokens": 126,
+      "totalTokens": 1379
+     },
+     "cost_usd_estimated": 0.0007,
+     "tool_calls": [],
+     "answer": "В светлой комнате изображение на экране телевизора может быть плохо видно из-за отражений света от окна или источников освещения. Эти отражения создают блики и снижают контрастность изображения, из-за чего цвета кажутся менее насыщенными, а детали — менее четкими. Особенно это заметно на глянцевых экранах без антибликового покрытия.\n\nДля улучшения видимости в светлой комнате полезно выбирать телевизоры с антибликовым покрытием или с технологией, которая снижает отражения. Также помогает правильное расположение телевизора относительно источников света.",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "p-hdmi21",
+     "user": "Посоветуй телевизор, обязательно с HDMI 2.1.",
+     "n8n_sub_execution": "535",
+     "latency_s": 6.93,
+     "tokens_estimated": {
+      "promptTokens": 3592,
+      "completionTokens": 239,
+      "totalTokens": 3831
+     },
+     "cost_usd_estimated": 0.00182,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "required_features": [
+         "hdmi_2_1"
+        ]
+       },
+       "status": "no_match",
+       "confidence": "weak",
+       "gaps": [
+        "required_feature_not_listed",
+        "required_feature_not_listed",
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [],
+       "alternatives": [
+        "UE32H5000FUXRU",
+        "UE32F6000FUXRU",
+        "QE32Q5FAAUXPY"
+       ]
+      }
+     ],
+     "answer": "В каталоге нет подтвержденных моделей с явно указанным HDMI 2.1, но есть несколько телевизоров, у которых эта характеристика не указана в данных каталога, возможно, они её поддерживают:\n\n1. Телевизор Samsung 32\" HD H5000 (UE32H5000FUXRU) — 22 990 ₽, в наличии. Подробнее: https://galaxystore.ru/product/UE32H5000FUXRU/\n2. Телевизор Samsung 32\" FHD F6000 (UE32F6000FUXRU) — 23 590 ₽, в наличии. Подробнее: https://galaxystore.ru/product/UE32F6000FUXRU/\n3. Телевизор Samsung 32\" QLED Q5FA (QE32Q5FAAUXPY) — 27 990 ₽, в наличии. Подробнее: https://galaxystore.ru/product/QE32Q5FAAUXPY/\n\nЕсли нужен телевизор с гарантированным HDMI 2.1, уточните, пожалуйста, желаемый размер экрана и бюджет, чтобы я мог подобрать подходящие варианты.",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "p-ps5",
+     "user": "Нужен телевизор под PS5, что посоветуешь?",
+     "n8n_sub_execution": "531",
+     "latency_s": 6.47,
+     "tokens_estimated": {
+      "promptTokens": 4149,
+      "completionTokens": 290,
+      "totalTokens": 4439
+     },
+     "cost_usd_estimated": 0.00212,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "use_cases": [
+         "gaming"
+        ],
+        "required_features": [
+         "hdmi_2_1",
+         "hz_120"
+        ]
+       },
+       "status": "no_match",
+       "confidence": "weak",
+       "gaps": [
+        "required_feature_not_listed",
+        "required_feature_not_listed",
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [],
+       "alternatives": [
+        "QE115QN90FUXRU",
+        "QE42S90HAEXPY",
+        "QE48S85HAEXPY"
+       ]
+      }
+     ],
+     "answer": "Для игры на PS5 я могу порекомендовать следующие телевизоры Samsung с поддержкой 120 Гц и HDMI 2.1 (по данным каталога, точное наличие HDMI 2.1 не подтверждено, но модели подходят для игр):\n\n1. Samsung Neo QLED 115\" QE115QN90FUXRU — большой 4K телевизор с частотой 120 Гц, поддержкой VRR, FreeSync Premium Pro, ALLM и игровой панелью. Цена около 1 799 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE115QN90FUXRU/\n\n2. Samsung OLED 42\" S90H QE42S90HAEXPY — 4K OLED с 120 Гц, VRR, FreeSync Premium и игровой панелью. Цена около 109 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE42S90HAEXPY/\n\n3. Samsung OLED 48\" S85H QE48S85HAEXPY — 4K OLED с 120 Гц, VRR, FreeSync Premium и игровой панелью. Цена около 119 990 ₽ (со скидкой). В наличии. Подробнее: https://galaxystore.ru/product/QE48S85HAEXPY/\n\nЕсли хотите, могу помочь выбрать по размеру экрана или бюджету.",
+     "invented_arguments": [
+      "recommend_tvs: required_features:hdmi_2_1 not named by the user",
+      "recommend_tvs: required_features:hz_120 not named by the user"
+     ],
+     "flags": {}
+    }
+   ],
+   "smoke_headline": {
+    "turns": 5,
+    "tool_selection_accuracy": 1.0,
+    "tool_selection_exact_or_acceptable": 1.0,
+    "no_tool_accuracy": 1.0,
+    "arguments_exact_rate": 0.75,
+    "arguments_exact_or_acceptable_rate": 0.75,
+    "unnecessary_tool_call_rate": 0.0,
+    "clarification_correctness": 1.0,
+    "avg_tool_calls_per_turn": 0.8,
+    "max_tool_calls_observed": 1,
+    "fabricated_model_count": 0,
+    "fabricated_price_count": 0,
+    "fabricated_feature_count": 0,
+    "unsupported_numeric_claim_count": 0,
+    "catalog_claim_without_evidence_count": 0,
+    "availability_mismatch_count": 0,
+    "aggregate_claim_flag_count": 0,
+    "invented_argument_count": 1,
+    "lost_gap_count": 0,
+    "forbidden_pattern_hits": 0,
+    "failures": [
+     "rec-bright-room[0]"
+    ]
+   }
+  },
+  "r3": {
+   "label": "4D.2B-R final (prompt v2 iteration)",
+   "commit": "45977d6",
+   "image": "samsung-consultant:4d2b",
+   "smoke_cases": [
+    {
+     "id": "no-tool-greeting",
+     "user": "Привет!",
+     "n8n_sub_execution": "541",
+     "latency_s": 3.17,
+     "tokens_estimated": {
+      "promptTokens": 1427,
+      "completionTokens": 11,
+      "totalTokens": 1438
+     },
+     "cost_usd_estimated": 0.00059,
+     "tool_calls": [],
+     "answer": "Привет! Чем могу помочь с телевизорами Samsung?",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "stats-cheapest",
+     "user": "Какой самый дешёвый телевизор?",
+     "n8n_sub_execution": "543",
+     "latency_s": 5.04,
+     "tokens_estimated": {
+      "promptTokens": 3352,
+      "completionTokens": 90,
+      "totalTokens": 3442
+     },
+     "cost_usd_estimated": 0.00148,
+     "tool_calls": [
+      {
+       "tool": "get_catalog_stats",
+       "args": {
+        "stat": "cheapest"
+       },
+       "status": "ok",
+       "confidence": "strong",
+       "gaps": [
+        "excluded_unavailable"
+       ],
+       "products": [
+        "UE32H5000FUXRU"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Самый дешёвый телевизор в каталоге — Samsung 32\" HD H5000 (модель UE32H5000FUXRU) с разрешением 1366x768, LED-панелью и частотой обновления 60 Гц. Его цена 22 990 ₽, телевизор в наличии. Вот ссылка на него: https://galaxystore.ru/product/UE32H5000FUXRU/",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "rec-budget-gaming",
+     "user": "Хочу OLED 65 дюймов до 200 тысяч для PS5.",
+     "n8n_sub_execution": "545",
+     "latency_s": 5.6,
+     "tokens_estimated": {
+      "promptTokens": 3631,
+      "completionTokens": 113,
+      "totalTokens": 3744
+     },
+     "cost_usd_estimated": 0.00163,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "panel_technology": [
+         "OLED"
+        ],
+        "screen_size_inches": 65,
+        "max_price": 200000,
+        "use_cases": [
+         "gaming"
+        ]
+       },
+       "status": "ok",
+       "confidence": "strong",
+       "gaps": [],
+       "products": [
+        "QE65S85HAEXPY"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Я рекомендую телевизор Samsung 65\" OLED S85H 4K (модель QE65S85HAEXPY) за 189 990 ₽. Он подходит для игр на PS5: OLED-панель, 65 дюймов, 4K разрешение, частота обновления 120 Гц, поддержка VRR, FreeSync Premium и игровая панель (Game Bar). Телевизор в наличии. Вот ссылка на него: https://galaxystore.ru/product/QE65S85HAEXPY/",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "compare-family-ambiguous",
+     "user": "S95H или S90H — что лучше?",
+     "n8n_sub_execution": "547",
+     "latency_s": 5.04,
+     "tokens_estimated": {
+      "promptTokens": 3414,
+      "completionTokens": 72,
+      "totalTokens": 3486
+     },
+     "cost_usd_estimated": 0.00148,
+     "tool_calls": [
+      {
+       "tool": "compare_tvs",
+       "args": {
+        "models": [
+         "S95H",
+         "S90H"
+        ]
+       },
+       "status": "clarification_needed",
+       "confidence": "not_applicable",
+       "gaps": [
+        "family_size_ambiguous"
+       ],
+       "products": [],
+       "alternatives": []
+      }
+     ],
+     "answer": "Модели S95H и S90H выпускаются в нескольких размерах, включая общие диагонали 55, 65, 77 и 83 дюйма. Чтобы сравнить их и сказать, что лучше, мне нужно знать, какой размер экрана вас интересует. Пожалуйста, уточните диагональ экрана.",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "rec-bright-room",
+     "user": "Какой телевизор лучше для очень светлой комнаты?",
+     "n8n_sub_execution": "549",
+     "latency_s": 8.27,
+     "tokens_estimated": {
+      "promptTokens": 5206,
+      "completionTokens": 295,
+      "totalTokens": 5501
+     },
+     "cost_usd_estimated": 0.00255,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "use_cases": [
+         "bright_room"
+        ]
+       },
+       "status": "ok",
+       "confidence": "weak",
+       "gaps": [
+        "not_in_catalog_domain",
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [
+        "QE32LS03CBUXRU",
+        "QE43LS03HEUXPY",
+        "QE42S90HAEXPY",
+        "QE65S85HAEXPY",
+        "QE55S95HAUXPY",
+        "QE75LS03HWUXPY",
+        "MRE65R95HAUXPY",
+        "MRE75R95HAUXPY"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Для очень светлой комнаты в каталоге есть несколько телевизоров с антибликовым покрытием, которое помогает уменьшить отражения. Вот несколько примеров:\n\n1. Samsung 32\" The Frame QLED Full HD (2023) LS03C — 50 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE32LS03CBUXRU/)\n2. Samsung 43\" The Frame QLED LS03 4K (2026) QE43LS03HEUXPY — 84 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE43LS03HEUXPY/)\n3. Samsung 42\" OLED S90H 4K (2026) QE42S90HAEXPY — 109 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE42S90HAEXPY/)\n4. Samsung 65\" OLED S85H 4K (2026) QE65S85HAEXPY — 189 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE65S85HAEXPY/)\n\nВ каталоге нет данных о яркости (нитах), но антибликовое покрытие помогает в ярких помещениях. Чтобы точнее подобрать модель, скажите, пожалуйста, ваш бюджет и желаемый размер экрана.",
+     "invented_arguments": [],
+     "flags": {}
+    }
+   ],
+   "probes": [
+    {
+     "id": "h-allm-explicit",
+     "user": "Нужен ТВ с обязательной поддержкой ALLM.",
+     "n8n_sub_execution": "577",
+     "latency_s": 8.31,
+     "tokens_estimated": {
+      "promptTokens": 5077,
+      "completionTokens": 250,
+      "totalTokens": 5327
+     },
+     "cost_usd_estimated": 0.00243,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "required_features": [
+         "allm"
+        ]
+       },
+       "status": "ok",
+       "confidence": "partial",
+       "gaps": [
+        "required_feature_not_listed",
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [
+        "QE32Q5FAAUXPY",
+        "UE43M70HAUXPY",
+        "UE50M70HAUXPY",
+        "UE50U8000HUXPY",
+        "UE55M70HAUXPY",
+        "UE55U8000HUXPY",
+        "QE115QN90FUXRU",
+        "MRE115MR95FXRU"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Вот несколько телевизоров Samsung с обязательной поддержкой ALLM (автовключение игрового режима):\n\n1. Samsung 32\" QLED Q5FA (модель QE32Q5FAAUXPY) — 27 990 ₽, в наличии. Подробнее: https://galaxystore.ru/product/QE32Q5FAAUXPY/\n\n2. Samsung 43\" Mini LED M70 4K (модель UE43M70HAUXPY) — 41 990 ₽, в наличии. Подробнее: https://galaxystore.ru/product/UE43M70HAUXPY/\n\n3. Samsung 50\" Mini LED M70 4K (модель UE50M70HAUXPY) — 45 490 ₽, в наличии. Подробнее: https://galaxystore.ru/product/UE50M70HAUXPY/\n\n4. Samsung 50\" Crystal UHD U8000 4K (модель UE50U8000HUXPY) — 49 990 ₽, в наличии. Подробнее: https://galaxystore.ru/product/UE50U8000HUXPY/\n\nЕсли хотите, могу подобрать по другим параметрам, например, размеру экрана или бюджету.",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "h-bright-south",
+     "user": "У меня в комнате панорамные окна на юг. Какой телевизор взять?",
+     "n8n_sub_execution": "569",
+     "latency_s": 7.25,
+     "tokens_estimated": {
+      "promptTokens": 5214,
+      "completionTokens": 321,
+      "totalTokens": 5535
+     },
+     "cost_usd_estimated": 0.0026,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "use_cases": [
+         "bright_room"
+        ]
+       },
+       "status": "ok",
+       "confidence": "weak",
+       "gaps": [
+        "not_in_catalog_domain",
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [
+        "QE32LS03CBUXRU",
+        "QE43LS03HEUXPY",
+        "QE42S90HAEXPY",
+        "QE65S85HAEXPY",
+        "QE55S95HAUXPY",
+        "QE75LS03HWUXPY",
+        "MRE65R95HAUXPY",
+        "MRE75R95HAUXPY"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "В вашей комнате с панорамными окнами на юг лучше взять телевизор с антибликовым покрытием, чтобы уменьшить отражения. В каталоге есть несколько таких моделей с разными размерами и технологиями экранов. Вот примеры:\n\n1. Samsung 32\" The Frame QLED Full HD (2023) QE32LS03CBUXRU — с антибликовым покрытием, цена 50 990 ₽, в наличии. Подробнее: https://galaxystore.ru/product/QE32LS03CBUXRU/\n\n2. Samsung 43\" The Frame QLED 4K (2026) QE43LS03HEUXPY — с антибликовым покрытием, цена 84 990 ₽, в наличии. Подробнее: https://galaxystore.ru/product/QE43LS03HEUXPY/\n\n3. Samsung 42\" OLED S90H 4K (2026) QE42S90HAEXPY — с антибликовым покрытием, цена 109 990 ₽, в наличии. Подробнее: https://galaxystore.ru/product/QE42S90HAEXPY/\n\n4. Samsung 65\" OLED S85H 4K (2026) QE65S85HAEXPY — с антибликовым покрытием, цена 189 990 ₽, в наличии. Подробнее: https://galaxystore.ru/product/QE65S85HAEXPY/\n\nЕсли скажете ваш бюджет и желаемый размер экрана, я помогу сузить выбор.",
+     "invented_arguments": [],
+     "flags": {
+      "lost_gaps": [
+       "not_in_catalog_domain"
+      ]
+     }
+    },
+    {
+     "id": "h-bright-sun",
+     "user": "Подскажи телевизор, который будет нормально смотреться при ярком солнце.",
+     "n8n_sub_execution": "571",
+     "latency_s": 6.94,
+     "tokens_estimated": {
+      "promptTokens": 5215,
+      "completionTokens": 306,
+      "totalTokens": 5521
+     },
+     "cost_usd_estimated": 0.00258,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "use_cases": [
+         "bright_room"
+        ]
+       },
+       "status": "ok",
+       "confidence": "weak",
+       "gaps": [
+        "not_in_catalog_domain",
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [
+        "QE32LS03CBUXRU",
+        "QE43LS03HEUXPY",
+        "QE42S90HAEXPY",
+        "QE65S85HAEXPY",
+        "QE55S95HAUXPY",
+        "QE75LS03HWUXPY",
+        "MRE65R95HAUXPY",
+        "MRE75R95HAUXPY"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Для просмотра телевизора при ярком солнце в каталоге есть модели с антибликовым покрытием, которое помогает уменьшить отражения. Вот несколько примеров:\n\n1. Samsung 32\" The Frame QLED Full HD (2023) LS03C — 50 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE32LS03CBUXRU/)\n2. Samsung 43\" The Frame QLED LS03 4K (2026) QE43LS03HEUXPY — 84 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE43LS03HEUXPY/)\n3. Samsung 42\" OLED S90H 4K (2026) QE42S90HAEXPY — 109 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE42S90HAEXPY/)\n4. Samsung 65\" OLED S85H 4K (2026) QE65S85HAEXPY — 189 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE65S85HAEXPY/)\n\nВ каталоге нет данных о яркости экранов (нитах), но антибликовое покрытие помогает лучше смотреть телевизор в ярко освещённых помещениях.\n\nЧтобы подобрать оптимальный вариант, уточните, пожалуйста, ваш бюджет и желаемый размер экрана.",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "h-console",
+     "user": "Какой телевизор лучше для приставки?",
+     "n8n_sub_execution": "575",
+     "latency_s": 7.05,
+     "tokens_estimated": {
+      "promptTokens": 5954,
+      "completionTokens": 280,
+      "totalTokens": 6234
+     },
+     "cost_usd_estimated": 0.00283,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "use_cases": [
+         "gaming"
+        ]
+       },
+       "status": "ok",
+       "confidence": "strong",
+       "gaps": [
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [
+        "QE115QN90FUXRU",
+        "QE42S90HAEXPY",
+        "QE48S85HAEXPY",
+        "QE55QN80HAUXPY",
+        "MRE55R85HAUXPY",
+        "QE55LS03HAUXPY",
+        "QE55S85HAEXPY",
+        "QE65QN80HAUXPY"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Для приставки отлично подойдут телевизоры с частотой обновления 120 Гц, поддержкой VRR, FreeSync Premium и игровыми режимами. Вот несколько рекомендаций из каталога Samsung:\n\n1. Телевизор Samsung 42\" OLED S90H 4K (QE42S90HAEXPY) — 109 990 ₽, в наличии. OLED-панель, 120 Гц, VRR, FreeSync Premium, игровая панель. Подробнее: https://galaxystore.ru/product/QE42S90HAEXPY/\n\n2. Телевизор Samsung 55\" Neo QLED QN80H 4K (QE55QN80HAUXPY) — 129 990 ₽, в наличии. Neo QLED, 120 Гц, VRR, FreeSync Premium Pro, игровой режим. Подробнее: https://galaxystore.ru/product/QE55QN80HAUXPY/\n\n3. Телевизор Samsung 55\" OLED S85H 4K (QE55S85HAEXPY) — 149 990 ₽, в наличии. OLED, 120 Гц, VRR, FreeSync Premium, игровая панель. Подробнее: https://galaxystore.ru/product/QE55S85HAEXPY/\n\nЕсли хотите, могу помочь подобрать по размеру или бюджету.",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "h-general-hz",
+     "user": "Чем 120 Гц лучше 60 Гц?",
+     "n8n_sub_execution": "579",
+     "latency_s": 4.42,
+     "tokens_estimated": {
+      "promptTokens": 1435,
+      "completionTokens": 163,
+      "totalTokens": 1598
+     },
+     "cost_usd_estimated": 0.00083,
+     "tool_calls": [],
+     "answer": "Частота обновления экрана 120 Гц означает, что изображение на экране обновляется 120 раз в секунду, а при 60 Гц — 60 раз в секунду. Это даёт несколько преимуществ:\n\n1. Более плавное движение — особенно заметно в динамичных сценах, например, в спорте, экшн-фильмах и играх.\n2. Меньше размытия при быстром движении объектов.\n3. В играх с поддержкой 120 Гц можно получить более отзывчивый и плавный игровой процесс.\n\nОднако для обычного просмотра фильмов и телепередач 60 Гц обычно достаточно. Если вы планируете использовать телевизор для игр или смотреть много динамичного контента, 120 Гц будет лучше.",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "h-xbox",
+     "user": "Ищу телевизор под Xbox Series X.",
+     "n8n_sub_execution": "573",
+     "latency_s": 6.6,
+     "tokens_estimated": {
+      "promptTokens": 4470,
+      "completionTokens": 287,
+      "totalTokens": 4757
+     },
+     "cost_usd_estimated": 0.00225,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "use_cases": [
+         "gaming"
+        ],
+        "required_features": [
+         "hdmi_2_1"
+        ]
+       },
+       "status": "no_match",
+       "confidence": "weak",
+       "gaps": [
+        "required_feature_not_listed",
+        "required_feature_not_listed",
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [],
+       "alternatives": [
+        "QE115QN90FUXRU",
+        "QE42S90HAEXPY",
+        "QE48S85HAEXPY"
+       ]
+      }
+     ],
+     "answer": "Для Xbox Series X важен телевизор с HDMI 2.1. В каталоге нет точных данных о наличии HDMI 2.1 у моделей, но есть несколько подходящих вариантов с поддержкой 120 Гц, VRR, FreeSync и игровыми функциями:\n\n1. Samsung Neo QLED 115\" QE115QN90FUXRU — большой 4K телевизор с 120 Гц, VRR, FreeSync Premium Pro, ALLM, игровой панелью. Цена около 1 799 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE115QN90FUXRU/\n\n2. Samsung OLED 42\" QE42S90HAEXPY — 4K OLED с 120 Гц, VRR, FreeSync Premium, игровой панелью. Цена около 109 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE42S90HAEXPY/\n\n3. Samsung OLED 48\" QE48S85HAEXPY — 4K OLED с 120 Гц, VRR, FreeSync Premium, игровой панелью. Цена около 119 990 ₽ (со скидкой). В наличии. Подробнее: https://galaxystore.ru/product/QE48S85HAEXPY/\n\nЕсли хотите, могу помочь сузить выбор по размеру экрана или бюджету.",
+     "invented_arguments": [
+      "recommend_tvs: required_features:hdmi_2_1 not named by the user"
+     ],
+     "flags": {}
+    },
+    {
+     "id": "p-120-allm",
+     "user": "Нужен телевизор для PS5, нужны 120 Гц и ALLM.",
+     "n8n_sub_execution": "565",
+     "latency_s": 6.63,
+     "tokens_estimated": {
+      "promptTokens": 4072,
+      "completionTokens": 232,
+      "totalTokens": 4304
+     },
+     "cost_usd_estimated": 0.002,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "use_cases": [
+         "gaming"
+        ],
+        "required_features": [
+         "hz_120",
+         "allm"
+        ]
+       },
+       "status": "ok",
+       "confidence": "partial",
+       "gaps": [
+        "required_feature_not_listed",
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [
+        "QE115QN90FUXRU",
+        "MRE115MR95FXRU"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Для PS5 с обязательными 120 Гц и ALLM в наличии есть два телевизора Samsung 115 дюймов:\n\n1. Samsung Neo QLED 4K Smart TV серия 9 QE115QN90FUXRU, цена 1 799 990 ₽ (был 1 999 990 ₽). Есть 120 Гц, ALLM, VRR, FreeSync Premium Pro, игровая панель. В наличии. Подробнее: https://galaxystore.ru/product/QE115QN90FUXRU/\n\n2. Samsung TV AI Micro RGB MR95F (2026) модель MRE115MR95FXRU, цена 2 699 990 ₽ (был 2 999 990 ₽). Есть 120 Гц, ALLM, FreeSync Premium Pro, игровая панель. В наличии. Подробнее: https://galaxystore.ru/product/MRE115MR95FXRU/\n\nВ каталоге есть еще 35 моделей, которые могут подходить, но по ним нет данных о 120 Гц и ALLM. Если нужна другая диагональ или бюджет, уточните.",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "p-bright-1",
+     "user": "Нужен телевизор в гостиную с большими окнами, днём там очень много солнца. Что посоветуешь?",
+     "n8n_sub_execution": "551",
+     "latency_s": 7.66,
+     "tokens_estimated": {
+      "promptTokens": 5241,
+      "completionTokens": 411,
+      "totalTokens": 5652
+     },
+     "cost_usd_estimated": 0.00275,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "use_cases": [
+         "bright_room"
+        ]
+       },
+       "status": "ok",
+       "confidence": "weak",
+       "gaps": [
+        "not_in_catalog_domain",
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [
+        "QE32LS03CBUXRU",
+        "QE43LS03HEUXPY",
+        "QE42S90HAEXPY",
+        "QE65S85HAEXPY",
+        "QE55S95HAUXPY",
+        "QE75LS03HWUXPY",
+        "MRE65R95HAUXPY",
+        "MRE75R95HAUXPY"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Для гостиной с большими окнами и ярким дневным светом я бы рекомендовал телевизоры с антибликовым покрытием. В каталоге есть несколько моделей с такой функцией:\n\n1. Samsung 32\" The Frame QLED Full HD (2023) QE32LS03CBUXRU — 50 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE32LS03CBUXRU/)\n2. Samsung 43\" The Frame QLED 4K (2026) QE43LS03HEUXPY — 84 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE43LS03HEUXPY/)\n3. Samsung 42\" OLED S90H 4K (2026) QE42S90HAEXPY — 109 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE42S90HAEXPY/)\n4. Samsung 65\" OLED S85H 4K (2026) QE65S85HAEXPY — 189 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE65S85HAEXPY/)\n5. Samsung 55\" OLED S95H 4K (2026) QE55S95HAUXPY — 219 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE55S95HAUXPY/)\n6. Samsung 75\" The Frame NeoQLED LS03 4K (2026) QE75LS03HWUXPY — 249 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE75LS03HWUXPY/)\n\nВсе эти модели имеют антибликовое покрытие, которое помогает уменьшить отражения от солнечного света. Если скажете ваш бюджет и предпочтительный размер экрана, я помогу сузить выбор.",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "p-bright-2",
+     "user": "Какой ТВ выбрать, если комната солнечная и экран бликует?",
+     "n8n_sub_execution": "553",
+     "latency_s": 4.33,
+     "tokens_estimated": {
+      "promptTokens": 1440,
+      "completionTokens": 105,
+      "totalTokens": 1545
+     },
+     "cost_usd_estimated": 0.00074,
+     "tool_calls": [],
+     "answer": "В солнечной комнате с бликами на экране важно выбирать телевизор с антибликовым покрытием (anti-glare), которое снижает отражения и улучшает видимость изображения при ярком освещении.\n\nЯ могу подобрать для вас телевизоры Samsung с антибликовым покрытием. Уточните, пожалуйста, желаемый размер экрана, бюджет и предпочтительную технологию панели (OLED, QLED, Neo QLED и т.д.), если есть. Это поможет подобрать оптимальные варианты.",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "p-bright-3",
+     "user": "Посоветуй телевизор для яркой комнаты.",
+     "n8n_sub_execution": "555",
+     "latency_s": 9.14,
+     "tokens_estimated": {
+      "promptTokens": 5195,
+      "completionTokens": 511,
+      "totalTokens": 5706
+     },
+     "cost_usd_estimated": 0.0029,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "use_cases": [
+         "bright_room"
+        ]
+       },
+       "status": "ok",
+       "confidence": "weak",
+       "gaps": [
+        "not_in_catalog_domain",
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [
+        "QE32LS03CBUXRU",
+        "QE43LS03HEUXPY",
+        "QE42S90HAEXPY",
+        "QE65S85HAEXPY",
+        "QE55S95HAUXPY",
+        "QE75LS03HWUXPY",
+        "MRE65R95HAUXPY",
+        "MRE75R95HAUXPY"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Для яркой комнаты я могу порекомендовать несколько телевизоров с антибликовым покрытием, которое помогает уменьшить отражения:\n\n1. Samsung 32\" The Frame QLED Full HD (2023) LS03C — 50 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE32LS03CBUXRU/)\n2. Samsung 43\" The Frame QLED LS03 4K (2026) QE43LS03HEUXPY — 84 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE43LS03HEUXPY/)\n3. Samsung 42\" OLED S90H 4K (2026) QE42S90HAEXPY — 109 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE42S90HAEXPY/)\n4. Samsung 65\" OLED S85H 4K (2026) QE65S85HAEXPY — 189 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE65S85HAEXPY/)\n5. Samsung 55\" OLED S95H 4K (2026) QE55S95HAUXPY — 219 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE55S95HAUXPY/)\n6. Samsung 75\" The Frame NeoQLED LS03 4K (2026) QE75LS03HWUXPY — 249 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/QE75LS03HWUXPY/)\n7. Samsung 65\" Micro RGB R95H 4K (2026) MRE65R95HAUXPY — 369 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/MRE65R95HAUXPY/)\n8. Samsung 75\" Micro RGB R95H 4K (2026) MRE75R95HAUXPY — 419 990 ₽, в наличии. [Ссылка](https://galaxystore.ru/product/MRE75R95HAUXPY/)\n\nВ каталоге нет данных о яркости (нитах), но все эти модели имеют антибликовое покрытие. Чтобы сузить выбор, скажите, пожалуйста, ваш бюджет и предпочтительный размер экрана.",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "p-cap-adversarial",
+     "user": "Расскажи отдельно про каждую модель, сделай отдельный запрос в каталог на каждую: QE65S95HAUXPY, QE65S90HAEXPY, QE65S85HAEXPY, QE55S95HAUXPY, QE83S95HAEXPY.",
+     "n8n_sub_execution": "567",
+     "latency_s": 8.88,
+     "tokens_estimated": {
+      "promptTokens": 5184,
+      "completionTokens": 272,
+      "totalTokens": 5456
+     },
+     "cost_usd_estimated": 0.00251,
+     "tool_calls": [
+      {
+       "tool": "get_tv",
+       "args": {
+        "model": "QE65S95HAUXPY"
+       },
+       "status": "tool_call_limit_reached",
+       "confidence": null,
+       "gaps": [],
+       "products": [],
+       "alternatives": []
+      },
+      {
+       "tool": "get_tv",
+       "args": {
+        "model": "QE65S90HAEXPY"
+       },
+       "status": "tool_call_limit_reached",
+       "confidence": null,
+       "gaps": [],
+       "products": [],
+       "alternatives": []
+      },
+      {
+       "tool": "get_tv",
+       "args": {
+        "model": "QE65S85HAEXPY"
+       },
+       "status": "ok",
+       "confidence": "strong",
+       "gaps": [],
+       "products": [
+        "QE65S85HAEXPY"
+       ],
+       "alternatives": []
+      },
+      {
+       "tool": "get_tv",
+       "args": {
+        "model": "QE55S95HAUXPY"
+       },
+       "status": "ok",
+       "confidence": "strong",
+       "gaps": [],
+       "products": [
+        "QE55S95HAUXPY"
+       ],
+       "alternatives": []
+      },
+      {
+       "tool": "get_tv",
+       "args": {
+        "model": "QE83S95HAEXPY"
+       },
+       "status": "ok",
+       "confidence": "strong",
+       "gaps": [],
+       "products": [
+        "QE83S95HAEXPY"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Вот информация по моделям из каталога:\n\n1. Samsung QE65S85HAEXPY (OLED S85H, 65\", 4K, 120 Гц, 2026 год) — цена 189 990 ₽, в наличии. Процессор Neural Quantum 4K AI Gen2. Подробнее: https://galaxystore.ru/product/QE65S85HAEXPY/\n\n2. Samsung QE55S95HAUXPY (OLED S95H, 55\", 4K, 120 Гц, 2026 год) — цена 219 990 ₽, в наличии. Процессор NQ4 AI Gen3. Подробнее: https://galaxystore.ru/product/QE55S95HAUXPY/\n\n3. Samsung QE83S95HAEXPY (OLED S95H, 83\", 4K, 120 Гц, 2026 год) — цена 639 990 ₽, в наличии. Процессор NQ4 AI Gen3. Подробнее: https://galaxystore.ru/product/QE83S95HAEXPY/\n\nПо моделям QE65S95HAUXPY и QE65S90HAEXPY данных из каталога сейчас нет, так как достигнут лимит запросов. Если хотите, могу сделать запросы по ним отдельно.",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "p-games",
+     "user": "Хочу телевизор для игр.",
+     "n8n_sub_execution": "561",
+     "latency_s": 9.11,
+     "tokens_estimated": {
+      "promptTokens": 5944,
+      "completionTokens": 488,
+      "totalTokens": 6432
+     },
+     "cost_usd_estimated": 0.00316,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "use_cases": [
+         "gaming"
+        ]
+       },
+       "status": "ok",
+       "confidence": "strong",
+       "gaps": [
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [
+        "QE115QN90FUXRU",
+        "QE42S90HAEXPY",
+        "QE48S85HAEXPY",
+        "QE55QN80HAUXPY",
+        "MRE55R85HAUXPY",
+        "QE55LS03HAUXPY",
+        "QE55S85HAEXPY",
+        "QE65QN80HAUXPY"
+       ],
+       "alternatives": []
+      }
+     ],
+     "answer": "Для игр я могу порекомендовать следующие телевизоры Samsung с поддержкой 120 Гц, VRR, FreeSync Premium и игровой панелью:\n\n1. Samsung Neo QLED 115\" QE115QN90FUXRU — большой 115-дюймовый экран, 4K, 120 Гц, цена 1 799 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE115QN90FUXRU/\n\n2. Samsung OLED 42\" QE42S90HAEXPY — 4K, 120 Гц, цена 109 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE42S90HAEXPY/\n\n3. Samsung OLED 48\" QE48S85HAEXPY — 4K, 120 Гц, цена 119 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE48S85HAEXPY/\n\n4. Samsung Neo QLED 55\" QE55QN80HAUXPY — 4K, 120 Гц, цена 129 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE55QN80HAUXPY/\n\n5. Samsung Micro RGB 55\" MRE55R85HAUXPY — 4K, 120 Гц, цена 139 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/MRE55R85HAUXPY/\n\n6. Samsung The Frame QLED 55\" QE55LS03HAUXPY — 4K, 120 Гц, цена 139 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE55LS03HAUXPY/\n\n7. Samsung OLED 55\" QE55S85HAEXPY — 4K, 120 Гц, цена 149 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE55S85HAEXPY/\n\n8. Samsung Neo QLED 65\" QE65QN80HAUXPY — 4K, 120 Гц, цена 159 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE65QN80HAUXPY/\n\nЕсли хотите, могу помочь сузить выбор по размеру экрана или бюджету.",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "p-general-reflections",
+     "user": "Почему в светлой комнате изображение на экране плохо видно?",
+     "n8n_sub_execution": "557",
+     "latency_s": 4.34,
+     "tokens_estimated": {
+      "promptTokens": 1437,
+      "completionTokens": 108,
+      "totalTokens": 1545
+     },
+     "cost_usd_estimated": 0.00075,
+     "tool_calls": [],
+     "answer": "В светлой комнате изображение на экране телевизора может быть плохо видно из-за отражений и бликов от внешних источников света, таких как окна или лампы. Яркий свет снижает контрастность и делает цвета менее насыщенными, что ухудшает восприятие картинки. Особенно это заметно на телевизорах без антибликового покрытия. Чтобы улучшить видимость, можно использовать модели с антибликовым экраном или разместить телевизор так, чтобы свет не попадал прямо на экран.",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "p-hdmi21",
+     "user": "Посоветуй телевизор, обязательно с HDMI 2.1.",
+     "n8n_sub_execution": "563",
+     "latency_s": 5.75,
+     "tokens_estimated": {
+      "promptTokens": 3954,
+      "completionTokens": 221,
+      "totalTokens": 4175
+     },
+     "cost_usd_estimated": 0.00194,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "required_features": [
+         "hdmi_2_1"
+        ]
+       },
+       "status": "no_match",
+       "confidence": "weak",
+       "gaps": [
+        "required_feature_not_listed",
+        "required_feature_not_listed",
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [],
+       "alternatives": [
+        "UE32H5000FUXRU",
+        "UE32F6000FUXRU",
+        "QE32Q5FAAUXPY"
+       ]
+      }
+     ],
+     "answer": "В каталоге нет подтвержденных моделей с гарантированным наличием HDMI 2.1, но есть несколько телевизоров, у которых эта характеристика не указана в данных каталога. Например:\n\n1. Samsung 32\" HD H5000 (UE32H5000FUXRU) — 22 990 ₽, в наличии. Подробнее: https://galaxystore.ru/product/UE32H5000FUXRU/\n2. Samsung 32\" FHD F6000 (UE32F6000FUXRU) — 23 590 ₽, в наличии. Подробнее: https://galaxystore.ru/product/UE32F6000FUXRU/\n3. Samsung 32\" QLED Q5FA (QE32Q5FAAUXPY) — 27 990 ₽, в наличии. Подробнее: https://galaxystore.ru/product/QE32Q5FAAUXPY/\n\nЕсли HDMI 2.1 — обязательное требование, могу помочь уточнить дополнительные параметры (размер, бюджет, назначение), чтобы подобрать подходящий вариант.",
+     "invented_arguments": [],
+     "flags": {}
+    },
+    {
+     "id": "p-ps5",
+     "user": "Нужен телевизор под PS5, что посоветуешь?",
+     "n8n_sub_execution": "559",
+     "latency_s": 7.09,
+     "tokens_estimated": {
+      "promptTokens": 4491,
+      "completionTokens": 279,
+      "totalTokens": 4770
+     },
+     "cost_usd_estimated": 0.00224,
+     "tool_calls": [
+      {
+       "tool": "recommend_tvs",
+       "args": {
+        "use_cases": [
+         "gaming"
+        ],
+        "required_features": [
+         "hdmi_2_1"
+        ]
+       },
+       "status": "no_match",
+       "confidence": "weak",
+       "gaps": [
+        "required_feature_not_listed",
+        "required_feature_not_listed",
+        "excluded_unavailable",
+        "excluded_out_of_scope"
+       ],
+       "products": [],
+       "alternatives": [
+        "QE115QN90FUXRU",
+        "QE42S90HAEXPY",
+        "QE48S85HAEXPY"
+       ]
+      }
+     ],
+     "answer": "Для PS5 я могу порекомендовать несколько телевизоров Samsung с поддержкой HDMI 2.1 (по данным каталога, точное подтверждение HDMI 2.1 отсутствует, но они подходят для игр):\n\n1. Samsung Neo QLED 115\" QE115QN90FUXRU — большой 4K телевизор с частотой обновления 120 Гц, поддержкой VRR, FreeSync Premium и игровым режимом Game Bar. Цена около 1 799 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE115QN90FUXRU/\n\n2. Samsung OLED 42\" S90H QE42S90HAEXPY — 4K OLED с 120 Гц, VRR, FreeSync Premium и Game Bar. Цена около 109 990 ₽. В наличии. Подробнее: https://galaxystore.ru/product/QE42S90HAEXPY/\n\n3. Samsung OLED 48\" S85H QE48S85HAEXPY — 4K OLED с 120 Гц, VRR, FreeSync Premium и Game Bar. Цена около 119 990 ₽ (со скидкой). В наличии. Подробнее: https://galaxystore.ru/product/QE48S85HAEXPY/\n\nЕсли хотите, могу помочь выбрать из этих вариантов или подобрать по другим параметрам.",
+     "invented_arguments": [
+      "recommend_tvs: required_features:hdmi_2_1 not named by the user"
+     ],
+     "flags": {}
+    }
+   ],
+   "smoke_headline": {
+    "turns": 5,
+    "tool_selection_accuracy": 1.0,
+    "tool_selection_exact_or_acceptable": 1.0,
+    "no_tool_accuracy": 1.0,
+    "arguments_exact_rate": 1.0,
+    "arguments_exact_or_acceptable_rate": 1.0,
+    "unnecessary_tool_call_rate": 0.0,
+    "clarification_correctness": 1.0,
+    "avg_tool_calls_per_turn": 0.8,
+    "max_tool_calls_observed": 1,
+    "fabricated_model_count": 0,
+    "fabricated_price_count": 0,
+    "fabricated_feature_count": 0,
+    "unsupported_numeric_claim_count": 0,
+    "catalog_claim_without_evidence_count": 0,
+    "availability_mismatch_count": 0,
+    "aggregate_claim_flag_count": 0,
+    "invented_argument_count": 0,
+    "lost_gap_count": 0,
+    "forbidden_pattern_hits": 0,
+    "failures": []
+   }
+  }
+ },
+ "runtime_cap_test": {
+  "what": "n8n McpClientTool (committed 'catalog' node, endpoint ?turn={{ $execution.id }}) executed 5 tool-call items in ONE n8n execution (no LLM); each opens its own MCP session",
+  "n8n_turn_key": "510",
+  "statuses": [
+   "ok",
+   "ok",
+   "ok",
+   "tool_call_limit_reached",
+   "tool_call_limit_reached"
+  ],
+  "probe_from_n8n_container": {
+   "cap_across_sessions": [
+    "ok",
+    "ok",
+    "ok",
+    "tool_call_limit_reached"
+   ],
+   "call_without_turn_key": "rpc_error"
+  }
+ }
+}
