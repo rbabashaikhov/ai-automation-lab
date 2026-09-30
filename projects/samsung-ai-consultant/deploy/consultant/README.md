@@ -18,7 +18,7 @@ n8n ──MCP + Bearer token──> samsung-consultant:8765 ──read-only role
 | `provision_env.py` | Generates the DB password and MCP token into `consultant.env`; emits the SCRAM verifier / token only into pipes |
 | `create_consultant_role.sql`, `verify_consultant_role.sql` | Least-privilege read-only role `samsung_consultant` and its verification |
 | `verify_readonly.py` | Write-denial check run inside the container with its own role |
-| `mcp_probe.js` | Boundary probe run with Node inside the n8n container: health, 401 without or with a wrong token, authenticated `tools/list` + closed-schema check, one deterministic call; since 4D.2B-R also the per-turn cap across four fresh sessions (`ok ok ok tool_call_limit_reached`) and refusal of a call without `?turn=` |
+| `mcp_probe.js` | Boundary probe run with Node inside the n8n container: health, 401 without or with a wrong token, authenticated `tools/list` + closed-schema check, one deterministic call; since 4D.2B-R also the per-turn cap across four fresh sessions (`ok ok ok tool_call_limit_reached`) and refusal of a call without `?turn=`; since 4D.2D also the result contract and the `attributes` limit |
 
 ## Runbook (as executed in Gate 4D.2A)
 
@@ -28,8 +28,8 @@ and the scripts. Commands run as root on the VPS unless marked *local*.
 ```bash
 # local: build from the deployed commit and ship the image (no registry, no repo on the VPS)
 docker build -f deploy/consultant/Dockerfile --label org.opencontainers.image.revision=$(git rev-parse HEAD) \
-  -t samsung-consultant:4d2b .
-docker save samsung-consultant:4d2b -o consultant.tar && gzip consultant.tar      # a piped save|ssh stalled in 4D.2B-R
+  -t samsung-consultant:4d2d .                                       # 4D.2D: revision 472c53c
+docker save samsung-consultant:4d2d -o consultant.tar && gzip consultant.tar      # a piped save|ssh stalled in 4D.2B-R
 scp consultant.tar.gz n8n-vps:/root/ && ssh n8n-vps 'gunzip -c /root/consultant.tar.gz | docker load && rm /root/consultant.tar.gz'
 
 python3 provision_env.py init-env consultant.env                       # secrets generated here, never printed
@@ -49,8 +49,10 @@ The n8n Header Auth credential (`Authorization: Bearer <token>`) is created thro
 public API. The token is piped from `provision_env.py mcp-token` and never displayed.
 
 **Rollback:**
-1. `docker compose -f compose.yml down` and `docker image rm samsung-consultant:4d2b` (to go back one gate,
-   set `image: samsung-consultant:4d2a` and `up -d`; that image lacks the per-turn key).
+1. `docker compose -f compose.yml down` and `docker image rm samsung-consultant:4d2d`. To go back one gate, set
+   `image: samsung-consultant:4d2b` (`compose.yml.4d2b.bak` on the VPS) and `up -d`, **and** restore the
+   Consultant workflow backup `tools/n8n-tool/backups/samsung-ai-consultant/20260930T123254Z_4d8mXFWGpS5P4t1L.json`
+   (prompt v2): prompt v3 expects the `agent-result-v2` price fields. `4d2a` lacks the per-turn key.
 2. Delete the n8n credential and workflow.
 3. As `n8n`, run `DROP OWNED BY samsung_consultant; DROP ROLE samsung_consultant;`.
 4. `shred -u consultant.env`.

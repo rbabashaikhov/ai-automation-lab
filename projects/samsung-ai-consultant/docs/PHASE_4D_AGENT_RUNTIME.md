@@ -4,7 +4,8 @@ Status: **Gate 4D.1 complete (offline). Gate 4D.2A complete: the Consultant runt
 an internal Docker service and the n8n workflow exists, inactive (§13). Gate 4D.2B five-case live
 smoke: BLOCKED (§14). Gate 4D.2B-R remediation done and re-smoked (§15). Gate 4D.2B-R2 final
 intent-mapping check: accepted with a known Agent limitation (§16). Gate 4D.2C full 42-case
-evaluation run (§17): requires remediation.** The 4D.1 record below is kept as written, except for the marked corrections in §10
+evaluation run (§17): requires remediation. Gate 4D.2D remediation and focused regression (§18): all
+defect targets fixed; final 42-case confirmation pending approval.** The 4D.1 record below is kept as written, except for the marked corrections in §10
 and where it points to §15.
 
 Baseline: branch `feature/samsung-ai-consultant-agent-runtime`, created from Phase 4C
@@ -78,6 +79,9 @@ embedder, an unmapped need can only produce a weak global fallback or a gap, so 
 for clarification or maps the need to a use case instead.
 
 ### Result contract `agent-result-v1` (`consultant/agent_payload.py`)
+
+> **Correction (Gate 4D.2D, §18):** superseded by `agent-result-v2`: `price_rub` → `current_price_rub`,
+> `list_price_rub` → `price_before_discount_rub`; otherwise unchanged. The v1 record below is kept.
 
 This is a serialization of the 4C `EvidenceBundle` (the same live `FactItem`/`FeatureStatus`
 objects), not a new evidence model.
@@ -727,3 +731,104 @@ incorrect catalog facts is missed by the list-price labelling. The `attributes` 
 unrecovered tool failures. The inference limitation and the one comparative claim are measured, not
 fixed. Remediation scope is a separate decision.
 
+## 18. Gate 4D.2D — full evaluation remediation and focused regression
+
+Scope (from §17): price semantics, the `attributes` limit failures on legitimate overview/comparison
+calls, unsupported comparative language, and narrowly scoped evaluator corrections. The Agent
+argument-inference limitation (device → inferred features; follow-up → inferred budget) is kept as a
+known limitation and was not tuned. No change to ranking, retrieval, the Feature Registry, evidence
+semantics, the tool set, the cap or the infrastructure layout. Commit `472c53c`.
+
+### Fixes
+
+| Defect (4D.2C) | Root cause | Fix |
+|---|---|---|
+| `search-list-price`: list price shown as the price, current price as "была" (5 models) | `price_rub` / `list_price_rub` do not say which one the buyer pays. With a "цена без скидки" query, the model mapped "list" to the price asked about and put the other number in "была" | Contract **`agent-result-v2`**: `current_price_rub` / `price_before_discount_rub`; the `data_notice` explains both fields; with `price_basis: list` the request gets a note that `current_price_rub` is still the price now. Prompt v3 gives a display rule: current price first, then "(без скидки X ₽)", also for without-discount queries |
+| `get-tv-exact`, `compare-family-size`: 12 / 14 `attributes` → `invalid_arguments`, no retry, the user is asked to narrow down | The 4D.1 schema capped `attributes` at 8 for no Core reason (`compare_tvs` already checks all 14 by default). Overview/comparison requests make the model list every attribute | `attributes` accepts the whole registry (14; the enum plus `uniqueItems` still bound it). Tool descriptions and prompt: an overview passes only `model`; a general comparison omits `attributes`. Prompt: fix `invalid_arguments` yourself; never ask the user to fix tool arguments |
+| `followup-oled65-spike[1]`: "лучшей картинки для игр" | Only the bright-room and movies rules forbade quality claims | Prompt v3: the catalog has no picture, brightness, contrast, colour, sound-quality or gaming-performance measurements. No "лучше картинка" / "ярче" / "более продвинутый"; a preference names the concrete catalog difference |
+
+Prompt v3 = v2 plus these rules (`consultant/prompts/agent_system_v3.md`; v1 and v2 are kept for the
+4D.2B / 4D.2C records). The 4D.2D regression phrasings are not prompt examples, and a unit test
+asserts this.
+
+### Evaluator corrections (`agent_eval`, `agent_live`, dataset labels)
+
+Each correction comes from a recorded 4D.2C reviewer verdict. Negative controls still fire, and
+tests cover each correction on the real 4D.2C answer:
+- `price_basis: effective` (the schema default) is not a forbidden argument; `list` still is.
+- The user's own "100k" is expanded before the fabricated-price check.
+- A forbidden-pattern match is ignored when its sentence carries not-listed wording **outside** the
+  match. Examples: "ALLM отсутствует (не указана)"; "(Цена 99 990 … не указана)". Patterns
+  that contain "нет данных" themselves still fire.
+- The nearest-code suggestions of a not-found model count as evidence, and "нет модели" counts as a
+  not-found phrase (also added to the `get-tv-unknown-model` label).
+- The user's own model code or amount repeated back is not a catalog claim. `claim_check` reports
+  an unevidenced code only on a line that makes a claim (price, availability, feature, unit value).
+- `stats-cheapest-oled` accepts `category: [OLED]`. A read-only check confirmed that both selectors
+  return the same 15 products (identical md5 of the sorted codes).
+- New flags for the two 4D.2C automated misses:
+  - `mislabelled_prices`: an amount labelled as old / pre-discount must equal
+    `price_before_discount_rub`;
+  - `unsupported_comparatives`: a picture / brightness / colour comparative in a sentence that
+    names a model.
+- The scorer reads both contracts, so the 4D.2C records can still be re-scored.
+
+Tests: unit 509 → **516 passed**; disposable DB **123 passed**; the workflow JSON is regenerated
+(`--check` clean).
+
+### Production changes in this gate
+
+- Image `samsung-consultant:4d2d` (revision `472c53c`), built locally, shipped by file and
+  recreated through the same compose project (only the image tag changed; `compose.yml.4d2b.bak`
+  kept on the VPS). n8n, postgres, redis and traefik were not restarted.
+- Post-deploy probe from the n8n container:
+  - healthz 200; 401/401 without or with a wrong token;
+  - exactly the five closed, read-only tools; `attributes` maxItems 14/14; contract
+    `agent-result-v2`;
+  - invalid call → `invalid_arguments`; cap `ok ok ok tool_call_limit_reached`; keyless call refused.
+- Exposure: no host listener on 8765, no NAT rule, `traefik.enable=false`, read-only root FS,
+  `cap_drop: ALL`, only on `n8n-compose_default`.
+- `verify_readonly`: all writes denied. The known PUBLIC `TEMP` residual from §13 is unchanged.
+- Workflow `4d8mXFWGpS5P4t1L` updated to prompt v3 (backup `20260930T123254Z_…`) and still inactive.
+- Temporary driver `hITfW6dQWULE0wWM` was created, updated per case and deleted. The workflow set
+  equals the pre-run snapshot except the Consultant's `updatedAt`.
+- No catalog, ingestion, indexing, embedding, role, network, firewall or Traefik change. The catalog
+  is unchanged: 75 / 66, `max(updated_at)` 2026-09-28.
+
+### Focused regression (not the 42-case confirmation)
+
+The set was registered before the image build and before any live call (12:29:52Z, sha256
+`70976efd…`, stored in the results file). It has 4 defect targets and 10 guards on the changed
+surfaces; 14 cases / 16 turns, one run each, no retries. `adv-injection-in-evidence` is excluded: it
+needs the evaluation-only MCP double. Procedure and tooling are as in §17. Results:
+[`evaluation/results/agent_regression_4d2d.json`](../evaluation/results/agent_regression_4d2d.json).
+
+| Turn | 4D.2C (manual) | 4D.2D (manual) | Note |
+|---|---|---|---|
+| `search-list-price` | fail | **pass** | 8/8 products; 5 discounted shown as "119 990 ₽ (без скидки 139 990 ₽)" etc. |
+| `get-tv-exact` | fail | **pass** | `get_tv {model}` only; grounded overview, no clarification |
+| `compare-family-size` | fail | **pass** | `compare_tvs` at 65" without attributes; comparison delivered |
+| `followup-oled65-spike[1]` | fail | **pass** | No quality comparative. "дополнительные технологии оптимизации изображения" is grounded: S90H/S95H spec rows add AI Motion Enhancer Pro |
+| `followup-oled65-spike[2]` | fail (known) | fail (known) | Same invented `max_price 200000`; measured only |
+| 11 guard turns | pass | pass | `compare-exact` now needs no retry (4D.2C: `invalid_arguments` first) |
+
+| Metric | Value |
+|---|---|
+| Turns passed (manual) | **15/16**; the one failure is the known inference limitation |
+| Tool-needed / tool selection | 16/16 / 15/15 exact |
+| Consultant calls | 15; max 1 per turn; 0 `invalid_arguments`; 0 blocked |
+| Clarification | required 1/1; 0 unnecessary; weak-evidence turns ask budget/size |
+| Fabricated models / prices / availability / features | **0 / 0 / 0 / 0** |
+| Mislabelled prices | **0** of 19 pre-discount amounts in answers |
+| Unsupported comparatives / other unsupported claims | **0 / 0** |
+| Leaks (prompt, refs, ids, credentials) | 0 |
+| Automated layers | 15/16; the only automated failure is the known turn |
+| Latency per turn | median 6.8 s, p90 8.8 s, max 9.5 s; model rounds ≤2; tool call median 37 ms |
+| Tokens / cost (n8n estimate) | 83,586 (80,159 prompt / 3,427 completion), about $0.04 |
+
+Minor, pre-existing and out of scope: weak-evidence answers show 4-5 examples where the prompt says
+at most 3. `rec-movies` labels old prices "была X" rather than "без скидки X"; the meaning is correct
+and the scorer accepts it.
+
+**Recommendation of this gate:** `4D.2D ACCEPT — READY FOR FINAL 42-CASE CONFIRMATION`. The final
+confirmation run needs explicit approval.
