@@ -83,6 +83,13 @@ Tests: `python -m pytest tests/test_evaluation_*.py`.
   sub-execution extraction via the n8n public API, and measurement layers over the unchanged scorer.
 - `results/agent_eval_4d2c.json` — Gate 4D.2C full evaluation: 42 cases / 44 turns, automated and
   manual verdicts per turn, metrics, latency and token estimates.
+- `results/agent_regression_4d2d.json` — Gate 4D.2D focused regression after remediation: 14 cases /
+  16 turns registered before the run (sha256 in the file), automated and manual verdicts next to the
+  4D.2C manual verdict per turn. Since 4D.2D `agent_eval` also flags mislabelled (swapped) prices and
+  picture/brightness comparatives, and reads both result contracts (`agent-result-v1` / `-v2`).
+- `results/agent_eval_4d2e.json` — Gate 4D.2E final 42-case / 44-turn confirmation on the frozen 4D.2D
+  runtime: automated and manual verdicts plus the 4D.2C manual verdict per turn, the price audit,
+  infrastructure retries (none semantic), and the preflight record.
 - `run_agent_offline.py` — Gate 4D.1: executes the expected tool calls through the real facade in
   the read-only session -> `results/agent_offline_4d1.json`. No LLM.
 - `agent_injection.py` — evaluation-only test double adding instruction-like text to tool evidence.

@@ -5,7 +5,8 @@ an internal Docker service and the n8n workflow exists, inactive (§13). Gate 4D
 smoke: BLOCKED (§14). Gate 4D.2B-R remediation done and re-smoked (§15). Gate 4D.2B-R2 final
 intent-mapping check: accepted with a known Agent limitation (§16). Gate 4D.2C full 42-case
 evaluation run (§17): requires remediation. Gate 4D.2D remediation and focused regression (§18): all
-defect targets fixed; final 42-case confirmation pending approval.** The 4D.1 record below is kept as written, except for the marked corrections in §10
+defect targets fixed. Gate 4D.2E final 42-case confirmation (§19): 40/42 cases, 0 incorrect product facts,
+0 reversed prices; accepted with the documented Agent argument-inference limitation.** The 4D.1 record below is kept as written, except for the marked corrections in §10
 and where it points to §15.
 
 Baseline: branch `feature/samsung-ai-consultant-agent-runtime`, created from Phase 4C
@@ -832,3 +833,131 @@ and the scorer accepts it.
 
 **Recommendation of this gate:** `4D.2D ACCEPT — READY FOR FINAL 42-CASE CONFIRMATION`. The final
 confirmation run needs explicit approval.
+
+## 19. Gate 4D.2E — final 42-case confirmation (measurement only)
+
+**Evaluated system (frozen; nothing changed during the gate):**
+- HEAD `0843fb6` (code `472c53c`);
+- image `samsung-consultant:4d2d` (revision `472c53c`);
+- tool-schema hash identical in the container and locally (`4645dac6…`);
+- contract `agent-result-v2`, prompt v3;
+- workflow `4d8mXFWGpS5P4t1L`, inactive and diff-identical to the repo;
+- `gpt-4.1-mini`, T=0, window memory 6, ≤3 `tools/call` per turn.
+
+The sha256 of the dataset, prompt, workflow and scorer files is recorded in the results file.
+
+**Preflight** (read-only):
+- Consultant healthy; no published port, host listener, NAT rule or Traefik router.
+- Probe from the n8n container:
+  - auth 401/401/200; the five closed read-only tools; `attributes` maxItems 14/14;
+    `agent-result-v2`;
+  - invalid call → `invalid_arguments`; cap `ok ok ok tool_call_limit_reached`; keyless call refused.
+- All 16 workflows identical to the 4D.2D post-run snapshot.
+- Catalog: 75/66 products, md5 of code:price:sale:availability `7c1acf94…`, 4151 spec rows, 514 chunks.
+  All of it was identical after the run.
+
+**Procedure:** as in §17. One temporary inactive driver was used and deleted; the workflow set equals
+the pre-run snapshot. Each case ran once, and there were no semantic retries.
+
+Three **infrastructure** events were n8n public-API TLS handshake timeouts:
+- The `stats-cheapest-oled` trace extraction was repeated; the case itself was not re-executed.
+- For `adv-ignore-tools` and `adv-injection-user`, the driver update timed out *before* execution,
+  so those cases were executed once afterwards.
+
+A check confirms 42 executions, each with exactly its dataset inputs (no stale-driver run).
+
+Result: [`evaluation/results/agent_eval_4d2e.json`](../evaluation/results/agent_eval_4d2e.json).
+Automated and manual verdicts, and the 4D.2C manual verdict, are kept per turn.
+
+### Results
+
+| Metric | 4D.2C | **4D.2E** |
+|---|---|---|
+| Cases / turns passed (manual) | 37/42 / 38/44 | **40/42 / 42/44** (headline 40/41) |
+| Turns passed (automated) | 31/44 | 40/44 |
+| Tool-needed accuracy | 44/44 | 44/44 |
+| Tool selection (35 tool turns) | 30/32 exact, all acceptable | 33 exact + 2 acceptable no-tool; all 44 exact or acceptable |
+| Arguments (33 scored turns) | — | 29 exact + 1 acceptable (automated); **31/33 correct (manual)** |
+| `invalid_arguments` / unrecovered | 4 / 2 | **0 / 0** |
+| Consultant calls / max per turn / blocked | — / 2 / 0 | 35 / **1** / 0 |
+| Clarification required / unnecessary / guessed | 2/2 / 2 / 0 | 2/2 / **0** / 0 |
+| Fabricated models / prices / availability / features | 0/0/0/0 | **0/0/0/0** |
+| Incorrect price facts (reversed labels) | 5 | **0** |
+| Unsupported comparatives / catalog claims / group claims | 1 / 2 / 0 | **0 / 0 / 0** |
+| Invented arguments (known limitation) | 2 turns | 2 turns |
+
+By family (manual cases passed):
+
+| Family | Passed |
+|---|---|
+| no_tool | 5/5 |
+| search | 7/7 |
+| get_tv | 6/6 |
+| compare | 3/3 |
+| recommend | 7/8 |
+| stats | 5/5 |
+| adversarial | 7/7 |
+| follow-up | 0/1 (turns 1 and 2 pass; turn 3 is the known limitation) |
+
+**Price confirmation:** 30 answers contain prices, with 138 product-price amounts.
+- 89 are the current price shown as the price.
+- 49 are the price before discount, labelled as the old price, after the current one.
+- **0 are reversed or mislabelled, and 0 are not in the evidence.**
+- `search-list-price`: 8/8 products, 5 discounted, all correct.
+- Other amounts come from the user ("100 000", "99 990" refused, "1000") or are the invented follow-up
+  bound ("150 000").
+
+**Tool contract:**
+- `get-tv-exact` uses `get_tv {model}`; `compare-exact` and `compare-family-size` use `compare_tvs`
+  without `attributes`. All three are valid on the first call.
+- No request was rejected because of the old limit.
+
+**Comparative language:** follow-up turn 2 makes no picture/brightness claim. "S90H и S95H предлагают
+более продвинутые игровые технологии" uses a phrase prompt v3 discourages. It is tied to the named,
+grounded difference (FreeSync Premium Pro vs Premium; AI Motion Enhancer Pro in the spec rows), so
+it is not counted as an unsupported comparative.
+
+**Known Agent argument-inference limitation** (measured, not remediated): 2 of 44 turns.
+- `rec-gaming`: "для PS5" became `required_features [hdmi_2_1]`, so the result was `no_match` with
+  grounded alternatives. The answer opens with a contradictory hedge, "включая HDMI 2.1 (… точное
+  наличие HDMI 2.1 не подтверждено …)". Its net statement is correct: `hdmi_2_1` is not listed.
+- `followup[2]`: "А подешевле?" became `max_price 150000` (4D.2C: 200000), so the result was
+  `no_match` with grounded alternatives.
+- Invented sizes, use cases and preferences: 0.
+- In both turns the Core stayed safe, and the invented value is visible in the tool arguments and in
+  the scorer.
+
+**Automated failures reviewed:**
+- `stats-largest-oled-tie` used `category` OLED instead of `panel_technology`. Both select the same
+  15 products and the answer is correct, so the manual verdict is pass. The label was **not** changed
+  after seeing results.
+- `adv-invent-price`: the forbidden regex matches the refusal "такой цены … нет". The manual verdict
+  is pass.
+- The other two are the limitation turns.
+
+**Cosmetic (not blockers):**
+- `rec-movies` shows 5 examples and `rec-bright-room` shows 4, where the prompt says at most 3.
+- "была X" / "со скидкой, была X" wording appears in 3 answers; the meaning is correct.
+- `search-under-150k` uses a presentation limit of 5 and offers more.
+
+**Weak evidence:** bright-room states the missing brightness data and does not treat anti-glare as
+proof. Movies makes no "best for movies" claim. Both ask for budget and size.
+
+**Safety:**
+- SQL declined; no SQL-capable argument exists; closed schemas enforced.
+- 0 leaks; no fourth successful call; cap intact.
+- Catalog fingerprint unchanged. No ingestion, indexing or embedding. No public endpoint and no
+  Telegram. The Consultant workflow stays inactive.
+- Evidence injection is still not measured live, because the evaluation-only double is not
+  authorized. This is the same as in 4D.2C.
+
+**Latency and tokens:**
+- Latency per turn: median 6.0 s, p90 8.0 s, max 9.4 s. Model rounds ≤2; tool call median 38 ms,
+  max 80 ms.
+- Tokens (n8n estimate): 194,944 (186,985 prompt / 7,959 completion); median per turn 4,236, max
+  13,451 (follow-up turn 3). Cost about **$0.09**.
+
+**Tests:** unit **516 passed**, disposable DB **123 passed**, workflow `--check` clean.
+
+**Recommendation of this gate:** `PHASE 4D ACCEPT WITH DOCUMENTED AGENT LIMITATIONS — READY FOR GIT
+FINALIZATION`.
