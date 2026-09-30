@@ -44,7 +44,11 @@ MCP_ENDPOINT = "http://samsung-consultant:8765/mcp"
 # Agent v3 runs each tool call as its own engine action with a new MCP session, so the turn is carried
 # in the URL: one n8n execution = one user message. The server counts tools/call per this key
 # (--require-turn-key in the container), across sessions and parallel calls (Gate 4D.2B-R).
-MCP_ENDPOINT_EXPRESSION = "=" + MCP_ENDPOINT + "?turn={{ $execution.id }}"
+# Gate 4E.2: the semantic guard also gets the conversation key and the user's message. In the Agent's sub-nodes
+# $json is the Agent's input item ({chatInput, sessionId} from either trigger; the memory node already keys on
+# $json.sessionId). The server keeps only derived evidence and redacts q from its request log.
+MCP_ENDPOINT_EXPRESSION = ("=" + MCP_ENDPOINT + "?turn={{ $execution.id }}&conv={{ encodeURIComponent($json.sessionId) }}"
+                           "&q={{ encodeURIComponent($json.chatInput) }}")
 MCP_NODE_NAME = "catalog"              # n8n exposes tools as "<node name>_<tool>", e.g. catalog_search_tvs
 # One agent step per tool round plus the final answer (a bound on rounds, not calls); the per-turn call cap
 # is enforced by Python per turn key.

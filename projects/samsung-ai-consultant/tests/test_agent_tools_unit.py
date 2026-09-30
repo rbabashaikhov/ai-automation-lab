@@ -514,8 +514,10 @@ def test_committed_workflow_is_generated_and_safe():
     assert not [n for n in wf["nodes"] if n["type"] in ("n8n-nodes-base.webhook", "@n8n/n8n-nodes-langchain.mcpTrigger")]
     mcp = nodes["catalog"]["parameters"]
     assert mcp["includeTools"] == list(TOOL_NAMES) and mcp["serverTransport"] == "httpStreamable"
-    # Docker service name, never an IP; the n8n execution id is the per-turn budget key (Gate 4D.2B-R)
-    assert mcp["endpointUrl"] == "=http://samsung-consultant:8765/mcp?turn={{ $execution.id }}"
+    # Docker service name, never an IP; the n8n execution id is the per-turn budget key (Gate 4D.2B-R);
+    # conv / q feed the semantic guard (Gate 4E.2)
+    assert mcp["endpointUrl"] == ("=http://samsung-consultant:8765/mcp?turn={{ $execution.id }}"
+                                  "&conv={{ encodeURIComponent($json.sessionId) }}&q={{ encodeURIComponent($json.chatInput) }}")
     model = nodes["OpenAI Chat Model"]
     assert model["parameters"]["model"]["value"] == "gpt-4.1-mini" and model["parameters"]["options"]["temperature"] == 0
     for n in wf["nodes"]:

@@ -111,7 +111,7 @@
         240
       ],
       "parameters": {
-        "endpointUrl": "=http://samsung-consultant:8765/mcp?turn={{ $execution.id }}",
+        "endpointUrl": "=http://samsung-consultant:8765/mcp?turn={{ $execution.id }}&conv={{ encodeURIComponent($json.sessionId) }}&q={{ encodeURIComponent($json.chatInput) }}",
         "serverTransport": "httpStreamable",
         "authentication": "headerAuth",
         "include": "selected",
