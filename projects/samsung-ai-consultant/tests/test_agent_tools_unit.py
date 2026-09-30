@@ -569,11 +569,18 @@ def test_prompt_v2_and_schema_keep_use_cases_out_of_required_features():
     from consultant.n8n_workflow import PROMPT_FILE
 
     p = PROMPT_FILE.read_text(encoding="utf-8")
-    rule = next(line for line in p.splitlines() if line.startswith("- A goal or use"))
-    for needle in ('"для PS5", "для игр"', "goes into use_cases", 'required_features only for features the user '
-                   'explicitly demands ("обязательно HDMI 2.1", "нужны 120 Гц и ALLM" → exactly those)',
+    # Gate 4D.2B-R2: one general intent rule, not a per-device workaround.
+    rule = next(line for line in p.splitlines() if line.startswith("- A named device, platform, application"))
+    for needle in ("game, room condition or usage scenario describes user intent / use case", "map it to use_cases",
+                   "Do not infer technical requirements from general model knowledge",
+                   'required_features may contain only technical features the user explicitly requests as requirements '
+                   '("обязательно HDMI 2.1", "нужны 120 Гц и ALLM" → exactly those)',
                    "Never add features the user did not mention"):
         assert needle in rule, needle
+    for held_out in ("Switch", "PlayStation 5 Pro", "RTX", "Кинопоиск", "YouTube", "футбол", "обязательно есть eARC",
+                     "обязательной поддержкой Dolby Atmos", "обязательно с Filmmaker Mode", "обязательно чтобы был VRR",
+                     "напротив окна", "от ламп", "на консоли"):          # R2 held-out phrasings are not examples
+        assert held_out not in p, held_out
     args_rule = next(line for line in p.splitlines() if line.startswith("- Every argument must come from"))
     assert "No budget or size unless the user stated one — not even a large placeholder such as 1000000" in args_rule
     for example in ('"хочу телевизор для кино" → {"use_cases": ["movies"]}',
