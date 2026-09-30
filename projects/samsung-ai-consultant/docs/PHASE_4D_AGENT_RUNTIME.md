@@ -2,8 +2,9 @@
 
 Status: **Gate 4D.1 complete (offline). Gate 4D.2A complete: the Consultant runtime is deployed as
 an internal Docker service and the n8n workflow exists, inactive (§13). Gate 4D.2B five-case live
-smoke: BLOCKED (§14). Gate 4D.2B-R remediation done and re-smoked (§15); the full 42-case evaluation
-has not run.** The 4D.1 record below is kept as written, except for the marked corrections in §10
+smoke: BLOCKED (§14). Gate 4D.2B-R remediation done and re-smoked (§15). Gate 4D.2B-R2 final
+intent-mapping check: accepted with a known Agent limitation (§16); the full 42-case evaluation has
+not run.** The 4D.1 record below is kept as written, except for the marked corrections in §10
 and where it points to §15.
 
 Baseline: branch `feature/samsung-ai-consultant-agent-runtime`, created from Phase 4C
@@ -582,3 +583,61 @@ examples where the prompt says at most 3.
   Pre-update backups are in `tools/n8n-tool/backups/samsung-ai-consultant/`.
 - Temporary workflows `R85Ju60Wq3hxaMGA` and `1kF8uAn19ssbKQ3u` deleted after the runs.
 - No catalog, ingestion, indexing, embedding, role, network or firewall change.
+
+## 16. Gate 4D.2B-R2 — final intent-mapping check (one prompt-only iteration)
+
+**Change** (commit `8df5606`; prompt only; no Core, MCP schema, ranking, retrieval, evidence or
+infrastructure change). Prompt v2's use-case line was replaced by one general rule. A named
+device, platform, application, game, room condition or usage scenario describes user intent / use
+case. Technical requirements are never inferred from general model knowledge; what a device
+benefits from is advice for the answer, not a filter. `required_features` holds only technical
+features the user explicitly requests, and the explicit examples ("обязательно HDMI 2.1", "нужны
+120 Гц и ALLM") are kept. The workflow was redeployed and is still inactive.
+
+**Held-out set.** 12 phrasings were registered with their expected arguments before the prompt was
+edited (11:01:44Z, sha256 `65d3ec7b…`, stored in the results file). None is a prompt example; a
+unit test asserts this. Categories:
+- named console (2);
+- generic console;
+- gaming PC;
+- streaming apps;
+- usage scenario;
+- explicit requirement (2);
+- mixed use case + explicit requirement (2);
+- bright-room / reflection paraphrase (2).
+
+The run used the same temporary inactive driver as §14, deleted afterwards. Round `r4` is recorded
+in `evaluation/results/agent_smoke_4d2b.json`.
+
+**Five smoke cases:** all green.
+- Tool selection 4/4; no-tool 1/1; arguments exact 4/4; clarification 5/5; max 1 call per turn.
+- 0 fabricated models, prices, availability or features.
+- 0 catalog claims without evidence, 0 group-claim flags, 0 invented arguments.
+- Tokens (n8n estimate): 18,200, about $0.008.
+
+**Held-out: 9/12 pass.**
+
+| Pass | Fail |
+|---|---|
+| Nintendo Switch 2 → `use_cases [gaming]`; generic console → gaming; streaming apps → `movies`, no features; explicit eARC → `[earc]`; explicit Dolby Atmos → `[dolby_atmos]`; PS5 Pro + "обязательно VRR" → gaming + `[vrr]` only; movies + "обязательно Filmmaker Mode" → movies + `[filmmaker_mode]`; both bright/reflection paraphrases → `recommend_tvs {use_cases: [bright_room]}` first, brightness gap stated | "PlayStation 5 Pro" → `required [hdmi_2_1, hz_120]`; gaming PC with RTX 4080 → `required [hdmi_2_1]`, `preferred [hz_120, vrr, allm]`, invented `min_price 100000`; football with friends → invented `bright_room` use case, `preferred [anti_glare]`, `min_screen_size_inches 55`, and the brightness gap of that invented use case not stated |
+
+**Grounding.** 370 per-model claims (price, availability, feature/spec words) in all 17 answers were
+checked against payload feature states, typed specs and spec rows. **0 unsupported.** No answer
+makes a catalog claim without a tool result.
+
+**Tool bound.** Unchanged and green: unit and HTTP cap tests pass, and the probe from the n8n container
+returns `ok ok ok tool_call_limit_reached`, with a keyless call refused.
+
+**Known Agent limitation (to measure in the full evaluation).** With `gpt-4.1-mini` at T=0, a prompt
+rule does not stop the model from turning its own knowledge of *high-end* gaming hardware (PS5 Pro,
+RTX 4080) into hard requirements (HDMI 2.1, 120 Hz). It sometimes also adds preferences or bounds
+for a scenario (football). Explicit requirements, named consoles without that association, and
+bright-room intent are handled.
+
+The effect is bounded and visible:
+- the Core answers `no_match` with labelled alternatives, never a fabricated product;
+- the `agent_eval` invented-argument check flags every such call.
+
+Per the gate instruction, no further prompt iteration was made. Deterministic options (user text at
+the Consultant boundary, or a post-answer validator in Phase 4E) remain future decisions.
+
