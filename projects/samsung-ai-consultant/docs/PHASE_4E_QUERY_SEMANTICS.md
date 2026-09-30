@@ -833,3 +833,48 @@ Nothing else persists: the Consultant has a read-only DB role, a read-only root 
 - **One more copy of the history in n8n:** the "Prior turns" node output holds the history in n8n
   execution data. The memory node's run data already holds the same messages. The Consultant still
   receives only a count, and keeps no text.
+
+## Production deployment and verification (Gate 4E.2A)
+
+**Pre-deploy gate:**
+- HEAD `e445aa1`, clean; pytest 719 passed / 0 failed; workflow `--check` clean (7 nodes).
+- Production was exactly the 4E.2 state: `4e2` / `657e0e4`, and a 6-node workflow identical to the
+  4E.2 artifact. No Samsung workflow had drifted.
+- **Image `4e2a` (revision label `8ea84f0`):** every `consultant/*.py` and prompt inside the image is
+  byte-identical to `e445aa1` except `n8n_workflow.py`, the workflow generator, which the server does
+  not load.
+
+**Deploy:**
+
+| Item | Value |
+|---|---|
+| Image | 2026-09-30T19:41:37Z: `samsung-consultant:4e2a` (VPS id `sha256:a2e86496…`) through the compose project; only the image tag changed (`compose.yml.4e2.bak` kept). Order: image first (without `h` the guard is report-only), then workflow |
+| Workflow | 19:42:05Z: `4d8mXFWGpS5P4t1L` updated to the 7-node version (`Prior turns`, `&h=`); backup `20260930T194205Z_4d8mXFWGpS5P4t1L.json`; inactive; diff-identical to the repository |
+| Services restarted | the Consultant only: the deploy recreate, plus one intentional `docker restart` for test 1 at 19:46:08Z. n8n, postgres, redis and traefik were not restarted |
+
+**Invariants:**
+- healthy, `RestartCount` 0, no published port, no host listener, `traefik.enable=false`;
+- boundary probe unchanged; guard probe unchanged;
+- `verify_readonly`: writes denied (known PUBLIC `TEMP` residual only);
+- tool-schema hash `4645dac666b7ce5e` (container == local);
+- catalog 75/66, md5 `7c1acf94…`, 4151 specs, 514 chunks, unchanged.
+
+**Targeted live tests** (production path, committed workflow unmodified, isolated sessions `e42ap-*`, one
+temporary driver, deleted afterwards):
+
+| Test | Result |
+|---|---|
+| 1. "До 120 тысяч." → **Consultant restart** → "А что лучше для PS5?" | Turn 1: clarifying question, no tool call. Turn 2: the Agent passed `{max_price 120000, use_cases [gaming]}` (n8n context intact); `h=1`; guard `report_only` (`would_remove max_price 120000`); **the Core applied `effective_price <= 120000`** with gaming; every recommended product ≤ 120 000 ₽ |
+| 2. "Покажи OLED 65 дюймов." → "Какой из них лучше для игр?" → "А подешевле?" | `h` = 0, 1, 2; turn 3: the Agent **invented `max_price 200000`**, and the guard **removed** it; the Core got OLED / 65 / gaming. The Agent's answer after `not_applied`: "Вы не указали бюджет явно, поэтому фильтр по цене не применился…", then the cheapest 65" OLED (S85H, 189 990 ₽) and a request for a budget |
+| 3. "Нужен телевизор до 150 тысяч, обязательно HDMI 2.1." | guard `unchanged`; `effective_price <= 150000` and `required [hdmi_2_1]` reached the Core; `no_match` (HDMI 2.1 is listed only for the professional display), stated honestly |
+| 4. "Привет! Бюджет у меня до 90 тысяч, но сначала объясни … OLED." → "А что посоветуешь для фильмов?" | turn 1: **no tool call** (the Consultant never saw the budget); turn 2: `h=1`, store 0 → `report_only` (`would_remove max_price 90000`, which the 4E.2 guard would have removed); **budget and movies reached the Core**; products ≤ 90 000 ₽ |
+
+**Privacy (Consultant log since the deploy, 149 lines):**
+- raw test phrases: 0; percent-encoded text: 0;
+- `q` redacted 96/96, unredacted 0;
+- no raw text is persisted by the Consultant (derived evidence only, in memory).
+- n8n already retains execution and memory content. `Prior turns` adds one more in-execution copy of
+  the history in n8n's execution data; nothing new is persisted inside the Consultant.
+
+**Cleanup:** the temporary driver was deleted; its local backups were removed; no temporary container
+or file remains on the VPS.

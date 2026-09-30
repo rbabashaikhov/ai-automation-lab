@@ -9,7 +9,7 @@ name: samsung-consultant
 
 services:
   samsung-consultant:
-    image: samsung-consultant:4e2
+    image: samsung-consultant:4e2a
     container_name: samsung-consultant
     restart: unless-stopped
     env_file:

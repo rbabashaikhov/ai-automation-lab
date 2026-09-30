@@ -29,8 +29,8 @@ and the scripts. Commands run as root on the VPS unless marked *local*.
 ```bash
 # local: build from the deployed commit and ship the image (no registry, no repo on the VPS)
 docker build -f deploy/consultant/Dockerfile --label org.opencontainers.image.revision=$(git rev-parse HEAD) \
-  -t samsung-consultant:4e2 .                                        # 4E.2: revision 657e0e4 (4D.2D: 4d2d / 472c53c)
-docker save samsung-consultant:4e2 -o consultant.tar && gzip consultant.tar      # a piped save|ssh stalled in 4D.2B-R
+  -t samsung-consultant:4e2a .                                       # 4E.2A: revision 8ea84f0 (4E.2: 4e2 / 657e0e4)
+docker save samsung-consultant:4e2a -o consultant.tar && gzip consultant.tar      # a piped save|ssh stalled in 4D.2B-R
 scp consultant.tar.gz n8n-vps:/root/ && ssh n8n-vps 'gunzip -c /root/consultant.tar.gz | docker load && rm /root/consultant.tar.gz'
 
 python3 provision_env.py init-env consultant.env                       # secrets generated here, never printed
@@ -50,6 +50,11 @@ ss -ltnup | grep 8765 || echo "no host listener";  docker port samsung-consultan
 
 The n8n Header Auth credential (`Authorization: Bearer <token>`) is created through the n8n
 public API. The token is piped from `provision_env.py mcp-token` and never displayed.
+
+**Rollback of Gate 4E.2A:** set `image: samsung-consultant:4e2` (`compose.yml.4e2.bak`) and `up -d`, and restore
+the workflow backup `tools/n8n-tool/backups/samsung-ai-consultant/20260930T194205Z_4d8mXFWGpS5P4t1L.json`
+(6 nodes, no `h`). Either order is privacy-safe: both images redact `q`. Note that `4e2` ignores `h` and has the
+restart/no-tool-turn provenance defect.
 
 **Rollback of Gate 4E.2 (order matters):** first restore the Consultant workflow backup
 `tools/n8n-tool/backups/samsung-ai-consultant/20260930T184031Z_4d8mXFWGpS5P4t1L.json` (endpoint without `conv`/`q`),
