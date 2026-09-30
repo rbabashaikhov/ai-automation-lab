@@ -758,3 +758,78 @@ temporary drivers, both deleted.
   - the Agent's handling of `not_applied` is unobserved live;
   - G2, restart loses evidence;
   - the unrelated SuperRAG change.
+
+---
+
+# Gate 4E.2A — restart-safe inherited constraints (root-cause fix only)
+
+## What remembers previous turns
+
+| Store | Where | Contents | Survives Consultant restart | Other lifecycle |
+|---|---|---|---|---|
+| Agent memory (`memoryBufferWindow`) | **n8n process**, global map `workflowId__sessionId` | all user and AI messages of the session; the Agent sees the last 6 exchanges | **yes** | lost on n8n restart; buffer cleared after 1 h idle; in the evaluation driver it lives in that `n8n execute` process |
+| `ConversationStore` | **Consultant process** | derived evidence (numbers, feature ids, use cases), one entry per turn **that made a tool call** | **no** | 30 min idle TTL, 12 turns |
+
+Nothing else persists: the Consultant has a read-only DB role, a read-only root FS and no volumes.
+
+## Root cause
+
+- The guard treated "absent from `ConversationStore`" as "not stated by the user". The store is not a
+  complete record of what the Agent legitimately remembers:
+  1. it is lost on a Consultant restart;
+  2. it never sees turns without a tool call, because `q` only travels with MCP requests;
+  3. it expires at 30 minutes, while n8n keeps history for 60.
+- In the 4E.2 restart probe, the store was empty after `docker restart` and only held turn 3's
+  evidence ("А какой лучше для игр?", no number). The Agent's carried `max_price 200000` was
+  therefore judged unsupported and removed.
+
+## Fix (guard rules unchanged)
+
+- **n8n:** one node, "Prior turns" (Chat Memory Manager v1.1, `load`), reads **the same window
+  memory** before the Agent runs.
+  - It sits on a side branch of both triggers, placed above the Agent so execution order v1 runs it
+    first; `onError: continueRegularOutput`.
+  - The MCP endpoint adds `&h=<earlier user turns>`: the number of message groups holding a user
+    message. `messagesCount` counts groups, and a turn with a tool call is stored as two, as seen
+    live.
+  - Unreadable output gives an empty `h`.
+- **Consultant (`mcp_server.guard_context`):** the guard may act only if the store holds at least `h`
+  earlier turns of this conversation. Otherwise, or with no or malformed `h`, it runs in the existing
+  **report-only** mode: nothing is removed, and the decision is logged as `would_remove`.
+- `semantic_guard.py` is unchanged.
+
+## Verification
+
+- **Unit tests (Consultant path, `guard_context` → store → `ConsultantTools.call` → guard):**
+  - cases A–F from the brief (retention, override, removal, size, OLED, HDMI 2.1), each in three
+    scenarios: same process, restart between turns, and turn 1 without a tool call. The Agent's
+    turn-2 arguments reach the Core unchanged in all 18;
+  - an expired store is report-only;
+  - first-turn protections (PS5 → HDMI 2.1, invented budget, gaming → 120 Hz) are unchanged, and the
+    fully observed follow-up invention is still removed.
+- **Live, on a temporary smoke container (`samsung-consultant:4e2a`, revision of this fix) and
+  temporary drivers:**
+
+| Run | Result |
+|---|---|
+| Direct probes | first-turn corrections unchanged; after `docker restart`, the carried `max_price 200000` is **kept** (`report_only`, `would_remove`) |
+| Agent path, "До 120 тысяч." → **restart** → "А что лучше для PS5?" | turn 1 made **no tool call**; turn 2 had `h=1` and the store 0 → `report_only`; **`max_price 120000` reached the Core** |
+| Agent path, 3-turn follow-up without restart | `h` = 0, 1, 2; guard active. At "А подешевле?" the Agent invented **`max_price 200000`** and the guard **removed** it: the first correction observed on a live Agent call |
+
+- **Other checks:** pytest 719 passed / 0 failed / 117 skipped; DB suite passed; workflow `--check`
+  clean; replay and semantic gold unchanged.
+- **Production is not changed:** `samsung-consultant:4e2` and the 4E.2 workflow are still deployed.
+  The committed workflow now has 7 nodes (deployed: 6), and it and image `4e2a` await a deploy
+  decision.
+- Temporary drivers and the smoke container were removed.
+
+## Limits (not addressed; outside the root cause)
+
+- **Stale values after an override:** if the Agent kept sending an overridden or released value, the
+  guard would keep it (it was stated earlier). The guard does not compute effective state. In the
+  tests the Agent supplies the new state.
+- **More report-only turns:** after any turn without a tool call, or after a restart, the guard is
+  report-only for the rest of that conversation. This fails open, by design.
+- **One more copy of the history in n8n:** the "Prior turns" node output holds the history in n8n
+  execution data. The memory node's run data already holds the same messages. The Consultant still
+  receives only a count, and keeps no text.

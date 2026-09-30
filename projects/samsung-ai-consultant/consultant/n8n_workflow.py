@@ -49,12 +49,14 @@ MCP_ENDPOINT = "http://samsung-consultant:8765/mcp"
 # $json.sessionId). The server keeps only derived evidence and redacts q from its request log.
 # Gate 4E.2A: h = earlier turns in the Agent's memory ("Prior turns" reads the same window memory before the Agent
 # runs). The guard removes nothing unless the Consultant has seen at least that many turns of the conversation; an
-# empty h (node not run / failed) also means report-only.
+# empty h (node not run / failed) also means report-only. Count the message groups that hold a user message:
+# messagesCount counts groups, and a turn with a tool call is stored as two ({human, ai, tool}, {ai}).
 PRIOR_TURNS_NODE = "Prior turns"
 MCP_ENDPOINT_EXPRESSION = ("=" + MCP_ENDPOINT + "?turn={{ $execution.id }}&conv={{ encodeURIComponent($json.sessionId) }}"
                            "&q={{ encodeURIComponent($json.chatInput) }}"
-                           "&h={{ $('" + PRIOR_TURNS_NODE + "').isExecuted ? ($('" + PRIOR_TURNS_NODE
-                           + "').first().json.messagesCount ?? '') : '' }}")
+                           "&h={{ $('" + PRIOR_TURNS_NODE + "').isExecuted && Array.isArray($('" + PRIOR_TURNS_NODE
+                           + "').first().json.messages) ? $('" + PRIOR_TURNS_NODE
+                           + "').first().json.messages.filter(g => g.human !== undefined).length : '' }}")
 MCP_NODE_NAME = "catalog"              # n8n exposes tools as "<node name>_<tool>", e.g. catalog_search_tvs
 # One agent step per tool round plus the final answer (a bound on rounds, not calls); the per-turn call cap
 # is enforced by Python per turn key.

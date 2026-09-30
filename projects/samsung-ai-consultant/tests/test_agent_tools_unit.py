@@ -518,7 +518,8 @@ def test_committed_workflow_is_generated_and_safe():
     # conv / q feed the semantic guard (Gate 4E.2); h = earlier turns in the Agent's memory (Gate 4E.2A)
     assert mcp["endpointUrl"] == ("=http://samsung-consultant:8765/mcp?turn={{ $execution.id }}"
                                   "&conv={{ encodeURIComponent($json.sessionId) }}&q={{ encodeURIComponent($json.chatInput) }}"
-                                  "&h={{ $('Prior turns').isExecuted ? ($('Prior turns').first().json.messagesCount ?? '') : '' }}")
+                                  "&h={{ $('Prior turns').isExecuted && Array.isArray($('Prior turns').first().json.messages) ? "
+                                  "$('Prior turns').first().json.messages.filter(g => g.human !== undefined).length : '' }}")
     prior = nodes["Prior turns"]
     assert prior["type"] == "@n8n/n8n-nodes-langchain.memoryManager" and prior["parameters"]["mode"] == "load"
     assert prior["onError"] == "continueRegularOutput"

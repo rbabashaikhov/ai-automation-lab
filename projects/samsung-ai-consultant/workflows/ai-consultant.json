@@ -129,7 +129,7 @@
         240
       ],
       "parameters": {
-        "endpointUrl": "=http://samsung-consultant:8765/mcp?turn={{ $execution.id }}&conv={{ encodeURIComponent($json.sessionId) }}&q={{ encodeURIComponent($json.chatInput) }}&h={{ $('Prior turns').isExecuted ? ($('Prior turns').first().json.messagesCount ?? '') : '' }}",
+        "endpointUrl": "=http://samsung-consultant:8765/mcp?turn={{ $execution.id }}&conv={{ encodeURIComponent($json.sessionId) }}&q={{ encodeURIComponent($json.chatInput) }}&h={{ $('Prior turns').isExecuted && Array.isArray($('Prior turns').first().json.messages) ? $('Prior turns').first().json.messages.filter(g => g.human !== undefined).length : '' }}",
         "serverTransport": "httpStreamable",
         "authentication": "headerAuth",
         "include": "selected",
