@@ -102,6 +102,24 @@
       }
     },
     {
+      "id": "61991b44-6e42-5477-a23f-ac0fee4b3498",
+      "name": "Prior turns",
+      "type": "@n8n/n8n-nodes-langchain.memoryManager",
+      "typeVersion": 1.1,
+      "position": [
+        -120,
+        -240
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "mode": "load",
+        "simplifyOutput": true,
+        "options": {
+          "groupMessages": true
+        }
+      }
+    },
+    {
       "id": "5312fa79-0923-5ccc-a99e-b4b8a39f504b",
       "name": "catalog",
       "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
@@ -111,7 +129,7 @@
         240
       ],
       "parameters": {
-        "endpointUrl": "=http://samsung-consultant:8765/mcp?turn={{ $execution.id }}&conv={{ encodeURIComponent($json.sessionId) }}&q={{ encodeURIComponent($json.chatInput) }}",
+        "endpointUrl": "=http://samsung-consultant:8765/mcp?turn={{ $execution.id }}&conv={{ encodeURIComponent($json.sessionId) }}&q={{ encodeURIComponent($json.chatInput) }}&h={{ $('Prior turns').isExecuted ? ($('Prior turns').first().json.messagesCount ?? '') : '' }}",
         "serverTransport": "httpStreamable",
         "authentication": "headerAuth",
         "include": "selected",
@@ -139,6 +157,11 @@
       "main": [
         [
           {
+            "node": "Prior turns",
+            "type": "main",
+            "index": 0
+          },
+          {
             "node": "Samsung AI Consultant",
             "type": "main",
             "index": 0
@@ -149,6 +172,11 @@
     "When called by evaluation workflow": {
       "main": [
         [
+          {
+            "node": "Prior turns",
+            "type": "main",
+            "index": 0
+          },
           {
             "node": "Samsung AI Consultant",
             "type": "main",
@@ -173,6 +201,11 @@
         [
           {
             "node": "Samsung AI Consultant",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Prior turns",
             "type": "ai_memory",
             "index": 0
           }

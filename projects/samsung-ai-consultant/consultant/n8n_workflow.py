@@ -47,8 +47,14 @@ MCP_ENDPOINT = "http://samsung-consultant:8765/mcp"
 # Gate 4E.2: the semantic guard also gets the conversation key and the user's message. In the Agent's sub-nodes
 # $json is the Agent's input item ({chatInput, sessionId} from either trigger; the memory node already keys on
 # $json.sessionId). The server keeps only derived evidence and redacts q from its request log.
+# Gate 4E.2A: h = earlier turns in the Agent's memory ("Prior turns" reads the same window memory before the Agent
+# runs). The guard removes nothing unless the Consultant has seen at least that many turns of the conversation; an
+# empty h (node not run / failed) also means report-only.
+PRIOR_TURNS_NODE = "Prior turns"
 MCP_ENDPOINT_EXPRESSION = ("=" + MCP_ENDPOINT + "?turn={{ $execution.id }}&conv={{ encodeURIComponent($json.sessionId) }}"
-                           "&q={{ encodeURIComponent($json.chatInput) }}")
+                           "&q={{ encodeURIComponent($json.chatInput) }}"
+                           "&h={{ $('" + PRIOR_TURNS_NODE + "').isExecuted ? ($('" + PRIOR_TURNS_NODE
+                           + "').first().json.messagesCount ?? '') : '' }}")
 MCP_NODE_NAME = "catalog"              # n8n exposes tools as "<node name>_<tool>", e.g. catalog_search_tvs
 # One agent step per tool round plus the final answer (a bound on rounds, not calls); the per-turn call cap
 # is enforced by Python per turn key.
@@ -84,6 +90,11 @@ def build(prompt: str) -> dict:
          "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow", "typeVersion": 1.3, "position": [-100, 240],
          "parameters": {"sessionIdType": "customKey", "sessionKey": "={{ $json.sessionId }}",
                         "contextWindowLength": MEMORY_WINDOW}},
+        # Placed above the Agent: execution order v1 runs this branch of the trigger first, so it reads the memory
+        # before the Agent adds the current turn. One grouped item {messages, messagesCount}; errors do not stop the turn.
+        {"id": _id("prior-turns"), "name": PRIOR_TURNS_NODE, "type": "@n8n/n8n-nodes-langchain.memoryManager",
+         "typeVersion": 1.1, "position": [-120, -240], "onError": "continueRegularOutput",
+         "parameters": {"mode": "load", "simplifyOutput": True, "options": {"groupMessages": True}}},
         {"id": _id("mcp-tool"), "name": MCP_NODE_NAME, "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
          "typeVersion": 1.2, "position": [60, 240],
          "parameters": {"endpointUrl": MCP_ENDPOINT_EXPRESSION, "serverTransport": "httpStreamable",
@@ -92,10 +103,13 @@ def build(prompt: str) -> dict:
          "credentials": {"httpHeaderAuth": MCP_CREDENTIAL}},
     ]
     connections = {
-        "When chat message received": {"main": [[{"node": agent, "type": "main", "index": 0}]]},
-        "When called by evaluation workflow": {"main": [[{"node": agent, "type": "main", "index": 0}]]},
+        "When chat message received": {"main": [[{"node": PRIOR_TURNS_NODE, "type": "main", "index": 0},
+                                                  {"node": agent, "type": "main", "index": 0}]]},
+        "When called by evaluation workflow": {"main": [[{"node": PRIOR_TURNS_NODE, "type": "main", "index": 0},
+                                                         {"node": agent, "type": "main", "index": 0}]]},
         "OpenAI Chat Model": {"ai_languageModel": [[{"node": agent, "type": "ai_languageModel", "index": 0}]]},
-        "Window memory (per session)": {"ai_memory": [[{"node": agent, "type": "ai_memory", "index": 0}]]},
+        "Window memory (per session)": {"ai_memory": [[{"node": agent, "type": "ai_memory", "index": 0},
+                                                       {"node": PRIOR_TURNS_NODE, "type": "ai_memory", "index": 0}]]},
         MCP_NODE_NAME: {"ai_tool": [[{"node": agent, "type": "ai_tool", "index": 0}]]},
     }
     settings = {"executionOrder": "v1", "saveManualExecutions": True, "saveDataSuccessExecution": "all",

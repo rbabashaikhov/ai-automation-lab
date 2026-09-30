@@ -12,7 +12,8 @@ from consultant import agent_tools, semantic_guard
 from consultant.agent_tools import ConsultantTools, TurnBudget
 from consultant.features import FEATURES
 from consultant.mcp_server import (
-    ConversationStore, guard_context, handle_message, make_handler, parse_guard_params, parse_target,
+    ConversationStore, guard_context, handle_message, make_handler, parse_guard_params, parse_prior_turns,
+    parse_target,
 )
 from consultant.semantic_guard import GuardResult, MessageEvidence, guard_tool_arguments
 from evaluation import guard_replay
@@ -293,13 +294,16 @@ def test_without_q_the_tool_call_shape_is_unchanged():
     assert tools.calls == [("recommend_tvs", {}, "turn:5", {})]
 
 
-def test_q_with_conv_acts_and_q_alone_is_report_only():
+def test_q_with_conv_acts_only_with_complete_provenance_and_q_alone_is_report_only():
+    """Gate 4E.2A: a conversation key alone no longer means 'the store has the whole conversation'."""
     tools, store = StubTools(), ConversationStore()
-    handle_message(tools, CALL, "s1", "5", True, lambda: guard_context(store, "5", "c1", "для PS5"))
-    handle_message(tools, CALL, "s1", "6", True, lambda: guard_context(store, "6", None, "для PS5"))
-    (_, _, _, kw1), (_, _, _, kw2) = tools.calls
+    handle_message(tools, CALL, "s1", "5", True, lambda: guard_context(store, "5", "c1", "для PS5", 0))
+    handle_message(tools, CALL, "s1", "6", True, lambda: guard_context(store, "6", None, "для PS5", 0))
+    handle_message(tools, CALL, "s1", "7", True, lambda: guard_context(store, "7", "c2", "для PS5", None))
+    (_, _, _, kw1), (_, _, _, kw2), (_, _, _, kw3) = tools.calls
     assert kw1["act"] is True and len(kw1["conversation"]) == 1
     assert kw2["act"] is False
+    assert kw3["act"] is False                                    # earlier turns unknown -> report-only
 
 
 def test_conversation_store_one_entry_per_turn_window_and_isolation():
@@ -361,3 +365,81 @@ def test_committed_replay_result_is_current(replay):
 def test_pipeline_modules_do_not_use_the_guard(module):
     source = (ROOT / "consultant" / f"{module}.py").read_text(encoding="utf-8")
     assert "semantic_guard" not in source and "query_semantics" not in source
+
+
+# ---- Gate 4E.2A: multi-turn provenance (restart, turns without a tool call, TTL) ------------------
+
+def _turn(recorded, store, conv, n, message, tool, args, observed=True):
+    """One user turn through the real path: guard_context (h = earlier turns in n8n memory) ->
+    ConversationStore -> ConsultantTools.call -> guard. ``observed=False``: the Agent made no tool
+    call, so the Consultant never received this message (n8n memory still counts it)."""
+    if not observed:
+        return None
+    recorded.clear()
+    conversation, act = guard_context(store, f"{conv}-t{n}", conv, message, n - 1)
+    ConsultantTools.for_repository(object()).call(tool, args, f"{conv}-t{n}", conversation, act)
+    return recorded[0][1]
+
+
+def test_parse_prior_turns():
+    assert parse_prior_turns("/mcp?turn=5&h=2&conv=c&q=x") == 2
+    assert parse_prior_turns("/mcp?turn=5&h=0") == 0
+    for bad in ("/mcp?turn=5", "/mcp?turn=5&h=", "/mcp?turn=5&h=-1", "/mcp?turn=5&h=two", "/mcp?turn=5&h=1&h=2"):
+        assert parse_prior_turns(bad) is None
+
+
+@pytest.mark.parametrize("case, t1, t2, args2", [
+    ("A-budget-retention", "До 120 тысяч.", "А что лучше для PS5?", {"max_price": 120000, "use_cases": ["gaming"]}),
+    ("B-budget-override", "До 120 тысяч.", "Можно до 160 тысяч.", {"max_price": 160000}),
+    ("C-budget-removal", "До 120 тысяч.", "Цена уже не важна.", {}),
+    ("D-size-retention", "Только 65 дюймов.", "А что лучше для кино?", {"screen_size_inches": 65, "use_cases": ["movies"]}),
+    ("E-technology-retention", "Только OLED.", "А какой лучше для PS5?", {"panel_technology": ["OLED"], "use_cases": ["gaming"]}),
+    ("F-feature-retention", "Обязательно HDMI 2.1.", "А что лучше для игр?", {"required_features": ["hdmi_2_1"], "use_cases": ["gaming"]}),
+])
+@pytest.mark.parametrize("scenario", ["same-process", "restart-between-turns", "turn-1-without-tool-call"])
+def test_inherited_constraints_survive(recorded, case, t1, t2, args2, scenario):
+    """The Agent's turn-2 arguments (effective state, carried from its n8n memory) reach the Core unchanged."""
+    store = ConversationStore()
+    _turn(recorded, store, case, 1, t1, "recommend_tvs", {}, observed=scenario != "turn-1-without-tool-call")
+    if scenario == "restart-between-turns":
+        store = ConversationStore()                               # a new Consultant process
+    assert _turn(recorded, store, case, 2, t2, "recommend_tvs", args2) == args2
+
+
+def test_restart_makes_the_guard_report_only_not_destructive(recorded, caplog):
+    store = ConversationStore()
+    _turn(recorded, store, "r", 1, "До 120 тысяч.", "recommend_tvs", {"max_price": 120000})
+    store = ConversationStore()
+    with caplog.at_level(logging.INFO, logger="consultant.agent_tools"):
+        final = _turn(recorded, store, "r", 2, "А что лучше для PS5?", "recommend_tvs",
+                      {"max_price": 120000, "use_cases": ["gaming"]})
+    assert final == {"max_price": 120000, "use_cases": ["gaming"]}
+    assert "report_only" in caplog.text and "would_remove" in caplog.text and "'removed'" not in caplog.text
+
+
+def test_expired_store_with_live_n8n_memory_is_report_only(recorded):
+    store = ConversationStore(ttl=-1)                             # store TTL passed; n8n memory (1 h) still has turn 1
+    _turn(recorded, store, "ttl", 1, "До 120 тысяч.", "recommend_tvs", {"max_price": 120000})
+    assert _turn(recorded, store, "ttl", 2, "А для игр?", "recommend_tvs", {"max_price": 120000}) == {"max_price": 120000}
+
+
+@pytest.mark.parametrize("t1, t2, t3, args3, expected", [
+    # the known 4D.2E follow-up invention: every turn observed -> still removed
+    ("Покажи OLED 65 дюймов.", "Какой из них лучше для игр?", "А подешевле?",
+     {"panel_technology": ["OLED"], "screen_size_inches": 65, "use_cases": ["gaming"], "max_price": 150000},
+     {"panel_technology": ["OLED"], "screen_size_inches": 65, "use_cases": ["gaming"]}),
+])
+def test_direct_protection_kept_when_provenance_is_complete(recorded, t1, t2, t3, args3, expected):
+    store = ConversationStore()
+    _turn(recorded, store, "f", 1, t1, "search_tvs", {"panel_technology": ["OLED"], "screen_size_inches": 65})
+    _turn(recorded, store, "f", 2, t2, "recommend_tvs", {"panel_technology": ["OLED"], "screen_size_inches": 65, "use_cases": ["gaming"]})
+    assert _turn(recorded, store, "f", 3, t3, "recommend_tvs", args3) == expected
+
+
+@pytest.mark.parametrize("text, args, expected", [
+    ("Посоветуй телевизор для PS5.", {"use_cases": ["gaming"], "required_features": ["hdmi_2_1"]}, {"use_cases": ["gaming"]}),
+    ("Посоветуй телевизор.", {"max_price": 150000}, {}),
+    ("Телевизор для игр.", {"min_refresh_rate_hz": 120}, {"use_cases": ["gaming"]}),
+])
+def test_first_turn_protections_are_unchanged(recorded, text, args, expected):
+    assert _turn(recorded, ConversationStore(), "first", 1, text, "recommend_tvs", args) == expected

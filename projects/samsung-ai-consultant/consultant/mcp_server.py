@@ -70,6 +70,7 @@ CONTAINER_MARKER = "/.dockerenv"
 TURN_PARAM = "turn"
 TURN_KEY = re.compile(r"^[A-Za-z0-9_.:-]{1,64}$")
 CONV_PARAM, QUERY_PARAM = "conv", "q"
+PRIOR_TURNS_PARAM = "h"             # earlier turns in the Agent's memory (n8n "Prior turns" node, Gate 4E.2A)
 MAX_QUERY_CHARS = 1000
 CONVERSATION_WINDOW = 12            # >= the n8n Agent's memory window (6), so a carried constraint is covered
 _REDACT = re.compile(r"([?&]" + QUERY_PARAM + r"=)[^&\s]*")
@@ -155,8 +156,8 @@ class SessionStore:
 
 class ConversationStore:
     """Per-conversation guard evidence (``semantic_guard.MessageEvidence``: derived facts, no text),
-    one entry per turn key, in memory only, bounded, idle TTL. Not durable: after a restart the
-    earlier messages of an ongoing conversation are unknown (see Gate 4E.2 record)."""
+    one entry per turn key, in memory only, bounded, idle TTL. Not durable and not complete (restart,
+    turns without a tool call, TTL): ``guard_context`` checks completeness against n8n's count."""
 
     def __init__(self, ttl: float = SESSION_TTL_SECONDS, max_conversations: int = MAX_SESSIONS,
                  window: int = CONVERSATION_WINDOW):
@@ -187,13 +188,19 @@ class ConversationStore:
 
 
 def guard_context(conversations: Optional[ConversationStore], turn_key: Optional[str],
-                  conv: Optional[str], query: Optional[str]) -> tuple:
-    """``(conversation evidence or None, act)`` for ``ConsultantTools.call``. Never raises."""
+                  conv: Optional[str], query: Optional[str], prior_turns: Optional[int] = None) -> tuple:
+    """``(conversation evidence or None, act)`` for ``ConsultantTools.call``. Never raises.
+
+    Gate 4E.2A: the store is not a complete record of the conversation -- it is lost on restart, it
+    never sees turns without a tool call, and it expires before n8n's memory. The guard may therefore
+    act (remove) only when the store holds at least as many earlier turns as the Agent's memory
+    (``prior_turns``, from n8n). Otherwise, or when ``prior_turns`` is unknown, it is report-only."""
     try:
         if conversations is None or not query or not turn_key:
             return None, True
         if conv:
-            return conversations.record(conv, turn_key, query), True
+            evidence = conversations.record(conv, turn_key, query)
+            return evidence, prior_turns is not None and len(evidence) - 1 >= prior_turns
         from .semantic_guard import MessageEvidence
         return (MessageEvidence.from_text(query),), False
     except Exception:
@@ -282,6 +289,12 @@ def parse_guard_params(target: str) -> tuple:
     return conv, query
 
 
+def parse_prior_turns(target: str) -> Optional[int]:
+    """``h`` = earlier turns in the Agent's memory; ``None`` when absent or malformed (guard report-only)."""
+    values = parse_qs(urlsplit(target).query).get(PRIOR_TURNS_PARAM, [])
+    return int(values[0]) if len(values) == 1 and values[0].isdigit() and int(values[0]) <= 10000 else None
+
+
 def make_handler(tools: ConsultantTools, token: str, sessions: SessionStore, allowed_origins: frozenset,
                  require_turn_key: bool = False, conversations: Optional[ConversationStore] = None):
     token_bytes = token.encode()
@@ -362,8 +375,9 @@ def make_handler(tools: ConsultantTools, token: str, sessions: SessionStore, all
             if not sessions.touch(sid):
                 return self._send(404, _error(None, INVALID_REQUEST, "Unknown or expired session"))
             conv, query = parse_guard_params(self.path)
+            prior = parse_prior_turns(self.path)
             response = handle_message(tools, message, sid, turn_key, require_turn_key,
-                                      lambda: guard_context(conversations, turn_key, conv, query))
+                                      lambda: guard_context(conversations, turn_key, conv, query, prior))
             if response is None:
                 return self._send(202)
             self._send(200, response)

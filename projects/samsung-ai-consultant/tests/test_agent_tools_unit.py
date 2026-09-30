@@ -515,9 +515,18 @@ def test_committed_workflow_is_generated_and_safe():
     mcp = nodes["catalog"]["parameters"]
     assert mcp["includeTools"] == list(TOOL_NAMES) and mcp["serverTransport"] == "httpStreamable"
     # Docker service name, never an IP; the n8n execution id is the per-turn budget key (Gate 4D.2B-R);
-    # conv / q feed the semantic guard (Gate 4E.2)
+    # conv / q feed the semantic guard (Gate 4E.2); h = earlier turns in the Agent's memory (Gate 4E.2A)
     assert mcp["endpointUrl"] == ("=http://samsung-consultant:8765/mcp?turn={{ $execution.id }}"
-                                  "&conv={{ encodeURIComponent($json.sessionId) }}&q={{ encodeURIComponent($json.chatInput) }}")
+                                  "&conv={{ encodeURIComponent($json.sessionId) }}&q={{ encodeURIComponent($json.chatInput) }}"
+                                  "&h={{ $('Prior turns').isExecuted ? ($('Prior turns').first().json.messagesCount ?? '') : '' }}")
+    prior = nodes["Prior turns"]
+    assert prior["type"] == "@n8n/n8n-nodes-langchain.memoryManager" and prior["parameters"]["mode"] == "load"
+    assert prior["onError"] == "continueRegularOutput"
+    assert prior["position"][1] < nodes["Samsung AI Consultant"]["position"][1]      # runs before the Agent (order v1)
+    for trigger in ("When chat message received", "When called by evaluation workflow"):
+        assert [c["node"] for c in wf["connections"][trigger]["main"][0]] == ["Prior turns", "Samsung AI Consultant"]
+    assert {c["node"] for c in wf["connections"]["Window memory (per session)"]["ai_memory"][0]} == \
+        {"Samsung AI Consultant", "Prior turns"}
     model = nodes["OpenAI Chat Model"]
     assert model["parameters"]["model"]["value"] == "gpt-4.1-mini" and model["parameters"]["options"]["temperature"] == 0
     for n in wf["nodes"]:
