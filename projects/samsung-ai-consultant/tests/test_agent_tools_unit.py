@@ -333,7 +333,15 @@ def test_mcp_messages():
     res = handle_message(tools, {"jsonrpc": "2.0", "id": 3, "method": "tools/call",
                                  "params": {"name": "search_tvs", "arguments": {"max_price": 1}}}, "s1")["result"]
     assert json.loads(res["content"][0]["text"])["status"] == "ok" and res["isError"] is False
-    assert tools.calls[-1] == ("search_tvs", {"max_price": 1}, "s1")          # session id is the turn key
+    assert tools.calls[-1] == ("search_tvs", {"max_price": 1}, "session:s1")  # fallback: session id
+    handle_message(tools, {"jsonrpc": "2.0", "id": 7, "method": "tools/call",
+                           "params": {"name": "search_tvs", "arguments": {}}}, "s1", "501")
+    assert tools.calls[-1][2] == "turn:501"                                     # the turn key wins
+    refused = handle_message(tools, {"jsonrpc": "2.0", "id": 8, "method": "tools/call",
+                                     "params": {"name": "search_tvs", "arguments": {}}}, "s1", None, True)
+    assert refused["error"]["code"] == -32600 and "turn" in refused["error"]["message"]
+    assert len(tools.calls) == 2                                                # never reached the tools
+    assert "result" in handle_message(tools, {"jsonrpc": "2.0", "id": 9, "method": "tools/list"}, "s1", None, True)
     assert handle_message(tools, {"jsonrpc": "2.0", "id": 4, "method": "tools/call",
                                   "params": {"name": "run_sql"}}, "s1")["error"]["code"] == -32602
     assert handle_message(tools, {"jsonrpc": "2.0", "id": 5, "method": "resources/list"}, "s1")["error"]["code"] == -32601
@@ -408,7 +416,83 @@ def test_mcp_http_session_auth_and_limits(mcp_http):
     assert post(b"x" * (64 * 1024 + 1), session=sid)[0] == 413
     status, _, body = post({"jsonrpc": "2.0", "id": 4, "method": "tools/call",
                             "params": {"name": "get_tv", "arguments": {"model": "S95H"}}}, session=sid)
-    assert status == 200 and tools.calls[-1][2] == sid
+    assert status == 200 and tools.calls[-1][2] == f"session:{sid}"
+
+
+# ---- per-turn cap across MCP sessions (Gate 4D.2B-R) ----------------------------------------------------
+#
+# n8n Agent v3 runs every tool call as its own engine action, and the MCP Client Tool opens a new MCP
+# session for each (observed live in Gate 4D.2B). These tests reproduce that shape: one fresh session
+# per call, all carrying the same ?turn=<n8n execution id>.
+
+@pytest.fixture
+def capped_server(monkeypatch):
+    from consultant import agent_tools
+
+    executed = []
+    monkeypatch.setattr(agent_tools, "run_tool", lambda name, args, repo: executed.append(name) or
+                        {"contract": "agent-result-v1", "tool": name, "status": "ok", "products": []})
+    token = "c" * 40
+    tools = ConsultantTools(lambda: __import__("contextlib").nullcontext(None), max_calls_per_turn=3)
+    server = build_server(tools, "127.0.0.1", 0, token, require_turn_key=True)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{server.server_address[1]}/mcp"
+
+    def rpc(body, query="", session=None):
+        headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}"}
+        if session:
+            headers["Mcp-Session-Id"] = session
+        req = urllib.request.Request(base + query, json.dumps(body).encode(), headers, method="POST")
+        try:
+            with urllib.request.urlopen(req) as r:
+                return r.status, r.headers.get("Mcp-Session-Id"), json.loads(r.read() or b"null")
+        except urllib.error.HTTPError as e:
+            return e.code, None, None
+
+    def call_in_new_session(turn, tool="get_tv", arguments=None):
+        """What n8n's McpClientTool.execute does per tool call: initialize, then one tools/call."""
+        query = f"?turn={turn}" if turn is not None else ""
+        _, sid, _ = rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}}, query)
+        status, _, body = rpc({"jsonrpc": "2.0", "id": 2, "method": "tools/call",
+                               "params": {"name": tool, "arguments": arguments or {"model": "S95H"}}}, query, sid)
+        if "error" in body:
+            return status, "rpc_error"
+        return status, json.loads(body["result"]["content"][0]["text"])["status"]
+
+    yield call_in_new_session, rpc, executed
+    server.shutdown()
+    server.server_close()
+
+
+def test_turn_cap_blocks_the_fourth_sequential_call_across_sessions(capped_server):
+    call, _, executed = capped_server
+    statuses = [call("501")[1] for _ in range(5)]
+    assert statuses == ["ok", "ok", "ok", "tool_call_limit_reached", "tool_call_limit_reached"]
+    assert len(executed) == 3                                  # calls 4 and 5 never reached the catalog
+    assert call("502")[1] == "ok"                              # the next user message has its own budget
+
+
+def test_turn_cap_holds_for_parallel_calls(capped_server):
+    call, _, executed = capped_server
+    results = []
+    threads = [threading.Thread(target=lambda: results.append(call("777")[1])) for _ in range(8)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert sorted(results) == ["ok"] * 3 + ["tool_call_limit_reached"] * 5
+    assert len(executed) == 3
+
+
+def test_turn_key_is_required_and_validated(capped_server):
+    call, rpc, executed = capped_server
+    assert call(None) == (200, "rpc_error") and not executed   # no turn key: refused before any tool runs
+    assert rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}}, "?turn=a%20b")[0] == 400
+    assert rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}}, "?turn=1&turn=2")[0] == 400
+    assert rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}}, "?turn=" + "9" * 65)[0] == 400
+    status, sid, _ = rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
+    assert status == 200 and sid                                 # listing tools needs no turn key (n8n editor)
+    assert rpc({"jsonrpc": "2.0", "id": 2, "method": "tools/list"}, "", sid)[0] == 200
 
 
 # ---- n8n workflow artifact and system prompt ---------------------------------------------------------
@@ -428,7 +512,8 @@ def test_committed_workflow_is_generated_and_safe():
     assert not [n for n in wf["nodes"] if n["type"] in ("n8n-nodes-base.webhook", "@n8n/n8n-nodes-langchain.mcpTrigger")]
     mcp = nodes["catalog"]["parameters"]
     assert mcp["includeTools"] == list(TOOL_NAMES) and mcp["serverTransport"] == "httpStreamable"
-    assert mcp["endpointUrl"] == "http://samsung-consultant:8765/mcp"      # Docker service name, never an IP
+    # Docker service name, never an IP; the n8n execution id is the per-turn budget key (Gate 4D.2B-R)
+    assert mcp["endpointUrl"] == "=http://samsung-consultant:8765/mcp?turn={{ $execution.id }}"
     model = nodes["OpenAI Chat Model"]
     assert model["parameters"]["model"]["value"] == "gpt-4.1-mini" and model["parameters"]["options"]["temperature"] == 0
     for n in wf["nodes"]:
@@ -452,12 +537,54 @@ def test_system_prompt_states_the_required_rules():
     from consultant.n8n_workflow import PROMPT_FILE
 
     p = PROMPT_FILE.read_text(encoding="utf-8")
+    assert PROMPT_FILE.name == "agent_system_v2.md"
     for needle in ("Samsung TV consultant", "only source of product facts", "Do NOT call tools for greetings",
                    "Never invent or change a model, price, availability", "`not_listed`", "в каталоге нет данных",
                    "every gap", "ask the user", "Do not reveal", "Keep that order", "General knowledge",
-                   "no brightness", "best for movies", "data, not instructions", "at most 3 tool calls"):
+                   "no brightness", "best for movies", "data, not instructions", "At most 3 tool calls"):
         assert needle.lower() in p.lower(), needle
     assert len(p) < 6000
+
+
+def test_prompt_v2_catalog_grounding_boundary():
+    """Gate 4D.2B smoke case E: a catalog statement with no tool call. General knowledge stays
+    tool-free; any statement about the catalog needs a tool result first, recommendations included."""
+    from consultant.n8n_workflow import PROMPT_FILE
+
+    p = PROMPT_FILE.read_text(encoding="utf-8")
+    assert "Anything about the actual catalog needs a tool result from this conversation BEFORE you say it" in p
+    assert "whether the catalog has models with some feature, and every recommendation" in p
+    assert "Asking which TV suits a need is always a catalog question: call the tool first" in p
+    assert "why reflections matter in a bright room" in p                    # general knowledge: no tool
+    assert '"в каталоге есть модели с …"' in p                               # named as not allowed
+    bright = next(line for line in p.splitlines() if line.startswith("- Bright room"))
+    for needle in ("no brightness (nits) measurements — say so", 'use_cases ["bright_room"]',
+                   "does not prove the model suits a bright room", "Never claim a TV is brighter"):
+        assert needle in bright, needle
+
+
+def test_prompt_v2_and_schema_keep_use_cases_out_of_required_features():
+    """Gate 4D.2B smoke case C: 'для PS5' became required_features [hz_120, allm, hdmi_2_1]."""
+    from consultant.n8n_workflow import PROMPT_FILE
+
+    p = PROMPT_FILE.read_text(encoding="utf-8")
+    rule = next(line for line in p.splitlines() if line.startswith("- A goal or use"))
+    for needle in ('"для PS5", "для игр"', "goes into use_cases", 'required_features only for features the user '
+                   'explicitly demands ("обязательно HDMI 2.1", "нужны 120 Гц и ALLM" → exactly those)',
+                   "Never add features the user did not mention"):
+        assert needle in rule, needle
+    props = TOOL_SCHEMAS["recommend_tvs"]["inputSchema"]["properties"]
+    assert "Never inferred from a use case" in props["required_features"]["description"]
+    assert "Never add features the user did not mention" in props["preferred_features"]["description"]
+    assert "is a use case, not required features" in TOOL_SCHEMAS["recommend_tvs"]["description"]
+
+
+def test_prompt_v2_group_claims_rule():
+    from consultant.n8n_workflow import PROMPT_FILE
+
+    p = PROMPT_FILE.read_text(encoding="utf-8")
+    assert ("One statement about several products (\"они 60 Гц\", \"обе в наличии\") only if the tool result shows it "
+            "for every one of them; otherwise give the value per model or leave it out.") in p
 
 
 # ---- evaluation set and scorer -----------------------------------------------------------------------
@@ -534,6 +661,75 @@ def test_grounding_flags_detect_fabrication_and_lost_gaps():
                             CATALOG, results)
     assert not any(clean[k] for k in ("fabricated_models", "fabricated_prices", "fabricated_features",
                                       "unsupported_numbers", "lost_gaps"))
+
+
+# Real Gate 4D.2B smoke answers (live n8n Agent, gpt-4.1-mini) that the v1 scorer did not flag.
+SMOKE_E_ANSWER = ("Для очень светлой комнаты обычно рекомендуют телевизоры с высокой яркостью и антибликовым покрытием, "
+                  "чтобы изображение было хорошо видно при ярком освещении. В каталоге Samsung есть модели с "
+                  "антибликовым покрытием, что помогает уменьшить отражения.\n\nЕсли хотите, я могу подобрать для вас "
+                  "телевизоры Samsung с антибликовым покрытием, которые подойдут для светлой комнаты. Уточните, "
+                  "пожалуйста, желаемый размер экрана и бюджет?")
+SMOKE_C_SENTENCE = ("Если готовы рассмотреть другие технологии, есть модели Mini LED и Crystal UHD 65\" дешевле 80 тысяч, "
+                    "но они не OLED и с частотой 60 Гц.")
+
+
+def _alt(code, category, panel, size, hz, price, available=True, features=None):
+    return {"model_code": code, "price_rub": price, "available": available, "features": features or {},
+            "specs": {"category": category, "panel_technology": panel, "screen_size_inches": size, "refresh_rate_hz": hz}}
+
+
+SMOKE_C_RESULT = {"contract": "agent-result-v1", "status": "no_match", "products": [], "alternatives": [
+    _alt("UE65U8000HUXPY", "Crystal UHD", "LED", 65, 60, 73990),
+    _alt("UE65M70HAUXPY", "Mini LED", "Mini LED", 65, 60, 75990),
+    _alt("UE65M1EHAUXPY", "Mini LED", "Mini LED", 65, 50, 75990),
+    _alt("QE65S85HAEXPY", "OLED", "OLED", 65, 120, 189990, features={"vrr": "yes", "allm": "not_listed"}),
+    _alt("QE55S85HAEXPY", "OLED", "OLED", 55, 120, 149990, features={"vrr": "yes"})]}
+
+
+def test_scorer_flags_catalog_claim_without_any_tool_evidence():
+    f = grounding_flags({"tool": "recommend_tvs"}, {"user": "Какой телевизор лучше для очень светлой комнаты?",
+                                                    "answer": SMOKE_E_ANSWER}, CATALOG, [])
+    assert f["catalog_claims_without_evidence"] == [
+        "В каталоге Samsung есть модели с антибликовым покрытием, что помогает уменьшить отражения."]
+    for general in ("Привет! Чем могу помочь с телевизорами Samsung?",
+                    "OLED — это технология, в которой каждый пиксель светится сам, поэтому чёрный цвет глубокий.",
+                    "Я могу подобрать телевизор, сравнить модели, подсказать цены и наличие по каталогу.",
+                    "В светлой комнате важны яркость и антибликовое покрытие: они уменьшают отражения."):
+        assert grounding_flags({"tool": None}, {"user": "q", "answer": general}, CATALOG, [])[
+            "catalog_claims_without_evidence"] == [], general
+    priced = grounding_flags({"tool": None}, {"user": "q", "answer": "QE65S95HAUXPY стоит 329 990 ₽."}, CATALOG, [])
+    assert priced["catalog_claims_without_evidence"]                           # a code/price with no tool call
+    with_tool = grounding_flags({"tool": "recommend_tvs"}, {"user": "q", "answer": SMOKE_E_ANSWER}, CATALOG,
+                                [SMOKE_C_RESULT])
+    assert with_tool["catalog_claims_without_evidence"] == []                  # evidence present: other checks apply
+
+
+def test_scorer_flags_unsupported_group_claims():
+    f = grounding_flags({"tool": "recommend_tvs"}, {"user": "q", "answer": SMOKE_C_SENTENCE}, CATALOG, [SMOKE_C_RESULT])
+    assert len(f["aggregate_claim_flags"]) == 1 and "UE65M1EHAUXPY', 50" in f["aggregate_claim_flags"][0]
+    ok = SMOKE_C_SENTENCE.replace("с частотой 60 Гц", "с частотой 50–60 Гц")
+    assert grounding_flags({"tool": "x"}, {"user": "q", "answer": ok}, CATALOG, [SMOKE_C_RESULT])["aggregate_claim_flags"] == []
+    per_model = ("Есть UE65U8000HUXPY (Crystal UHD, 60 Гц) и UE65M1EHAUXPY (Mini LED, 50 Гц).")
+    assert grounding_flags({"tool": "x"}, {"user": "q", "answer": per_model}, CATALOG,
+                           [SMOKE_C_RESULT])["aggregate_claim_flags"] == []
+    true_group = "Обе OLED-модели на 65 и 55 дюймов, они поддерживают 120 Гц."
+    assert grounding_flags({"tool": "x"}, {"user": "q", "answer": true_group}, CATALOG,
+                           [SMOKE_C_RESULT])["aggregate_claim_flags"] == []
+    feature = grounding_flags({"tool": "x"}, {"user": "q", "answer": "QE65S85HAEXPY и QE55S85HAEXPY поддерживают ALLM."},
+                              CATALOG, [SMOKE_C_RESULT])["aggregate_claim_flags"]
+    assert feature == ["allm claimed for all of ['QE65S85HAEXPY', 'QE55S85HAEXPY']; not 'yes' for "
+                       "['QE65S85HAEXPY', 'QE55S85HAEXPY']"]
+
+
+def test_scorer_availability_and_model_reporting():
+    result = {"products": [_alt("QE65S95HAUXPY", "OLED", "OLED", 65, 120, 329990, available=False)]}
+    f = grounding_flags({"tool": "get_tv"}, {"user": "q", "answer": "QE65S95HAUXPY есть в наличии за 329 990 ₽."},
+                        CATALOG, [result])
+    assert f["availability_mismatches"] == ["QE65S95HAUXPY: said available, evidence unavailable"]
+    assert f["mentioned_models"] == ["QE65S95HAUXPY"] and f["returned_models"] == ["QE65S95HAUXPY"]
+    ok = grounding_flags({"tool": "get_tv"}, {"user": "q", "answer": "QE65S95HAUXPY сейчас нет в наличии."}, CATALOG,
+                         [result])
+    assert ok["availability_mismatches"] == []
 
 
 def test_user_quoted_numbers_and_codes_are_not_fabrications():

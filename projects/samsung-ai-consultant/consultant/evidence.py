@@ -153,7 +153,8 @@ class EvidenceBundle:
     router_rule: str
     plan_summary: dict
     products: tuple                  # ProductEvidence, P1..Pn in shortlist/result order
-    alternatives: tuple              # ProductEvidence, A1..An (relaxation; each violates one constraint)
+    alternatives: tuple              # ProductEvidence, A1..An, unique: relaxation rows labelled with the
+                                     # constraints they actually violate, then required-not-listed candidates
     gaps: tuple
     totals: dict
     retrieval_confidence: str        # strong | partial | weak | not_applicable
@@ -511,10 +512,21 @@ def build_evidence(plan: ResolvedPlan, route_plan: RoutePlan, result: Structured
             probes = relax(plan, repo)
             totals["relaxation"] = [{"dropped": p.dropped, "requested": p.requested, "matches": p.matches}
                                     for p in probes]
+            # A probe drops one constraint but may also return rows that satisfy it (always the case
+            # when candidates exist and only a required feature failed). Label each row by the
+            # constraints its live values actually violate; a row violating none is a candidate,
+            # not a relaxation alternative (the unknown bucket below carries it if relevant).
+            shown = set()
             for row, dropped in alternative_rows(probes):
-                alternatives.append(_Draft(row, [f"violates:{k}" for k in dropped]))
+                violated = [s.key for s in constraint_statuses(plan, row)
+                            if s.satisfied is False or (s.satisfied is None and s.key in dropped)]
+                if violated and row.id not in shown:
+                    shown.add(row.id)
+                    alternatives.append(_Draft(row, [f"violates:{k}" for k in violated]))
             for c in ranking.unknown[:3]:
-                alternatives.append(_Draft(c.product, [f"required_not_listed:{','.join(plan.required)}"]))
+                if c.product.id not in shown:
+                    shown.add(c.product.id)
+                    alternatives.append(_Draft(c.product, [f"required_not_listed:{','.join(plan.required)}"]))
 
     elif route is Route.PRODUCT_SCOPED_SEMANTIC:
         rows = list(plan.resolved_products[:MAX_NAMED_PRODUCTS])

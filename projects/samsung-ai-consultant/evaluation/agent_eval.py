@@ -61,6 +61,23 @@ FEATURE_WORDS = {
 }
 NEGATION = re.compile(r"(?i)\bне\b|\bнет\b|без\b|отсутств|no data|not listed|неизвестн")
 
+# Gate 4D.2B-R: statements about the actual catalog. Only meaningful when the session has no tool
+# evidence (then any of these is a catalog claim made from model knowledge). General explanations
+# ("OLED — это ...", "для светлой комнаты важна яркость") do not match.
+CATALOG_CLAIM = re.compile(
+    r"(?i)\bв (нашем |этом )?каталоге\b[^.!?\n]{0,20}\b(есть|представлен\w*|имеются|доступн\w*|найд\w+|продаются)\b"
+    r"|\b(есть|имеются|представлены|продаются) (модели|телевизоры|варианты)\b|\bв наличии\b|\bпо данным каталога\b"
+    r"|\bthe catalog (has|includes|lists)\b|\bin stock\b")
+GROUP_MARKER = re.compile(r"(?i)\b(они|все|обе|оба|эти|каждая|каждый|такие|both|all|each|they)\b")
+# Longest names first so "Neo QLED" is not also read as "QLED"; a "не "/"not " prefix excludes it.
+CATEGORY_NAMES = ("Crystal UHD", "The Frame", "Neo QLED", "Micro RGB", "Micro LED", "Mini LED", "QLED", "OLED")
+AVAILABLE_WORDS = re.compile(r"(?i)\bв наличии\b|\bin stock\b")
+UNAVAILABLE_WORDS = re.compile(r"(?i)\bнет в наличии\b|\bне в наличии\b|\bотсутствует в продаже\b|\bout of stock\b")
+# A value, or a range/list of values ("50–60 Гц", "55 и 65 дюймов"), before the unit.
+_VALUES = r"(?<![\d.,])(?:\d{2,3}\s*(?:–|—|-|/|,|и|или|or|and)\s*)*\d{2,3}\s*"
+SPEC_UNITS = {"refresh_rate_hz": re.compile(rf"(?i){_VALUES}(?:Гц|Hz)\b"),
+              "screen_size_inches": re.compile(rf"{_VALUES}(?:дюйм\w*|\"|″)")}
+
 
 class DatasetError(ValueError):
     pass
@@ -266,8 +283,76 @@ def _evidence_prices(results: list) -> set:
     return out
 
 
+def _evidence_products(results: list) -> list:
+    return [p for r in results for p in [*(r.get("products") or []), *(r.get("alternatives") or [])]]
+
+
 def _evidence_codes(results: list) -> set:
-    return {p.get("model_code") for r in results for p in [*(r.get("products") or []), *(r.get("alternatives") or [])]}
+    return {p.get("model_code") for p in _evidence_products(results)}
+
+
+def _mentioned_categories(sentence: str) -> set:
+    found, rest = set(), sentence
+    for name in CATEGORY_NAMES:
+        for m in re.finditer(rf"(?i)(\bне\s+|\bnot\s+)?\b{re.escape(name)}\b", rest):
+            if not m.group(1):
+                found.add(name.casefold())
+        rest = re.sub(rf"(?i)\b{re.escape(name)}\b", " ", rest)
+    return found
+
+
+def aggregate_claim_flags(answer: str, results: list) -> list:
+    """One statement about several products that the evidence does not support for every one of
+    them. Deterministic and deliberately narrow (manual review still applies):
+
+    * a group sentence (они/все/обе/эти/...) that names product lines (and optionally a size) and
+      states one refresh rate or size: every evidence product of those lines (and size) must have it;
+    * a sentence naming 2+ model codes with "в наличии" or a feature word and no negation: every
+      named product must be available / have the feature ``yes``."""
+    products = _evidence_products(results)
+    by_code = {p.get("model_code"): p for p in products}
+    flags = []
+    for sentence in _sentences(answer):
+        codes = [c for c in dict.fromkeys(MODEL_CODE.findall(sentence)) if c in by_code]
+        low = sentence.lower()
+        if len(codes) >= 2 and not NEGATION.search(sentence):
+            if AVAILABLE_WORDS.search(sentence):
+                bad = [c for c in codes if by_code[c].get("available") is not True]
+                if bad:
+                    flags.append(f"availability claimed for all of {codes}; not available: {bad}")
+            for fid, words in FEATURE_WORDS.items():
+                if any(w in low for w in words):
+                    bad = [c for c in codes if _state(by_code[c], fid) != "yes"]
+                    if bad:
+                        flags.append(f"{fid} claimed for all of {codes}; not 'yes' for {bad}")
+        if codes or not GROUP_MARKER.search(sentence):
+            continue
+        lines = _mentioned_categories(sentence)
+        if not lines:
+            continue
+        members = [p for p in products if {str((p.get("specs") or {}).get(k, "")).casefold()
+                                           for k in ("category", "panel_technology")} & lines]
+        claims = {field: {int(v) for m in rx.finditer(sentence) for v in re.findall(r"\d{2,3}", m.group(0))}
+                  for field, rx in SPEC_UNITS.items()}
+        for field, values in claims.items():
+            if len(values) != 1:
+                continue
+            value = next(iter(values))
+            group = members
+            for other, other_values in claims.items():   # "Mini LED 65\" ... 60 Гц": restrict by the size too
+                if other != field and len(other_values) == 1:
+                    group = [p for p in group if (p.get("specs") or {}).get(other) in other_values]
+            group = list({p.get("model_code"): p for p in group}.values())
+            bad = sorted({p.get("model_code") for p in group if (p.get("specs") or {}).get(field) != value})
+            if len(group) >= 2 and bad:
+                flags.append(f"'{sentence.strip()[:120]}' states {field}={value} for {sorted(lines)}; "
+                             f"differs for {[(c, (by_code[c].get('specs') or {}).get(field)) for c in bad]}")
+    return flags
+
+
+def _state(product: dict, fid: str):
+    v = (product.get("features") or {}).get(fid)
+    return v if isinstance(v, str) or v is None else v.get("state")
 
 
 def _features_by_code(results: list) -> dict:
@@ -319,6 +404,24 @@ def grounding_flags(spec: dict, turn: dict, catalog_codes: frozenset, session_re
         if not exact.search(evidence_text) and not exact.search(user_text):
             unsupported_numbers.append(m.group(0).strip())
 
+    catalog_claims = []
+    if not results:            # no tool evidence in this session: any catalog statement is unsupported
+        for sentence in _sentences(answer):
+            if CATALOG_CLAIM.search(sentence) or MODEL_CODE.search(sentence) or MONEY.search(sentence):
+                catalog_claims.append(sentence.strip()[:160])
+
+    availability_mismatches = []
+    by_code = {p.get("model_code"): p for p in _evidence_products(results)}
+    for sentence in _sentences(answer):
+        codes = [c for c in dict.fromkeys(MODEL_CODE.findall(sentence)) if c in by_code]
+        if len(codes) != 1:
+            continue
+        available = by_code[codes[0]].get("available")
+        if UNAVAILABLE_WORDS.search(sentence) and available is True:
+            availability_mismatches.append(f"{codes[0]}: said unavailable, evidence available")
+        elif AVAILABLE_WORDS.search(sentence) and not UNAVAILABLE_WORDS.search(sentence) and available is False:
+            availability_mismatches.append(f"{codes[0]}: said available, evidence unavailable")
+
     features = _features_by_code(results)
     fabricated_features = []
     for sentence in _sentences(answer):
@@ -347,8 +450,12 @@ def grounding_flags(spec: dict, turn: dict, catalog_codes: frozenset, session_re
     missing_all = [c for c in g.get("must_mention_all", []) if c.lower() not in low_answer]
     forbidden_hits = [p for p in g.get("forbidden_patterns", []) if re.search(p, answer)]
     return {"fabricated_models": fabricated_models, "ungrounded_models": ungrounded_models,
+            "mentioned_models": sorted(set(MODEL_CODE.findall(answer))), "returned_models": sorted(
+                c for c in codes_in_evidence if c),
             "fabricated_prices": fabricated_prices, "unsupported_numbers": unsupported_numbers,
             "fabricated_features": fabricated_features, "lost_gaps": lost_gaps,
+            "catalog_claims_without_evidence": catalog_claims, "availability_mismatches": availability_mismatches,
+            "aggregate_claim_flags": aggregate_claim_flags(answer, results),
             "missing_required_mentions": missing_mentions + [[c] for c in missing_all],
             "forbidden_pattern_hits": forbidden_hits, "manual_review": list(g.get("manual_review", []))}
 
@@ -399,6 +506,9 @@ def aggregate(turns: list) -> dict:
         "max_tool_calls_observed": max((t.calls for t in turns), default=0),
         "fabricated_model_count": g("fabricated_models"), "fabricated_price_count": g("fabricated_prices"),
         "fabricated_feature_count": g("fabricated_features"), "unsupported_numeric_claim_count": g("unsupported_numbers"),
+        "catalog_claim_without_evidence_count": g("catalog_claims_without_evidence"),
+        "availability_mismatch_count": g("availability_mismatches"),
+        "aggregate_claim_flag_count": g("aggregate_claim_flags"),
         "lost_gap_count": g("lost_gaps") + sum(len(t.grounding.get("missing_required_mentions", [])) for t in turns),
         "forbidden_pattern_hits": g("forbidden_pattern_hits"),
         "failures": [f"{t.case_id}[{t.turn}]" for t in turns

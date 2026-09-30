@@ -163,13 +163,15 @@ TOOL_SCHEMAS = {
             "Recommend Samsung TVs for a use case and/or constraints ('посоветуй OLED для PS5 до 200 "
             "тысяч', 'хороший звук без саундбара'). The Consultant ranks deterministically; keep the "
             "returned order. use_cases: gaming (consoles, PS5/Xbox), movies, sound, bright_room, "
-            "thin_wall (thin / wall mounting), compact. Explicit hard requirements go to "
-            "required_features. Call with no arguments only if the user gave no need at all."),
+            "thin_wall (thin / wall mounting), compact. A goal ('для PS5', 'для игр') is a use case, not "
+            "required features. Call with no arguments only if the user gave no need at all."),
         "inputSchema": _obj({
             **_FILTERS,
             "use_cases": _arr(USE_CASE_IDS, "Needs the user stated, mapped to these ids."),
-            "required_features": _arr(FEATURE_IDS, "Features the user said are mandatory."),
-            "preferred_features": _arr(FEATURE_IDS, "Features the user would like (not mandatory)."),
+            "required_features": _arr(FEATURE_IDS, "Only features the user explicitly said are mandatory "
+                                                   "('обязательно HDMI 2.1'). Never inferred from a use case."),
+            "preferred_features": _arr(FEATURE_IDS, "Only features the user mentioned as wishes (not mandatory). "
+                                                    "Never add features the user did not mention."),
         }),
     },
     "get_catalog_stats": {

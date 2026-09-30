@@ -295,6 +295,28 @@ def test_relaxation_required_feature_not_listed(env):
     assert b.retrieval_confidence == "weak"
 
 
+def test_relaxation_with_candidates_labels_only_actual_violations(env):
+    """Candidates exist (OLED 65 <= 200k) but none has every required feature listed: relaxation
+    probes also return rows that satisfy the dropped constraint. Such rows must not be labelled
+    as violating it, and a product appears at most once among the alternatives."""
+    repo = env[0]
+    b, _, _ = build(repo, {"intent": "recommend", "constraints": {"panel_technology": ["OLED"], "screen_size_inches": 65,
+                                                                  "effective_price": {"max": 200000}},
+                           "use_cases": ["gaming"],
+                           "features": [{"id": f, "strength": "required"} for f in ("hz_120", "allm", "hdmi_2_1")]})
+    assert not b.products and b.alternatives
+    ids = [a.product_id for a in b.alternatives]
+    assert len(ids) == len(set(ids))
+    for a in b.alternatives:
+        unsatisfied = {c.key for c in a.constraints if c.satisfied is not True}
+        labelled = {r.split(":", 1)[1] for r in a.selection_reasons if r.startswith("violates:")}
+        assert labelled <= unsatisfied
+        assert labelled or any(r.startswith("required_not_listed:") for r in a.selection_reasons)
+    s85 = next(a for a in b.alternatives if a.model_code == "QE65S85HAEXPY")
+    assert all(c.satisfied is True for c in s85.constraints)
+    assert s85.selection_reasons == ("required_not_listed:hz_120,allm,hdmi_2_1",)
+
+
 # ---- global fallback + renderer ---------------------------------------------------------------------------------
 
 def test_global_fallback_respects_scope_and_is_weak(env):

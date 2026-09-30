@@ -22,4 +22,7 @@ USER 10001
 EXPOSE 8765
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
     CMD ["python", "-c", "import sys, urllib.request; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8765/healthz', timeout=3).status == 200 else 1)"]
-ENTRYPOINT ["python", "-m", "consultant.mcp_server", "--container", "--host", "0.0.0.0", "--port", "8765"]
+# --require-turn-key: tool calls must carry ?turn=<n8n execution id>, so the per-turn cap spans every MCP
+# session of one Agent turn (Gate 4D.2B-R).
+ENTRYPOINT ["python", "-m", "consultant.mcp_server", "--container", "--host", "0.0.0.0", "--port", "8765", \
+            "--require-turn-key"]

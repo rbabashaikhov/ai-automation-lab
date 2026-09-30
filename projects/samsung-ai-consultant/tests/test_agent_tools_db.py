@@ -217,6 +217,47 @@ def test_recommend_required_feature_not_listed(env):
     assert any(s.startswith("required_not_listed") for a in r["alternatives"] for s in a["selection"])
 
 
+def _assert_violation_labels_are_true(alt):
+    """Every ``violates:<key>`` is backed by that constraint being unsatisfied; no satisfied
+    constraint is ever labelled as violated."""
+    status = {c["constraint"].split()[0]: c["satisfied"] for c in alt["constraints"]}
+    labelled = {s.split(":", 1)[1] for s in alt["selection"] if s.startswith("violates:")}
+    assert all(status.get(k) is not True for k in labelled), alt
+    assert not {k for k, ok in status.items() if ok is True} & labelled, alt
+
+
+def test_recommend_required_features_regression_4d2b_smoke_case_c(env):
+    """Gate 4D.2B smoke (live): these arguments returned QE65S85HAEXPY -- 65", 189 990, inside
+    every structured constraint -- labelled violates:screen_size_inches + violates:effective_price,
+    and listed twice. Labels must reflect actual violations; alternatives are unique."""
+    tools, *_ = env
+    args = {"panel_technology": ["OLED"], "screen_size_inches": 65, "max_price": 200000, "use_cases": ["gaming"],
+            "required_features": ["hz_120", "allm", "hdmi_2_1"]}
+    r = tools.call("recommend_tvs", args)
+    assert r["status"] == "no_match" and "required_feature_not_listed" in kinds(r)
+    alts = codes(r, "alternatives")
+    assert len(alts) == len(set(alts))
+    s85 = [a for a in r["alternatives"] if a["model_code"] == "QE65S85HAEXPY"]
+    assert len(s85) == 1 and s85[0]["selection"] == ["required_not_listed:hz_120,allm,hdmi_2_1"]
+    assert all(c["satisfied"] is True for c in s85[0]["constraints"])
+    for alt in r["alternatives"]:
+        _assert_violation_labels_are_true(alt)
+    assert codes(tools.call("recommend_tvs", args), "alternatives") == alts          # deterministic order
+
+
+def test_relaxation_labels_true_in_the_zero_candidate_path(env):
+    tools, *_ = env
+    for args in ({"panel_technology": ["OLED"], "max_price": 30000, "use_cases": ["gaming"]},
+                 {"panel_technology": ["OLED"], "screen_size_inches": 50},
+                 {"panel_technology": ["OLED"], "screen_size_inches": 65, "max_price": 150000}):
+        r = tools.call("recommend_tvs", args)
+        assert r["status"] == "no_match" and r["alternatives"], args
+        assert len(codes(r, "alternatives")) == len(set(codes(r, "alternatives")))
+        for alt in r["alternatives"]:
+            assert any(s.startswith("violates:") for s in alt["selection"]), alt
+            _assert_violation_labels_are_true(alt)
+
+
 # ---- get_catalog_stats ------------------------------------------------------------------------------------
 
 def test_stats_count_with_availability_breakdown(env):

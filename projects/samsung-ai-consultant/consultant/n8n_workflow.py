@@ -2,7 +2,7 @@
 
     python -m consultant.n8n_workflow [--check]
 
-Generated rather than hand-edited so the Agent system prompt (``prompts/agent_system_v1.md``) and
+Generated rather than hand-edited so the Agent system prompt (``prompts/agent_system_v2.md``) and
 the tool list (``agent_tools.TOOL_SCHEMAS``) have a single source; ``--check`` fails when the
 committed JSON is stale (also asserted by the unit tests). Deployed with ``tools/n8n-tool``.
 
@@ -29,7 +29,9 @@ from .agent_tools import DEFAULT_MAX_TOOL_CALLS_PER_TURN, TOOL_NAMES
 
 PROJECT = Path(__file__).resolve().parents[1]
 OUT = PROJECT / "workflows" / "ai-consultant.json"
-PROMPT_FILE = Path(__file__).parent / "prompts" / "agent_system_v1.md"
+# v2 (Gate 4D.2B-R): catalog claims need a tool result first; use case vs required features; group claims;
+# bright-room gap. v1 is kept unchanged for the 4D.2B smoke record.
+PROMPT_FILE = Path(__file__).parent / "prompts" / "agent_system_v2.md"
 
 WORKFLOW_NAME = "Samsung — AI Consultant"
 AGENT_MODEL = "gpt-4.1-mini"          # measured via this credential in Phase 3D; temperature 0
@@ -38,8 +40,13 @@ MCP_CREDENTIAL = {"id": "9Ak6Ely4Wbp63RUn", "name": "Samsung Consultant MCP"}   
 # Internal Docker service on n8n-compose_default (Phase 4D.2A; deploy/consultant/compose.yml), reached by
 # service name -- never a container IP and never the bridge gateway (see ADR 004 correction).
 MCP_ENDPOINT = "http://samsung-consultant:8765/mcp"
+# Agent v3 runs each tool call as its own engine action with a new MCP session, so the turn is carried
+# in the URL: one n8n execution = one user message. The server counts tools/call per this key
+# (--require-turn-key in the container), across sessions and parallel calls (Gate 4D.2B-R).
+MCP_ENDPOINT_EXPRESSION = "=" + MCP_ENDPOINT + "?turn={{ $execution.id }}"
 MCP_NODE_NAME = "catalog"              # n8n exposes tools as "<node name>_<tool>", e.g. catalog_search_tvs
-# One agent step per tool round plus the final answer; Python enforces the hard per-turn cap.
+# One agent step per tool round plus the final answer (a bound on rounds, not calls); the per-turn call cap
+# is enforced by Python per turn key.
 AGENT_MAX_ITERATIONS = DEFAULT_MAX_TOOL_CALLS_PER_TURN + 1
 MEMORY_WINDOW = 6
 
@@ -74,7 +81,7 @@ def build(prompt: str) -> dict:
                         "contextWindowLength": MEMORY_WINDOW}},
         {"id": _id("mcp-tool"), "name": MCP_NODE_NAME, "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
          "typeVersion": 1.2, "position": [60, 240],
-         "parameters": {"endpointUrl": MCP_ENDPOINT, "serverTransport": "httpStreamable",
+         "parameters": {"endpointUrl": MCP_ENDPOINT_EXPRESSION, "serverTransport": "httpStreamable",
                         "authentication": "headerAuth", "include": "selected", "includeTools": list(TOOL_NAMES),
                         "options": {"timeout": 30000}},
          "credentials": {"httpHeaderAuth": MCP_CREDENTIAL}},

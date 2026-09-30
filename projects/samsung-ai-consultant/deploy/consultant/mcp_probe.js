@@ -1,4 +1,4 @@
-// Phase 4D.2A boundary probe. Runs with plain Node (e.g. inside the n8n container):
+// Phase 4D.2A boundary probe (4D.2B-R: per-turn key + cap across sessions). Runs with plain Node (e.g. inside the n8n container):
 //   <token on stdin> | node -e "$(cat mcp_probe.js)" http://samsung-consultant:8765
 // The token is read from stdin only and never printed. Prints results, not payloads.
 const BASE = process.argv[1] && process.argv[1].startsWith("http") ? process.argv[1] : process.argv[2];
@@ -10,8 +10,10 @@ async function readStdin() {
   return data.trim();
 }
 
-async function post(body, headers = {}) {
-  const r = await fetch(`${BASE}/mcp`, {
+const PROBE_TURN = `probe-${Date.now()}`;
+
+async function post(body, headers = {}, turn = PROBE_TURN) {
+  const r = await fetch(`${BASE}/mcp${turn ? `?turn=${turn}` : ""}`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json, text/event-stream", ...headers },
     body: JSON.stringify(body),
@@ -62,5 +64,17 @@ function closed(schema) {
   out.invalid_arguments_call = JSON.parse(bad.json.result.content[0].text).status;
   const del = await fetch(`${BASE}/mcp`, { method: "DELETE", headers: s });
   out.session_closed = del.status;
+  // Per-turn cap as n8n drives it: one new MCP session per call, all with the same turn key.
+  async function callInNewSession(turn) {
+    const i = await post({ jsonrpc: "2.0", id: 10, method: "initialize",
+      params: { protocolVersion: "2025-03-26", capabilities: {}, clientInfo: { name: "4d2b-probe", version: "1" } } }, auth, turn);
+    const r = await post({ jsonrpc: "2.0", id: 11, method: "tools/call",
+      params: { name: "get_catalog_stats", arguments: { stat: "count" } } }, { ...auth, "Mcp-Session-Id": i.session }, turn);
+    return r.json.error ? "rpc_error" : JSON.parse(r.json.result.content[0].text).status;
+  }
+  const capTurn = `probe-cap-${Date.now()}`;
+  out.cap_across_sessions = [];
+  for (let n = 0; n < 4; n++) out.cap_across_sessions.push(await callInNewSession(capTurn));
+  out.call_without_turn_key = await callInNewSession(null);
   console.log(JSON.stringify(out, null, 1));
 })().catch((e) => { console.log(JSON.stringify({ probe_error: String(e && e.message) })); process.exit(1); });
