@@ -93,3 +93,12 @@ Tests: `python -m pytest tests/test_evaluation_*.py`.
 - `run_agent_offline.py` — Gate 4D.1: executes the expected tool calls through the real facade in
   the read-only session -> `results/agent_offline_4d1.json`. No LLM.
 - `agent_injection.py` — evaluation-only test double adding instruction-like text to tool evidence.
+
+## Phase 4E.1 (see [../docs/PHASE_4E_QUERY_SEMANTICS.md](../docs/PHASE_4E_QUERY_SEMANTICS.md))
+
+- `semantic_cases.json` — 30 gold cases (intent / explicit filters / preferences), including the
+  false-constraint traps. Written before the parser; `agent_cases.json` is unchanged.
+- `semantic_eval.py` — offline evaluation (no DB, LLM or n8n): field-level gold scoring with the
+  invented-hard-filter count, the trap table, shadow tool calls checked at the real tool boundary,
+  and the grounding check over the recorded 4D.2E Agent arguments ->
+  `results/semantic_eval_4e1.json`.

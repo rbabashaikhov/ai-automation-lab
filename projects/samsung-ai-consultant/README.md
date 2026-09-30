@@ -49,6 +49,7 @@ Phase 4A — AI Consultant architecture:         COMPLETE (docs/PHASE_4A_AI_CONS
 Phase 4B — Structured Consultant core:         COMPLETE (no LLM/embeddings; docs/PHASE_4B_STRUCTURED_CORE.md)
 Phase 4C — Evidence & semantic retrieval:      COMPLETE (no LLM/new embeddings; docs/PHASE_4C_EVIDENCE_SEMANTIC.md)
 Phase 4D — Agent tools & n8n runtime:          4D.1 + 4D.2A COMPLETE (internal MCP service deployed; live Agent eval pending approval)
+Phase 4E.1 — Query-semantics spike:           EVALUATED (isolated, not integrated; docs/PHASE_4E_QUERY_SEMANTICS.md)
 Phase 4E–4G — answers, conversation, channel:  PLANNED
 Phase 5 — Evaluation / Observability:          PLANNED
 ```
