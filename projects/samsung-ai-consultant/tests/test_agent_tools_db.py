@@ -47,7 +47,7 @@ def test_search_oled_65(env):
     r = tools.call("search_tvs", {"panel_technology": ["OLED"], "screen_size_inches": 65})
     assert r["status"] == "ok" and sorted(codes(r)) == ["QE65S85HAEXPY", "QE65S90HAEXPY", "QE65S95HAUXPY"]
     assert r["order_basis"] == "effective_price_asc"
-    prices = [p["price_rub"] for p in r["products"]]
+    prices = [p["current_price_rub"] for p in r["products"]]
     assert prices == sorted(prices)
 
 
@@ -55,7 +55,7 @@ def test_search_budget_uses_effective_price(env):
     tools, *_ = env
     r = tools.call("search_tvs", {"max_price": 190000, "panel_technology": ["Neo QLED"]})
     qn80 = product(r, "QE75QN80HAUXPY")                        # list 229990, on sale 189990 -> included
-    assert qn80["price_rub"] == 189990 and qn80["list_price_rub"] == 229990
+    assert qn80["current_price_rub"] == 189990 and qn80["price_before_discount_rub"] == 229990
     by_list = tools.call("search_tvs", {"max_price": 190000, "panel_technology": ["Neo QLED"], "price_basis": "list"})
     assert "QE75QN80HAUXPY" not in codes(by_list)
 
@@ -87,7 +87,7 @@ def test_get_tv_exact_lookup_has_overview_passage_without_stale_lines(env):
     tools, *_ = env
     r = tools.call("get_tv", {"model": "QE65S95HAUXPY"})
     p = product(r, "QE65S95HAUXPY")
-    assert r["status"] == "ok" and p["price_rub"] == 329990 and p["url"].endswith("/QE65S95HAUXPY/")
+    assert r["status"] == "ok" and p["current_price_rub"] == 329990 and p["url"].endswith("/QE65S95HAUXPY/")
     text = json.dumps(r, ensure_ascii=False)
     assert p["catalog_passages"] and "Цена:" not in text and "Наличие:" not in text
 
@@ -133,7 +133,7 @@ def test_compare_exact_models(env):
     r = tools.call("compare_tvs", {"models": ["QE65S95HAUXPY", "QE65S90HAEXPY"], "attributes": ["sound_power_w", "allm"]})
     assert r["status"] == "ok" and codes(r) == ["QE65S95HAUXPY", "QE65S90HAEXPY"]
     diff = {d.get("field") or d.get("feature") for d in r["comparison"]["differences"]}
-    assert {"price_rub", "sound_power_w"} <= diff and "allm" not in diff
+    assert {"current_price_rub", "sound_power_w"} <= diff and "allm" not in diff
     assert r["comparison"]["same"]["panel_technology"] == "OLED"
 
 
@@ -286,7 +286,7 @@ def test_live_price_wins_over_indexed_chunk(env):
     conn.commit()
     r = tools.call("get_tv", {"model": "QE65S95HAUXPY"})
     p = product(r, "QE65S95HAUXPY")
-    assert p["price_rub"] == 299990 and p["list_price_rub"] == 349990
+    assert p["current_price_rub"] == 299990 and p["price_before_discount_rub"] == 349990
     assert "329990" not in json.dumps(r)                       # the chunk's index-time price is never surfaced
 
 
@@ -299,7 +299,7 @@ def test_injection_like_spec_text_is_returned_as_data(env):
     conn.commit()
     r = tools.call("get_tv", {"model": "QE65S95HAUXPY", "attributes": ["anti_glare"]})
     p = product(r, "QE65S95HAUXPY")
-    assert p["price_rub"] == 329990 and p["available"] is True
+    assert p["current_price_rub"] == 329990 and p["available"] is True
     assert {"name": "Антибликовое покрытие", "value": hostile} in p["catalog_specs"]
     assert p["features"]["anti_glare"] == {"state": "not_listed", "data_quality": "unrecognized_value"}
 

@@ -103,10 +103,12 @@ _FILTERS = {
                                     "that are out of stock."},
 }
 _MODEL_REF = {"type": "string", "minLength": 2, "maxLength": 24, "pattern": MODEL_REF_PATTERN}
+# Up to the whole registry (Gate 4D.2D): the 4D.1 cap of 8 had no Core reason (compare_tvs already checks all
+# attributes by default) and made legitimate overview/comparison calls fail with invalid_arguments in 4D.2C.
 _ATTRIBUTES = _arr(FEATURE_IDS, "Registry attributes to check (tri-state yes/no/not_listed). hz_120 = 120 Hz; "
                                 "vrr; freesync_premium / freesync_premium_pro; allm; game_bar; hdmi_2_1; earc; "
-                                "anti_glare; filmmaker_mode; dolby_atmos; sound_power_w (W); depth_cm; vesa.")
-_ATTRIBUTES["maxItems"] = 8
+                                "anti_glare; filmmaker_mode; dolby_atmos; sound_power_w (W); depth_cm; vesa. "
+                                "Only the features the user asks about.")
 
 
 def _obj(properties: dict, required: tuple = ()) -> dict:
@@ -131,9 +133,9 @@ TOOL_SCHEMAS = {
         "description": (
             "Authoritative facts about ONE named model code (e.g. QE65S95HAUXPY) or model family "
             "(e.g. S95H): price, availability, key specs, and optionally specific attributes or a "
-            "long-tail feature question ('есть ли AirPlay'). Unknown models are reported as not found "
-            "with nearest catalog codes. A feature missing from the catalog is 'not_listed' (unknown), "
-            "never 'no'."),
+            "long-tail feature question ('есть ли AirPlay'). For a general overview ('расскажи про ...') "
+            "pass only `model`. Unknown models are reported as not found with nearest catalog codes. A "
+            "feature missing from the catalog is 'not_listed' (unknown), never 'no'."),
         "inputSchema": _obj({
             "model": {**_MODEL_REF, "description": "Model code or family exactly as the user wrote it, "
                                                    "without the brand ('QE65S95HAUXPY', 'S95H')."},
@@ -148,7 +150,8 @@ TOOL_SCHEMAS = {
     "compare_tvs": {
         "description": (
             "Compare 2-4 explicitly named model codes or families (e.g. ['S95H', 'S90H']). Returns "
-            "prices, availability, specs and feature differences. If families share several sizes and "
+            "prices, availability, specs and feature differences. Omit `attributes` for a general "
+            "comparison: all registry attributes are compared. If families share several sizes and "
             "no size is given, returns clarification_needed with the size options -- ask the user."),
         "inputSchema": _obj({
             "models": {"type": "array", "items": {**_MODEL_REF, "description": "Model code or family."},

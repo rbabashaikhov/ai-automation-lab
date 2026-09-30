@@ -45,7 +45,7 @@ CLARIFY_REQUEST = re.compile(r"(?i)\b(уточните|укажите|подск
 # Answer phrases that preserve each gap kind (Russian first; English for English answers).
 GAP_PHRASES = {
     "model_not_found": ("не найден", "нет в каталоге", "отсутствует в каталоге", "не нашл", "нет такой", "не представлен",
-                        "not found", "not in the catalog"),
+                        "нет модели", "not found", "not in the catalog"),
     "not_in_catalog_domain": ("ярк", "нит", "nits", "brightness"),
     "no_product_satisfies": ("нет подходящ", "не нашл", "не найд", "нет моделей", "нет ни одного", "таких нет",
                              "ничего не", "нет oled", "no model", "nothing"),
@@ -88,6 +88,25 @@ UNAVAILABLE_WORDS = re.compile(r"(?i)\bнет в наличии\b|\bне в на
 _VALUES = r"(?<![\d.,])(?:\d{2,3}\s*(?:–|—|-|/|,|и|или|or|and)\s*)*\d{2,3}\s*"
 SPEC_UNITS = {"refresh_rate_hz": re.compile(rf"(?i){_VALUES}(?:Гц|Hz)\b"),
               "screen_size_inches": re.compile(rf"{_VALUES}(?:дюйм\w*|\"|″)")}
+
+# Gate 4D.2D evaluator corrections (each from a recorded 4D.2C discrepancy, §17).
+# An argument sent with its schema default changes nothing ('price_basis: effective').
+DEFAULT_ARG_VALUES = {"price_basis": "effective"}
+# Correct not-listed / negated wording around a forbidden-pattern match ("ALLM отсутствует (не указана)").
+NOT_LISTED_MARKER = re.compile(r"(?i)не указ|нет данных|нет информации|неизвестн|no data|not listed")
+# Agent contract price fields: v2 (4D.2D) and v1 (4D.2C records).
+CURRENT_PRICE_KEYS = ("current_price_rub", "price_rub")
+BEFORE_PRICE_KEYS = ("price_before_discount_rub", "list_price_rub")
+# An amount labelled as the old / pre-discount price must be the evidence's price before discount.
+BEFORE_DISCOUNT_LABEL = re.compile(r"(?i)(\bбыл[аио]?|\bбез скидки|\bдо скидки|\bстарая цена|\bвместо|\bwas|"
+                                   r"before discount|list price)\s*:?\s*$")
+# Picture/brightness/colour comparatives: the catalog has no such measurements, so any such claim about a
+# named model is unsupported (4D.2C follow-up turn 2: "лучшей картинки для игр лучше QE65S90HAEXPY ...").
+QUALITY_COMPARATIVE = re.compile(
+    r"(?i)\b(лучш\w*|качественне\w*|более качественн\w*)\s+(?:\w+\s+){0,2}?(картин\w*|изображени\w*|цвет\w*|"
+    r"контраст\w*|яркост\w*|цветопередач\w*)|\b(картинк\w*|изображени\w*|цвет\w*)\s+(?:\w+\s+){0,2}?(лучше|"
+    r"качественнее|ярче|насыщеннее)|\bярче\b|\bконтрастнее\b|\bbetter (picture|image)|\bbrighter\b")
+FAMILY_TOKEN = re.compile(r"(?<![A-Za-z0-9])[A-Z]{1,2}\d{2,4}[A-Z]{0,2}(?![A-Za-z0-9])")
 
 
 class DatasetError(ValueError):
@@ -293,7 +312,8 @@ def score_turn(case: dict, index: int, spec: dict, turn: dict, catalog_codes: fr
                  and (c.get("result") or {}).get("status") not in RETRY_STATUSES]
         target = valid[0] if valid else target
         args = target.get("args") or {}
-        forbidden = [k for k in spec.get("forbidden_args", []) if k in args]
+        forbidden = [k for k in spec.get("forbidden_args", []) if k in args
+                     and not (k in DEFAULT_ARG_VALUES and args[k] == DEFAULT_ARG_VALUES[k])]
         if forbidden:
             notes.append(f"forbidden args sent: {forbidden}")
         if args_match(spec["args"], args) and not forbidden:
@@ -328,14 +348,15 @@ def score_turn(case: dict, index: int, spec: dict, turn: dict, catalog_codes: fr
 
 # ---- grounding ----------------------------------------------------------------------------------------
 
+def product_prices(p: dict) -> tuple:
+    """``(current, before_discount)`` of a payload product under either contract version."""
+    pick = lambda keys: next((p[k] for k in keys if isinstance(p.get(k), (int, float))), None)   # noqa: E731
+    return pick(CURRENT_PRICE_KEYS), pick(BEFORE_PRICE_KEYS)
+
+
 def _evidence_prices(results: list) -> set:
-    out = set()
-    for r in results:
-        for p in [*(r.get("products") or []), *(r.get("alternatives") or [])]:
-            for k in ("price_rub", "list_price_rub"):
-                if isinstance(p.get(k), (int, float)):
-                    out.add(int(round(p[k])))
-    return out
+    return {int(round(v)) for r in results for p in [*(r.get("products") or []), *(r.get("alternatives") or [])]
+            for v in product_prices(p) if v is not None}
 
 
 def _evidence_products(results: list) -> list:
@@ -343,7 +364,58 @@ def _evidence_products(results: list) -> list:
 
 
 def _evidence_codes(results: list) -> set:
-    return {p.get("model_code") for p in _evidence_products(results)}
+    """Returned products and alternatives, plus the nearest-code suggestions of a not-found model."""
+    suggested = {s for r in results for res in (r.get("request") or {}).get("model_resolution") or []
+                 for s in res.get("suggestions") or []}
+    return {p.get("model_code") for p in _evidence_products(results)} | suggested
+
+
+def price_label_issues(answer: str, results: list) -> list:
+    """Lines naming one product: an amount labelled as the old / pre-discount price ("(была X ₽)", "без
+    скидки X ₽") must equal that product's price before discount (4D.2C search-list-price swapped them)."""
+    by_code = {p.get("model_code"): p for p in _evidence_products(results)}
+    issues = []
+    for line in re.split(r"\n+", answer):
+        codes = set(MODEL_CODE.findall(line)) | {c for c in by_code if c and f"/product/{c}/" in line}
+        codes &= set(by_code)
+        if len(codes) != 1:
+            continue
+        code = codes.pop()
+        current, before = product_prices(by_code[code])
+        for m in MONEY.finditer(line):
+            if not BEFORE_DISCOUNT_LABEL.search(line[max(0, m.start() - 25):m.start()]):
+                continue
+            value = int(re.sub(r"\D", "", m.group(1)))
+            if value != before:
+                issues.append(f"{code}: {value} labelled as the price before discount; evidence current={current}, "
+                              f"before_discount={before}")
+    return issues
+
+
+def quality_comparative_claims(answer: str) -> list:
+    """Sentences naming a model (code or family) and claiming better picture / brightness / colours."""
+    out = []
+    for sentence in _sentences(answer):
+        if not (MODEL_CODE.search(sentence) or FAMILY_TOKEN.search(sentence)) or NEGATION.search(sentence):
+            continue
+        if QUALITY_COMPARATIVE.search(sentence):
+            out.append(sentence.strip()[:160])
+    return out
+
+
+def _forbidden_hits(patterns: list, answer: str) -> list:
+    """A match counts unless its sentence carries not-listed wording outside the match itself."""
+    hits = []
+    for pattern in patterns:
+        for m in re.finditer(pattern, answer):
+            sentence = next((s for s in _sentence_spans(answer) if s[0] <= m.start() < s[1]), (0, len(answer)))
+            text = answer[sentence[0]:sentence[1]]
+            outside = [x for x in NOT_LISTED_MARKER.finditer(text)
+                       if not (m.start() <= sentence[0] + x.start() and sentence[0] + x.end() <= m.end())]
+            if not outside:
+                hits.append(pattern)
+                break
+    return hits
 
 
 def _mentioned_categories(sentence: str) -> set:
@@ -425,6 +497,15 @@ def _sentences(text: str) -> list:
     return [s for s in re.split(r"(?<=[.!?\n])\s+", text) if s.strip()]
 
 
+def _sentence_spans(text: str) -> list:
+    """``(start, end)`` of the same sentences as :func:`_sentences`."""
+    spans, start = [], 0
+    for m in re.finditer(r"(?<=[.!?\n])\s+", text):
+        spans.append((start, m.start()))
+        start = m.end()
+    return spans + [(start, len(text))]
+
+
 def grounding_flags(spec: dict, turn: dict, catalog_codes: frozenset, session_results: list) -> dict:
     """Automatic, deterministic flags over the final answer against *this session's* tool results
     (earlier turns included, since follow-ups may reuse them) and the user's own text."""
@@ -446,9 +527,11 @@ def grounding_flags(spec: dict, turn: dict, catalog_codes: frozenset, session_re
 
     fabricated_prices = []
     user_digits = re.sub(r"\D", " ", user_text).split()
+    user_numbers = _user_numbers(user_text)                    # the user's "100k" restated is not a fabrication
     for m in MONEY.finditer(answer):
         value = int(re.sub(r"\D", "", m.group(1)))
-        if value not in prices and str(value) not in user_digits and str(value) not in re.sub(r"[\s  ]", "", user_text):
+        if (value not in prices and value not in user_numbers and str(value) not in user_digits
+                and str(value) not in re.sub(r"[\s  ]", "", user_text)):
             fabricated_prices.append(m.group(0).strip())
 
     unsupported_numbers = []
@@ -462,7 +545,11 @@ def grounding_flags(spec: dict, turn: dict, catalog_codes: frozenset, session_re
     catalog_claims = []
     if not results:            # no tool evidence in this session: any catalog statement is unsupported
         for sentence in _sentences(answer):
-            if CATALOG_CLAIM.search(sentence) or MODEL_CODE.search(sentence) or MONEY.search(sentence):
+            # the user's own model code or amount repeated back is not a catalog claim
+            codes = [c for c in MODEL_CODE.findall(sentence) if c not in user_text]
+            amounts = [m for m in MONEY.finditer(sentence)
+                       if int(re.sub(r"\D", "", m.group(1))) not in user_numbers]
+            if CATALOG_CLAIM.search(sentence) or codes or amounts:
                 catalog_claims.append(sentence.strip()[:160])
 
     availability_mismatches = []
@@ -503,7 +590,7 @@ def grounding_flags(spec: dict, turn: dict, catalog_codes: frozenset, session_re
     missing_mentions = [alts for alts in g.get("must_mention_any", [])
                         if not any(a.lower() in low_answer for a in alts)]
     missing_all = [c for c in g.get("must_mention_all", []) if c.lower() not in low_answer]
-    forbidden_hits = [p for p in g.get("forbidden_patterns", []) if re.search(p, answer)]
+    forbidden_hits = _forbidden_hits(g.get("forbidden_patterns", []), answer)
     return {"fabricated_models": fabricated_models, "ungrounded_models": ungrounded_models,
             "mentioned_models": sorted(set(MODEL_CODE.findall(answer))), "returned_models": sorted(
                 c for c in codes_in_evidence if c),
@@ -511,6 +598,8 @@ def grounding_flags(spec: dict, turn: dict, catalog_codes: frozenset, session_re
             "fabricated_features": fabricated_features, "lost_gaps": lost_gaps,
             "catalog_claims_without_evidence": catalog_claims, "availability_mismatches": availability_mismatches,
             "aggregate_claim_flags": aggregate_claim_flags(answer, results),
+            "mislabelled_prices": price_label_issues(answer, results),
+            "unsupported_comparatives": quality_comparative_claims(answer),
             "missing_required_mentions": missing_mentions + [[c] for c in missing_all],
             "forbidden_pattern_hits": forbidden_hits, "manual_review": list(g.get("manual_review", []))}
 
@@ -564,6 +653,8 @@ def aggregate(turns: list) -> dict:
         "catalog_claim_without_evidence_count": g("catalog_claims_without_evidence"),
         "availability_mismatch_count": g("availability_mismatches"),
         "aggregate_claim_flag_count": g("aggregate_claim_flags"),
+        "mislabelled_price_count": g("mislabelled_prices"),
+        "unsupported_comparative_count": g("unsupported_comparatives"),
         "invented_argument_count": sum(len(t.invented_arguments) for t in turns),
         "lost_gap_count": g("lost_gaps") + sum(len(t.grounding.get("missing_required_mentions", [])) for t in turns),
         "forbidden_pattern_hits": g("forbidden_pattern_hits"),

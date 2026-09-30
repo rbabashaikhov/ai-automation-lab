@@ -147,7 +147,8 @@ def extract(case_id: str, parent_out: Path, out: Path) -> dict:
     out.write_text(text)
     return rec
 
-from .agent_eval import MODEL_CODE, MONEY, from_n8n_agent_output, invented_arguments, load_cases, score_run  # noqa: E402
+from .agent_eval import (MODEL_CODE, MONEY, UNIT_NUMBER, from_n8n_agent_output, invented_arguments,  # noqa: E402
+                         load_cases, product_prices, score_run)
 
 FEATURE_PATTERNS = {"hz_120": (r"120\s*Гц",), "vrr": (r"\bVRR\b",), "freesync_premium": (r"FreeSync",), "allm": (r"\bALLM\b",),
                     "game_bar": (r"игров\w* (панел|режим)", r"Game Bar"), "hdmi_2_1": (r"HDMI 2\.1",), "earc": (r"eARC",),
@@ -176,13 +177,17 @@ def claim_check(answer: str, results: list) -> tuple:
         code = found.pop()
         x = prods.get(code)
         if x is None:
-            issues.append(f"{code}: named on a line but not in this session's evidence")
+            # Gate 4D.2D: naming a code (e.g. the user's own) is not a claim; a price, availability, feature or
+            # unit value on that line is.
+            if (MONEY.search(line) or UNIT_NUMBER.search(line) or re.search(r"(?i)в наличии", line)
+                    or any(re.search(p, line, re.I) for pats in FEATURE_PATTERNS.values() for p in pats)):
+                issues.append(f"{code}: named on a line but not in this session's evidence")
             continue
         spec_text = json.dumps(x.get("catalog_specs", []) + [x.get("name", ""), x.get("specs", {})], ensure_ascii=False)
         for m in MONEY.finditer(line):
             v = int(re.sub(r"\D", "", m.group(1)))
             checked += 1
-            if v not in (x.get("price_rub"), x.get("list_price_rub")):
+            if v not in product_prices(x):
                 issues.append(f"{code}: price {v} not in evidence")
         if re.search(r"(?i)в наличии", line) and not re.search(r"(?i)нет в наличии|не в наличии", line):
             checked += 1
@@ -266,7 +271,8 @@ def analyze(out_dir: Path, catalog_codes: frozenset) -> dict:
             g = sc["grounding"]
             hard_flags = {k: g[k] for k in ("fabricated_models", "ungrounded_models", "fabricated_prices", "unsupported_numbers",
                                             "fabricated_features", "catalog_claims_without_evidence", "availability_mismatches",
-                                            "aggregate_claim_flags", "forbidden_pattern_hits") if g.get(k)}
+                                            "aggregate_claim_flags", "mislabelled_prices", "unsupported_comparatives",
+                                            "forbidden_pattern_hits") if g.get(k)}
             soft_flags = {k: g[k] for k in ("lost_gaps", "missing_required_mentions") if g.get(k)}
             leaks = sorted(set(m.group(0) for m in LEAK.finditer(turn["answer"])))
             rows.append({

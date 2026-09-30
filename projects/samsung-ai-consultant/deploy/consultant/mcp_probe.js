@@ -54,11 +54,14 @@ function closed(schema) {
   out.schemas_closed = tools.every((t) => closed(t.inputSchema));
   out.required = Object.fromEntries(tools.map((t) => [t.name, t.inputSchema.required]));
   out.read_only_hint = tools.every((t) => t.annotations && t.annotations.readOnlyHint === true);
+  out.attributes_max_items = Object.fromEntries(tools.filter((t) => t.inputSchema.properties.attributes)
+    .map((t) => [t.name, t.inputSchema.properties.attributes.maxItems]));             // 4D.2D: whole registry
   const call = await post({ jsonrpc: "2.0", id: 4, method: "tools/call",
     params: { name: "get_catalog_stats", arguments: { stat: "cheapest" } } }, s);
   const payload = JSON.parse(call.json.result.content[0].text);
+  out.contract = payload.contract;
   out.smoke_call = { tool: payload.tool, status: payload.status, isError: call.json.result.isError,
-    products: (payload.products || []).map((p) => `${p.model_code} ${p.price_rub} RUB available=${p.available}`) };
+    products: (payload.products || []).map((p) => `${p.model_code} ${p.current_price_rub} RUB available=${p.available}`) };
   const bad = await post({ jsonrpc: "2.0", id: 5, method: "tools/call",
     params: { name: "search_tvs", arguments: { sql: "DROP TABLE products" } } }, s);
   out.invalid_arguments_call = JSON.parse(bad.json.result.content[0].text).status;

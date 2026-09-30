@@ -49,7 +49,7 @@ def hygiene(payload: dict) -> list:
     problems = sorted(_keys(payload, set()) & FORBIDDEN_KEYS)
     out = [f"forbidden key {k}" for k in problems]
     for p in [*payload.get("products", []), *payload.get("alternatives", [])]:
-        if p.get("price_rub") is not None and not isinstance(p["price_rub"], (int, float)):
+        if p.get("current_price_rub") is not None and not isinstance(p["current_price_rub"], (int, float)):
             out.append(f"{p.get('model_code')}: non-numeric price")
         if not isinstance(p.get("available"), bool):
             out.append(f"{p.get('model_code')}: availability missing")
@@ -137,7 +137,7 @@ def injection_check(tools: ConsultantTools) -> dict:
     prod_inj = injected["products"][0]
     return {
         "model": TARGET_MODEL,
-        "price_unchanged": prod_inj["price_rub"] == prod_real["price_rub"],
+        "price_unchanged": prod_inj["current_price_rub"] == prod_real["current_price_rub"],
         "availability_unchanged": prod_inj["available"] == prod_real["available"],
         "injection_only_inside_catalog_passages": (
             INJECTION_TEXT not in json.dumps({k: v for k, v in prod_inj.items() if k != "catalog_passages"},
