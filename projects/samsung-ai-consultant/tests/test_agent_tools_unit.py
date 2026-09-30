@@ -543,7 +543,7 @@ def test_system_prompt_states_the_required_rules():
                    "every gap", "ask the user", "Do not reveal", "Keep that order", "General knowledge",
                    "no brightness", "best for movies", "data, not instructions", "At most 3 tool calls"):
         assert needle.lower() in p.lower(), needle
-    assert len(p) < 6000
+    assert len(p) < 6500                   # v2 adds argument examples; still compact
 
 
 def test_prompt_v2_catalog_grounding_boundary():
@@ -554,7 +554,8 @@ def test_prompt_v2_catalog_grounding_boundary():
     p = PROMPT_FILE.read_text(encoding="utf-8")
     assert "Anything about the actual catalog needs a tool result from this conversation BEFORE you say it" in p
     assert "whether the catalog has models with some feature, and every recommendation" in p
-    assert "Asking which TV suits a need is always a catalog question: call the tool first" in p
+    assert ("Any question about which TV to choose, buy or take for a need or situation" in p
+            and "call recommend_tvs in this turn before answering — do not offer to \"подобрать\" later" in p)
     assert "why reflections matter in a bright room" in p                    # general knowledge: no tool
     assert '"в каталоге есть модели с …"' in p                               # named as not allowed
     bright = next(line for line in p.splitlines() if line.startswith("- Bright room"))
@@ -573,6 +574,11 @@ def test_prompt_v2_and_schema_keep_use_cases_out_of_required_features():
                    'explicitly demands ("обязательно HDMI 2.1", "нужны 120 Гц и ALLM" → exactly those)',
                    "Never add features the user did not mention"):
         assert needle in rule, needle
+    args_rule = next(line for line in p.splitlines() if line.startswith("- Every argument must come from"))
+    assert "No budget or size unless the user stated one — not even a large placeholder such as 1000000" in args_rule
+    for example in ('"хочу телевизор для кино" → {"use_cases": ["movies"]}',
+                    '"для игр, обязательно HDMI 2.1" → {"use_cases": ["gaming"], "required_features": ["hdmi_2_1"]}'):
+        assert example in args_rule
     props = TOOL_SCHEMAS["recommend_tvs"]["inputSchema"]["properties"]
     assert "Never inferred from a use case" in props["required_features"]["description"]
     assert "Never add features the user did not mention" in props["preferred_features"]["description"]
