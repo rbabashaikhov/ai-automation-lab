@@ -25,6 +25,13 @@ turn. The n8n workflow therefore puts the turn into the endpoint URL,
 ``tools/call`` per turn key across sessions, sequential or parallel. ``--require-turn-key`` (set in
 the container) refuses tool calls without one; without it, the session id is the fallback key.
 Nothing secret is logged; request arguments are not logged.
+
+Semantic guard context (Gate 4E.2, optional): ``&conv=<conversation key>&q=<current user message>``
+next to ``turn``. The server keeps, per conversation, only *derived* evidence of the user's messages
+(numbers, feature mentions, implied use cases -- never the text) in memory, bounded, with the
+session TTL, and passes it to the guard in ``ConsultantTools.call``. ``q`` without ``conv`` runs the
+guard in report-only mode (earlier messages unknown). Without ``q`` -- the deployed Phase 4D
+workflow -- the guard is skipped and behaviour is unchanged. ``q`` is redacted from the request log.
 """
 
 from __future__ import annotations
@@ -62,6 +69,10 @@ WILDCARD_HOSTS = frozenset({"", "0.0.0.0", "::", "[::]", "*"})
 CONTAINER_MARKER = "/.dockerenv"
 TURN_PARAM = "turn"
 TURN_KEY = re.compile(r"^[A-Za-z0-9_.:-]{1,64}$")
+CONV_PARAM, QUERY_PARAM = "conv", "q"
+MAX_QUERY_CHARS = 1000
+CONVERSATION_WINDOW = 12            # >= the n8n Agent's memory window (6), so a carried constraint is covered
+_REDACT = re.compile(r"([?&]" + QUERY_PARAM + r"=)[^&\s]*")
 TOOL_ANNOTATIONS = {"readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}
 
 PARSE_ERROR, INVALID_REQUEST, METHOD_NOT_FOUND, INVALID_PARAMS = -32700, -32600, -32601, -32602
@@ -142,6 +153,54 @@ class SessionStore:
             return self._seen.pop(sid, None) is not None
 
 
+class ConversationStore:
+    """Per-conversation guard evidence (``semantic_guard.MessageEvidence``: derived facts, no text),
+    one entry per turn key, in memory only, bounded, idle TTL. Not durable: after a restart the
+    earlier messages of an ongoing conversation are unknown (see Gate 4E.2 record)."""
+
+    def __init__(self, ttl: float = SESSION_TTL_SECONDS, max_conversations: int = MAX_SESSIONS,
+                 window: int = CONVERSATION_WINDOW):
+        self._ttl, self._max, self._window = ttl, max_conversations, window
+        self._convs: OrderedDict = OrderedDict()      # conv -> (last_seen, OrderedDict(turn -> evidence))
+        self._lock = threading.Lock()
+
+    def record(self, conv: str, turn: str, message: str) -> tuple:
+        """Evidence of the conversation's messages so far, the current one last."""
+        from .semantic_guard import MessageEvidence
+        now = time.monotonic()
+        with self._lock:
+            seen, turns = self._convs.pop(conv, (now, OrderedDict()))
+            if now - seen > self._ttl:
+                turns = OrderedDict()
+            self._convs[conv] = (now, turns)
+            while len(self._convs) > self._max:
+                self._convs.popitem(last=False)
+            known = turn in turns
+        evidence = None if known else MessageEvidence.from_text(message)     # parse outside the lock
+        with self._lock:
+            if evidence is not None and turn not in turns:
+                turns[turn] = evidence
+                while len(turns) > self._window:
+                    turns.popitem(last=False)
+            turns.move_to_end(turn)
+            return tuple(turns.values())
+
+
+def guard_context(conversations: Optional[ConversationStore], turn_key: Optional[str],
+                  conv: Optional[str], query: Optional[str]) -> tuple:
+    """``(conversation evidence or None, act)`` for ``ConsultantTools.call``. Never raises."""
+    try:
+        if conversations is None or not query or not turn_key:
+            return None, True
+        if conv:
+            return conversations.record(conv, turn_key, query), True
+        from .semantic_guard import MessageEvidence
+        return (MessageEvidence.from_text(query),), False
+    except Exception:
+        log.exception("semantic guard context unavailable")
+        return None, True
+
+
 def _error(msg_id, code: int, message: str) -> dict:
     return {"jsonrpc": "2.0", "id": msg_id, "error": {"code": code, "message": message}}
 
@@ -156,10 +215,12 @@ def tools_list() -> list:
 
 
 def handle_message(tools: ConsultantTools, message, session_id: Optional[str], turn_key: Optional[str] = None,
-                   require_turn_key: bool = False) -> Optional[dict]:
+                   require_turn_key: bool = False, context=None) -> Optional[dict]:
     """One JSON-RPC message -> response (``None`` for notifications / client responses).
     Transport-independent; ``initialize`` is handled by the transport (it creates the session).
-    ``tools/call`` is budgeted per ``turn_key`` (one n8n execution) or, if allowed, per session."""
+    ``tools/call`` is budgeted per ``turn_key`` (one n8n execution) or, if allowed, per session.
+    ``context``: a callable returning ``(conversation evidence, act)`` for the semantic guard, called
+    only for ``tools/call`` (Gate 4E.2); ``None`` = Phase 4D behaviour."""
     if not isinstance(message, dict) or message.get("jsonrpc") != "2.0":
         return _error(None, INVALID_REQUEST, "Invalid JSON-RPC 2.0 message")
     method = message.get("method")
@@ -193,7 +254,11 @@ def handle_message(tools: ConsultantTools, message, session_id: Optional[str], t
                                                    f"{MCP_PATH}?{TURN_PARAM}=<n8n execution id>")
         else:
             budget_key = f"session:{session_id}"
-        payload = tools.call(name, params.get("arguments"), turn_id=budget_key)
+        conversation, act = context() if context is not None else (None, True)
+        if conversation:
+            payload = tools.call(name, params.get("arguments"), turn_id=budget_key, conversation=conversation, act=act)
+        else:                               # Phase 4D call shape, unchanged
+            payload = tools.call(name, params.get("arguments"), turn_id=budget_key)
         return _result(msg_id, {"content": [{"type": "text", "text": json.dumps(payload, ensure_ascii=False)}],
                                 "isError": payload.get("status") == "error"})
     return _error(msg_id, METHOD_NOT_FOUND, f"Method not found: {str(method)[:40]}")
@@ -208,16 +273,25 @@ def parse_target(target: str) -> tuple:
     return parts.path, (values[0] if values else None), True
 
 
+def parse_guard_params(target: str) -> tuple:
+    """``(conv, query)`` from ``&conv=..&q=..``; anything malformed is ignored (guard skipped), never an error."""
+    params = parse_qs(urlsplit(target).query)
+    conv, query = params.get(CONV_PARAM, []), params.get(QUERY_PARAM, [])
+    conv = conv[0] if len(conv) == 1 and TURN_KEY.match(conv[0]) else None
+    query = query[0] if len(query) == 1 and 0 < len(query[0].strip()) and len(query[0]) <= MAX_QUERY_CHARS else None
+    return conv, query
+
+
 def make_handler(tools: ConsultantTools, token: str, sessions: SessionStore, allowed_origins: frozenset,
-                 require_turn_key: bool = False):
+                 require_turn_key: bool = False, conversations: Optional[ConversationStore] = None):
     token_bytes = token.encode()
 
     class Handler(BaseHTTPRequestHandler):
         server_version = "samsung-consultant-mcp"
         sys_version = ""
 
-        def log_message(self, fmt, *args):     # request line + status only; never headers or bodies
-            log.info(fmt, *args)
+        def log_message(self, fmt, *args):     # request line + status only; never headers, bodies or q=
+            log.info(fmt, *(_REDACT.sub(r"\1[redacted]", a) if isinstance(a, str) else a for a in args))
 
         def _send(self, status: int, body: Optional[dict] = None, headers: Optional[dict] = None):
             data = b"" if body is None else json.dumps(body, ensure_ascii=False).encode("utf-8")
@@ -287,7 +361,9 @@ def make_handler(tools: ConsultantTools, token: str, sessions: SessionStore, all
                 return self._send(400, _error(None, INVALID_REQUEST, "Mcp-Session-Id header required"))
             if not sessions.touch(sid):
                 return self._send(404, _error(None, INVALID_REQUEST, "Unknown or expired session"))
-            response = handle_message(tools, message, sid, turn_key, require_turn_key)
+            conv, query = parse_guard_params(self.path)
+            response = handle_message(tools, message, sid, turn_key, require_turn_key,
+                                      lambda: guard_context(conversations, turn_key, conv, query))
             if response is None:
                 return self._send(202)
             self._send(200, response)
@@ -297,7 +373,8 @@ def make_handler(tools: ConsultantTools, token: str, sessions: SessionStore, all
 
 def build_server(tools: ConsultantTools, host: str, port: int, token: str,
                  allowed_origins: tuple = (), sessions: Optional[SessionStore] = None,
-                 allow_wildcard: bool = False, require_turn_key: bool = False) -> ThreadingHTTPServer:
+                 allow_wildcard: bool = False, require_turn_key: bool = False,
+                 conversations: Optional[ConversationStore] = None) -> ThreadingHTTPServer:
     """``allow_wildcard`` is only for container mode: inside a container's own network namespace
     with no published port, "all interfaces" means the container's loopback and its Docker
     network interface -- never a host interface. On a host, wildcard binds stay refused."""
@@ -305,7 +382,8 @@ def build_server(tools: ConsultantTools, host: str, port: int, token: str,
         raise ValueError("refusing to bind to a wildcard address; use loopback, or --container inside Docker")
     if len(token) < MIN_TOKEN_LENGTH:
         raise ValueError(f"the MCP token must be at least {MIN_TOKEN_LENGTH} characters")
-    handler = make_handler(tools, token, sessions or SessionStore(), frozenset(allowed_origins), require_turn_key)
+    handler = make_handler(tools, token, sessions or SessionStore(), frozenset(allowed_origins), require_turn_key,
+                           conversations if conversations is not None else ConversationStore())
     return ThreadingHTTPServer((host, port), handler)
 
 

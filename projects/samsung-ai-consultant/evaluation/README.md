@@ -102,3 +102,11 @@ Tests: `python -m pytest tests/test_evaluation_*.py`.
   invented-hard-filter count, the trap table, shadow tool calls checked at the real tool boundary,
   and the grounding check over the recorded 4D.2E Agent arguments ->
   `results/semantic_eval_4e1.json`.
+
+## Phase 4E.2 (see the Gate 4E.2 part of [../docs/PHASE_4E_QUERY_SEMANTICS.md](../docs/PHASE_4E_QUERY_SEMANTICS.md))
+
+- `guard_cases.json` — 22 supplementary semantic-guard cases (explicit requirements, carried
+  constraints, thin_wall / compact, model-code size, invented constraints), written before the replay.
+- `guard_replay.py` — offline replay of the frozen 4D.2E Agent calls and the supplementary cases through
+  the guard, with re-validation at the tool boundary and a no-invention check ->
+  `results/guard_replay_4e2.json`. No DB, LLM or n8n.

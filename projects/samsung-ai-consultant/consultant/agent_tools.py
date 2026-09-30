@@ -495,7 +495,10 @@ class ConsultantTools:
     def for_repository(cls, repo, max_calls_per_turn: Optional[int] = None) -> "ConsultantTools":
         return cls(lambda: nullcontext(repo), max_calls_per_turn)
 
-    def call(self, name: str, arguments: Any, turn_id: Optional[str] = None) -> dict:
+    def call(self, name: str, arguments: Any, turn_id: Optional[str] = None,
+             conversation: Optional[tuple] = None, act: bool = True) -> dict:
+        """``conversation``: evidence of the user's messages so far (Phase 4E.2 semantic guard). Without
+        it the guard is skipped and the call is exactly the Phase 4D path."""
         started = time.monotonic()
         if turn_id is not None:
             allowed, n = self.budget.consume(turn_id)
@@ -505,19 +508,32 @@ class ConsultantTools:
                     "Answer from the tool results you already have and say what is still unknown."])
                 self._log(name, payload, started)
                 return payload
+        guard = None
+        if conversation:
+            try:
+                from .semantic_guard import guard_tool_arguments   # lazy: semantic_guard imports this module
+                guard = guard_tool_arguments(name, arguments, conversation, act)
+                arguments = guard.arguments
+            except Exception:                       # additive safety: fall back to the Phase 4D path
+                log.exception("semantic guard failed; original arguments used")
+                guard = None
         try:
             with self._repo_provider() as repo:
                 payload = run_tool(name, arguments, repo)
         except Exception:                           # never leak internals (SQL, DSN, traceback) to the Agent
             log.exception("tool %s failed", str(name)[:40])
             payload = error_payload(str(name)[:40], "error", ["The catalog is temporarily unavailable."])
-        self._log(name, payload, started)
+        if guard is not None and guard.status == "modified" and isinstance(payload.get("request"), dict):
+            from .semantic_guard import not_applied_note
+            payload["request"]["not_applied"] = not_applied_note(guard)
+        self._log(name, payload, started, guard)
         return payload
 
     @staticmethod
-    def _log(name: str, payload: dict, started: float) -> None:
+    def _log(name: str, payload: dict, started: float, guard=None) -> None:
         log.info("tool_call %s", {"tool": str(name)[:40], "status": payload.get("status"),
                                   "products": len(payload.get("products", ())),
                                   "gaps": [g.get("kind") for g in payload.get("gaps", ())],
                                   "ms": round((time.monotonic() - started) * 1000),
-                                  "contract": AGENT_CONTRACT_VERSION})
+                                  "contract": AGENT_CONTRACT_VERSION,
+                                  **(guard.summary() if guard is not None else {})})

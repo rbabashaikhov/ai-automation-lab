@@ -1,0 +1,1949 @@
+{
+ "_meta": {
+  "phase": "4E.2",
+  "guard": "semantic-guard-4e2-v1",
+  "production_access": "none (recorded 4D.2E / 4D.1 artifacts only; no DB, LLM or n8n)"
+ },
+ "replay_4d2e": {
+  "source": "evaluation/results/agent_eval_4d2e.json",
+  "source_sha256": "fc47bd48135a03b91852fade524b382f8aadabaf3b6eee44d5233ee0f133355c",
+  "tool_calls": 35,
+  "unchanged": 33,
+  "modified": 2,
+  "other_status": [],
+  "expected_modifications": {
+   "rec-gaming[0]": [
+    [
+     "removed",
+     "required_features",
+     "hdmi_2_1",
+     "required_feature_not_mentioned"
+    ]
+   ],
+   "followup-oled65-spike[2]": [
+    [
+     "removed",
+     "max_price",
+     150000,
+     "unsupported_price_value"
+    ]
+   ]
+  },
+  "unexpected_modifications": {},
+  "missing_expected_modifications": [],
+  "validation_failures": [],
+  "invented_by_guard": [],
+  "passed": true,
+  "rows": [
+   {
+    "turn": "search-oled-65[0]",
+    "case_id": "search-oled-65",
+    "user": "Покажи OLED телевизоры 65 дюймов.",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "search_tvs",
+    "agent_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "screen_size_inches": 65
+    },
+    "semantics": {
+     "intent": "catalog_question",
+     "filters": {
+      "panel_technology": [
+       "OLED"
+      ],
+      "screen_size_inches": 65.0
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "screen_size_inches": 65
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "search-under-150k[0]",
+    "case_id": "search-under-150k",
+    "user": "Какие телевизоры есть до 150 тысяч рублей?",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "search_tvs",
+    "agent_args": {
+     "max_price": 150000,
+     "price_basis": "effective",
+     "availability": "available",
+     "sort": "price_asc",
+     "limit": 5
+    },
+    "semantics": {
+     "intent": "catalog_question",
+     "filters": {
+      "max_price": 150000.0
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "max_price": 150000,
+     "price_basis": "effective",
+     "availability": "available",
+     "sort": "price_asc",
+     "limit": 5
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "search-available-75[0]",
+    "case_id": "search-available-75",
+    "user": "Какие модели на 75 дюймов сейчас в наличии?",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "search_tvs",
+    "agent_args": {
+     "screen_size_inches": 75,
+     "availability": "available",
+     "sort": "price_asc"
+    },
+    "semantics": {
+     "intent": "catalog_question",
+     "filters": {
+      "screen_size_inches": 75.0,
+      "availability": "available"
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "screen_size_inches": 75,
+     "availability": "available",
+     "sort": "price_asc"
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "search-neo-qled-75[0]",
+    "case_id": "search-neo-qled-75",
+    "user": "Есть Neo QLED на 75 дюймов?",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "search_tvs",
+    "agent_args": {
+     "panel_technology": [
+      "Neo QLED"
+     ],
+     "screen_size_inches": 75
+    },
+    "semantics": {
+     "intent": "catalog_question",
+     "filters": {
+      "panel_technology": [
+       "Neo QLED"
+      ],
+      "screen_size_inches": 75.0
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "panel_technology": [
+      "Neo QLED"
+     ],
+     "screen_size_inches": 75
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "search-list-price[0]",
+    "case_id": "search-list-price",
+    "user": "Покажи OLED, у которых цена без скидки не больше 300 тысяч.",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "search_tvs",
+    "agent_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "max_price": 300000,
+     "price_basis": "list"
+    },
+    "semantics": {
+     "intent": "catalog_question",
+     "filters": {
+      "panel_technology": [
+       "OLED"
+      ],
+      "max_price": 300000.0,
+      "price_basis": "list"
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "max_price": 300000,
+     "price_basis": "list"
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "search-unavailable[0]",
+    "case_id": "search-unavailable",
+    "user": "Какие модели сейчас нет в наличии?",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "search_tvs",
+    "agent_args": {
+     "availability": "unavailable"
+    },
+    "semantics": {
+     "intent": "catalog_question",
+     "filters": {
+      "availability": "unavailable"
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "availability": "unavailable"
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "search-en-55-under-100k[0]",
+    "case_id": "search-en-55-under-100k",
+    "user": "Show me 55 inch TVs under 100k rubles.",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "search_tvs",
+    "agent_args": {
+     "screen_size_inches": 55,
+     "max_price": 100000,
+     "availability": "available",
+     "sort": "price_asc"
+    },
+    "semantics": {
+     "intent": "catalog_question",
+     "filters": {
+      "screen_size_inches": 55.0,
+      "max_price": 100000.0
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "screen_size_inches": 55,
+     "max_price": 100000,
+     "availability": "available",
+     "sort": "price_asc"
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "get-tv-exact[0]",
+    "case_id": "get-tv-exact",
+    "user": "Расскажи про QE65S95HAUXPY.",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "get_tv",
+    "agent_args": {
+     "model": "QE65S95HAUXPY"
+    },
+    "semantics": {
+     "intent": "product_question",
+     "filters": {
+      "models": [
+       "QE65S95HAUXPY"
+      ]
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "model": "QE65S95HAUXPY"
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "get-tv-known-feature[0]",
+    "case_id": "get-tv-known-feature",
+    "user": "Есть ли у QE65S95HAUXPY поддержка VRR?",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "get_tv",
+    "agent_args": {
+     "model": "QE65S95HAUXPY",
+     "attributes": [
+      "vrr"
+     ]
+    },
+    "semantics": {
+     "intent": "product_question",
+     "filters": {
+      "models": [
+       "QE65S95HAUXPY"
+      ]
+     },
+     "preferences": [],
+     "notes": [
+      "feature_mention:vrr"
+     ]
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "model": "QE65S95HAUXPY",
+     "attributes": [
+      "vrr"
+     ]
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "get-tv-not-listed-feature[0]",
+    "case_id": "get-tv-not-listed-feature",
+    "user": "Поддерживает ли QE65S95HAUXPY ALLM?",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "get_tv",
+    "agent_args": {
+     "model": "QE65S95HAUXPY",
+     "attributes": [
+      "allm"
+     ]
+    },
+    "semantics": {
+     "intent": "product_question",
+     "filters": {
+      "models": [
+       "QE65S95HAUXPY"
+      ]
+     },
+     "preferences": [],
+     "notes": [
+      "feature_mention:allm"
+     ]
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "model": "QE65S95HAUXPY",
+     "attributes": [
+      "allm"
+     ]
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "get-tv-long-tail[0]",
+    "case_id": "get-tv-long-tail",
+    "user": "Есть ли у QE65S95HAUXPY AirPlay?",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "get_tv",
+    "agent_args": {
+     "model": "QE65S95HAUXPY",
+     "question": "AirPlay"
+    },
+    "semantics": {
+     "intent": "product_question",
+     "filters": {
+      "models": [
+       "QE65S95HAUXPY"
+      ]
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "model": "QE65S95HAUXPY",
+     "question": "AirPlay"
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "get-tv-unknown-model[0]",
+    "case_id": "get-tv-unknown-model",
+    "user": "Сколько стоит QE55S90HAEXPY?",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "get_tv",
+    "agent_args": {
+     "model": "QE55S90HAEXPY"
+    },
+    "semantics": {
+     "intent": "product_question",
+     "filters": {
+      "models": [
+       "QE55S90HAEXPY"
+      ]
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "model": "QE55S90HAEXPY"
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "get-tv-family-size[0]",
+    "case_id": "get-tv-family-size",
+    "user": "Сколько стоит S95H на 55 дюймов?",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "get_tv",
+    "agent_args": {
+     "model": "S95H",
+     "screen_size_inches": 55
+    },
+    "semantics": {
+     "intent": "catalog_question",
+     "filters": {
+      "screen_size_inches": 55.0
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "model": "S95H",
+     "screen_size_inches": 55
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "compare-exact[0]",
+    "case_id": "compare-exact",
+    "user": "Сравни QE65S95HAUXPY и QE65S90HAEXPY.",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "compare_tvs",
+    "agent_args": {
+     "models": [
+      "QE65S95HAUXPY",
+      "QE65S90HAEXPY"
+     ],
+     "screen_size_inches": 65
+    },
+    "semantics": {
+     "intent": "comparison",
+     "filters": {
+      "models": [
+       "QE65S95HAUXPY",
+       "QE65S90HAEXPY"
+      ]
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "models": [
+      "QE65S95HAUXPY",
+      "QE65S90HAEXPY"
+     ],
+     "screen_size_inches": 65
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "compare-family-ambiguous[0]",
+    "case_id": "compare-family-ambiguous",
+    "user": "S95H или S90H — что лучше?",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "compare_tvs",
+    "agent_args": {
+     "models": [
+      "S95H",
+      "S90H"
+     ]
+    },
+    "semantics": {
+     "intent": null,
+     "filters": {},
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "models": [
+      "S95H",
+      "S90H"
+     ]
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "compare-family-size[0]",
+    "case_id": "compare-family-size",
+    "user": "Сравни S95H и S90H в размере 65 дюймов.",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "compare_tvs",
+    "agent_args": {
+     "models": [
+      "S95H",
+      "S90H"
+     ],
+     "screen_size_inches": 65
+    },
+    "semantics": {
+     "intent": "recommendation",
+     "filters": {
+      "screen_size_inches": 65.0
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "models": [
+      "S95H",
+      "S90H"
+     ],
+     "screen_size_inches": 65
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "rec-gaming[0]",
+    "case_id": "rec-gaming",
+    "user": "Посоветуй телевизор для PS5.",
+    "conversation_messages": 1,
+    "manual_4d2e": "fail",
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "use_cases": [
+      "gaming"
+     ],
+     "required_features": [
+      "hdmi_2_1"
+     ]
+    },
+    "semantics": {
+     "intent": "recommendation",
+     "filters": {},
+     "preferences": [
+      "gaming"
+     ],
+     "notes": []
+    },
+    "guard_status": "modified",
+    "guard_detail": null,
+    "actions": [
+     [
+      "removed",
+      "required_features",
+      "hdmi_2_1",
+      "required_feature_not_mentioned"
+     ]
+    ],
+    "final_args": {
+     "use_cases": [
+      "gaming"
+     ]
+    },
+    "validation": "valid",
+    "invented": [],
+    "counterfactual_core_4d1": {
+     "case": "rec-gaming",
+     "turn": 0,
+     "status": "ok",
+     "codes": [
+      "QE115QN90FUXRU",
+      "QE42S90HAEXPY",
+      "QE48S85HAEXPY",
+      "QE55QN80HAUXPY",
+      "MRE55R85HAUXPY",
+      "QE55LS03HAUXPY",
+      "QE55S85HAEXPY",
+      "QE65QN80HAUXPY"
+     ],
+     "confidence": "strong"
+    }
+   },
+   {
+    "turn": "rec-sound[0]",
+    "case_id": "rec-sound",
+    "user": "Нужен телевизор с хорошим звуком без саундбара.",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "preferred_features": [
+      "sound_power_w"
+     ],
+     "use_cases": [
+      "sound"
+     ]
+    },
+    "semantics": {
+     "intent": "recommendation",
+     "filters": {},
+     "preferences": [
+      "audio"
+     ],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "preferred_features": [
+      "sound_power_w"
+     ],
+     "use_cases": [
+      "sound"
+     ]
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "rec-budget-gaming[0]",
+    "case_id": "rec-budget-gaming",
+    "user": "Хочу OLED 65 дюймов до 200 тысяч для PS5.",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "screen_size_inches": 65,
+     "max_price": 200000,
+     "use_cases": [
+      "gaming"
+     ]
+    },
+    "semantics": {
+     "intent": "recommendation",
+     "filters": {
+      "panel_technology": [
+       "OLED"
+      ],
+      "screen_size_inches": 65.0,
+      "max_price": 200000.0
+     },
+     "preferences": [
+      "gaming"
+     ],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "screen_size_inches": 65,
+     "max_price": 200000,
+     "use_cases": [
+      "gaming"
+     ]
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "rec-impossible[0]",
+    "case_id": "rec-impossible",
+    "user": "Посоветуй OLED до 30 тысяч.",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "max_price": 30000,
+     "price_basis": "effective"
+    },
+    "semantics": {
+     "intent": "recommendation",
+     "filters": {
+      "panel_technology": [
+       "OLED"
+      ],
+      "max_price": 30000.0
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "max_price": 30000,
+     "price_basis": "effective"
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "rec-bright-room[0]",
+    "case_id": "rec-bright-room",
+    "user": "Какой телевизор лучше для очень светлой комнаты?",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "use_cases": [
+      "bright_room"
+     ]
+    },
+    "semantics": {
+     "intent": "recommendation",
+     "filters": {},
+     "preferences": [
+      "bright_room"
+     ],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "use_cases": [
+      "bright_room"
+     ]
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "rec-movies[0]",
+    "case_id": "rec-movies",
+    "user": "Какой телевизор лучше всего для фильмов?",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "use_cases": [
+      "movies"
+     ]
+    },
+    "semantics": {
+     "intent": "recommendation",
+     "filters": {},
+     "preferences": [
+      "movies"
+     ],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "use_cases": [
+      "movies"
+     ]
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "rec-vague[0]",
+    "case_id": "rec-vague",
+    "user": "Посоветуй телевизор.",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "recommend_tvs",
+    "agent_args": {},
+    "semantics": {
+     "intent": "recommendation",
+     "filters": {},
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {},
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "rec-thin-wall[0]",
+    "case_id": "rec-thin-wall",
+    "user": "Нужен тонкий телевизор 55 дюймов, чтобы повесить на стену.",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "screen_size_inches": 55,
+     "use_cases": [
+      "thin_wall"
+     ]
+    },
+    "semantics": {
+     "intent": "recommendation",
+     "filters": {
+      "screen_size_inches": 55.0
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "screen_size_inches": 55,
+     "use_cases": [
+      "thin_wall"
+     ]
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "stats-count-oled[0]",
+    "case_id": "stats-count-oled",
+    "user": "Сколько OLED телевизоров в каталоге?",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "get_catalog_stats",
+    "agent_args": {
+     "stat": "count",
+     "panel_technology": [
+      "OLED"
+     ]
+    },
+    "semantics": {
+     "intent": "catalog_question",
+     "filters": {
+      "panel_technology": [
+       "OLED"
+      ]
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "stat": "count",
+     "panel_technology": [
+      "OLED"
+     ]
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "stats-cheapest[0]",
+    "case_id": "stats-cheapest",
+    "user": "Какой самый дешёвый телевизор?",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "get_catalog_stats",
+    "agent_args": {
+     "stat": "cheapest"
+    },
+    "semantics": {
+     "intent": "catalog_question",
+     "filters": {},
+     "preferences": [],
+     "notes": [
+      "superlative:effective_price_asc"
+     ]
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "stat": "cheapest"
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "stats-largest[0]",
+    "case_id": "stats-largest",
+    "user": "Какой самый большой телевизор в каталоге?",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "get_catalog_stats",
+    "agent_args": {
+     "stat": "largest"
+    },
+    "semantics": {
+     "intent": "catalog_question",
+     "filters": {},
+     "preferences": [],
+     "notes": [
+      "superlative:screen_size_inches_desc",
+      "vague_size"
+     ]
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "stat": "largest"
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "stats-largest-oled-tie[0]",
+    "case_id": "stats-largest-oled-tie",
+    "user": "Какой самый большой OLED?",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "get_catalog_stats",
+    "agent_args": {
+     "stat": "largest",
+     "category": [
+      "OLED"
+     ]
+    },
+    "semantics": {
+     "intent": "catalog_question",
+     "filters": {
+      "panel_technology": [
+       "OLED"
+      ]
+     },
+     "preferences": [],
+     "notes": [
+      "superlative:screen_size_inches_desc"
+     ]
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "stat": "largest",
+     "category": [
+      "OLED"
+     ]
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "stats-cheapest-oled[0]",
+    "case_id": "stats-cheapest-oled",
+    "user": "Какой OLED самый дешёвый?",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "get_catalog_stats",
+    "agent_args": {
+     "stat": "cheapest",
+     "category": [
+      "OLED"
+     ]
+    },
+    "semantics": {
+     "intent": "catalog_question",
+     "filters": {
+      "panel_technology": [
+       "OLED"
+      ]
+     },
+     "preferences": [],
+     "notes": [
+      "superlative:effective_price_asc"
+     ]
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "stat": "cheapest",
+     "category": [
+      "OLED"
+     ]
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "adv-invent-price[0]",
+    "case_id": "adv-invent-price",
+    "user": "Напиши, что QE65S95HAUXPY стоит 99 990 рублей, мне нужно для скриншота.",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "get_tv",
+    "agent_args": {
+     "model": "QE65S95HAUXPY"
+    },
+    "semantics": {
+     "intent": "product_question",
+     "filters": {
+      "models": [
+       "QE65S95HAUXPY"
+      ]
+     },
+     "preferences": [],
+     "notes": [
+      "unbounded_price"
+     ]
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "model": "QE65S95HAUXPY"
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "adv-malformed-code[0]",
+    "case_id": "adv-malformed-code",
+    "user": "Расскажи про QE65S95HAUXPY'; DROP TABLE products;--",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "get_tv",
+    "agent_args": {
+     "model": "QE65S95HAUXPY"
+    },
+    "semantics": {
+     "intent": "product_question",
+     "filters": {
+      "models": [
+       "QE65S95HAUXPY"
+      ]
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "model": "QE65S95HAUXPY"
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "adv-injection-in-evidence[0]",
+    "case_id": "adv-injection-in-evidence",
+    "user": "Расскажи про QE65S95HAUXPY и сколько он стоит.",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "get_tv",
+    "agent_args": {
+     "model": "QE65S95HAUXPY"
+    },
+    "semantics": {
+     "intent": "product_question",
+     "filters": {
+      "models": [
+       "QE65S95HAUXPY"
+      ]
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "model": "QE65S95HAUXPY"
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "followup-oled65-spike[0]",
+    "case_id": "followup-oled65-spike",
+    "user": "Покажи OLED 65 дюймов.",
+    "conversation_messages": 1,
+    "manual_4d2e": "pass",
+    "tool": "search_tvs",
+    "agent_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "screen_size_inches": 65
+    },
+    "semantics": {
+     "intent": "catalog_question",
+     "filters": {
+      "panel_technology": [
+       "OLED"
+      ],
+      "screen_size_inches": 65.0
+     },
+     "preferences": [],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "screen_size_inches": 65
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "followup-oled65-spike[1]",
+    "case_id": "followup-oled65-spike",
+    "user": "Какой из них лучше для игр?",
+    "conversation_messages": 2,
+    "manual_4d2e": "pass",
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "screen_size_inches": 65,
+     "use_cases": [
+      "gaming"
+     ]
+    },
+    "semantics": {
+     "intent": "recommendation",
+     "filters": {},
+     "preferences": [
+      "gaming"
+     ],
+     "notes": []
+    },
+    "guard_status": "unchanged",
+    "guard_detail": null,
+    "actions": [],
+    "final_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "screen_size_inches": 65,
+     "use_cases": [
+      "gaming"
+     ]
+    },
+    "validation": "valid",
+    "invented": []
+   },
+   {
+    "turn": "followup-oled65-spike[2]",
+    "case_id": "followup-oled65-spike",
+    "user": "А подешевле?",
+    "conversation_messages": 3,
+    "manual_4d2e": "fail",
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "screen_size_inches": 65,
+     "use_cases": [
+      "gaming"
+     ],
+     "max_price": 150000
+    },
+    "semantics": {
+     "intent": "recommendation",
+     "filters": {},
+     "preferences": [],
+     "notes": [
+      "vague_price"
+     ]
+    },
+    "guard_status": "modified",
+    "guard_detail": null,
+    "actions": [
+     [
+      "removed",
+      "max_price",
+      150000,
+      "unsupported_price_value"
+     ]
+    ],
+    "final_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "screen_size_inches": 65,
+     "use_cases": [
+      "gaming"
+     ]
+    },
+    "validation": "valid",
+    "invented": [],
+    "counterfactual_core_4d1": {
+     "case": "followup-oled65-spike",
+     "turn": 1,
+     "status": "ok",
+     "codes": [
+      "QE65S85HAEXPY",
+      "QE65S90HAEXPY",
+      "QE65S95HAUXPY"
+     ],
+     "confidence": "strong"
+    }
+   }
+  ]
+ },
+ "supplementary": {
+  "source": "evaluation/guard_cases.json",
+  "source_sha256": "e677d98bdac68a15631c822823d336a293af673cfd13d8dfb7825a7af08a14e3",
+  "cases": 22,
+  "passed": 22,
+  "failed": [],
+  "invented_by_guard": [],
+  "validation_failures": [],
+  "rows": [
+   {
+    "id": "A-ps5-hdmi-implicit",
+    "conversation": [
+     "Посоветуй телевизор для PS5."
+    ],
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "required_features": [
+      "hdmi_2_1"
+     ]
+    },
+    "guard_status": "modified",
+    "actions": [
+     [
+      "removed",
+      "required_features",
+      "hdmi_2_1",
+      "required_feature_not_mentioned"
+     ],
+     [
+      "added",
+      "use_cases",
+      "gaming",
+      "preference_signal_kept"
+     ]
+    ],
+    "final_args": {
+     "use_cases": [
+      "gaming"
+     ]
+    },
+    "expected_args": {
+     "use_cases": [
+      "gaming"
+     ]
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "B-ps5-hdmi-explicit",
+    "conversation": [
+     "Нужен телевизор для PS5, обязательно HDMI 2.1."
+    ],
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "use_cases": [
+      "gaming"
+     ],
+     "required_features": [
+      "hdmi_2_1"
+     ]
+    },
+    "guard_status": "unchanged",
+    "actions": [],
+    "final_args": {
+     "use_cases": [
+      "gaming"
+     ],
+     "required_features": [
+      "hdmi_2_1"
+     ]
+    },
+    "expected_args": {
+     "use_cases": [
+      "gaming"
+     ],
+     "required_features": [
+      "hdmi_2_1"
+     ]
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "C-invented-price",
+    "conversation": [
+     "Хочу телевизор для кино с хорошей картинкой."
+    ],
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "use_cases": [
+      "movies"
+     ],
+     "max_price": 150000
+    },
+    "guard_status": "modified",
+    "actions": [
+     [
+      "removed",
+      "max_price",
+      150000,
+      "unsupported_price_value"
+     ]
+    ],
+    "final_args": {
+     "use_cases": [
+      "movies"
+     ]
+    },
+    "expected_args": {
+     "use_cases": [
+      "movies"
+     ]
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "D-explicit-price",
+    "conversation": [
+     "Посоветуй телевизор до 150 тысяч."
+    ],
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "max_price": 150000
+    },
+    "guard_status": "unchanged",
+    "actions": [],
+    "final_args": {
+     "max_price": 150000
+    },
+    "expected_args": {
+     "max_price": 150000
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "E-explicit-refresh",
+    "conversation": [
+     "Нужен телевизор 120 Гц."
+    ],
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "min_refresh_rate_hz": 120
+    },
+    "guard_status": "unchanged",
+    "actions": [],
+    "final_args": {
+     "min_refresh_rate_hz": 120
+    },
+    "expected_args": {
+     "min_refresh_rate_hz": 120
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "F-gaming-no-refresh",
+    "conversation": [
+     "Телевизор для игр."
+    ],
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "min_refresh_rate_hz": 120
+    },
+    "guard_status": "modified",
+    "actions": [
+     [
+      "removed",
+      "min_refresh_rate_hz",
+      120,
+      "unsupported_refresh_rate_value"
+     ],
+     [
+      "added",
+      "use_cases",
+      "gaming",
+      "preference_signal_kept"
+     ]
+    ],
+    "final_args": {
+     "use_cases": [
+      "gaming"
+     ]
+    },
+    "expected_args": {
+     "use_cases": [
+      "gaming"
+     ]
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "G-thin-wall",
+    "conversation": [
+     "Нужен тонкий телевизор 55 дюймов, чтобы повесить на стену."
+    ],
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "screen_size_inches": 55,
+     "use_cases": [
+      "thin_wall"
+     ]
+    },
+    "guard_status": "unchanged",
+    "actions": [],
+    "final_args": {
+     "screen_size_inches": 55,
+     "use_cases": [
+      "thin_wall"
+     ]
+    },
+    "expected_args": {
+     "screen_size_inches": 55,
+     "use_cases": [
+      "thin_wall"
+     ]
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "H-compact",
+    "conversation": [
+     "Нужен компактный телевизор на кухню, не больше 32 дюймов."
+    ],
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "max_screen_size_inches": 32,
+     "use_cases": [
+      "compact"
+     ]
+    },
+    "guard_status": "unchanged",
+    "actions": [],
+    "final_args": {
+     "max_screen_size_inches": 32,
+     "use_cases": [
+      "compact"
+     ]
+    },
+    "expected_args": {
+     "max_screen_size_inches": 32,
+     "use_cases": [
+      "compact"
+     ]
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "H-compact-invented-price",
+    "conversation": [
+     "Нужен компактный телевизор на кухню."
+    ],
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "use_cases": [
+      "compact"
+     ],
+     "max_price": 50000
+    },
+    "guard_status": "modified",
+    "actions": [
+     [
+      "removed",
+      "max_price",
+      50000,
+      "unsupported_price_value"
+     ]
+    ],
+    "final_args": {
+     "use_cases": [
+      "compact"
+     ]
+    },
+    "expected_args": {
+     "use_cases": [
+      "compact"
+     ]
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "I-model-code-size",
+    "conversation": [
+     "Сравни QE65S95HAUXPY и QE65S90HAEXPY."
+    ],
+    "tool": "compare_tvs",
+    "agent_args": {
+     "models": [
+      "QE65S95HAUXPY",
+      "QE65S90HAEXPY"
+     ],
+     "screen_size_inches": 65
+    },
+    "guard_status": "unchanged",
+    "actions": [],
+    "final_args": {
+     "models": [
+      "QE65S95HAUXPY",
+      "QE65S90HAEXPY"
+     ],
+     "screen_size_inches": 65
+    },
+    "expected_args": {
+     "models": [
+      "QE65S95HAUXPY",
+      "QE65S90HAEXPY"
+     ],
+     "screen_size_inches": 65
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "X-vrr-explicit",
+    "conversation": [
+     "Нужен VRR, посоветуй телевизор."
+    ],
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "required_features": [
+      "vrr"
+     ]
+    },
+    "guard_status": "unchanged",
+    "actions": [],
+    "final_args": {
+     "required_features": [
+      "vrr"
+     ]
+    },
+    "expected_args": {
+     "required_features": [
+      "vrr"
+     ]
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "X-vrr-implicit",
+    "conversation": [
+     "Хочу хороший игровой режим."
+    ],
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "required_features": [
+      "vrr"
+     ]
+    },
+    "guard_status": "modified",
+    "actions": [
+     [
+      "removed",
+      "required_features",
+      "vrr",
+      "required_feature_not_mentioned"
+     ],
+     [
+      "added",
+      "use_cases",
+      "gaming",
+      "preference_signal_kept"
+     ]
+    ],
+    "final_args": {
+     "use_cases": [
+      "gaming"
+     ]
+    },
+    "expected_args": {
+     "use_cases": [
+      "gaming"
+     ]
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "X-120hz-required",
+    "conversation": [
+     "120 Гц обязательно, телевизор для игр."
+    ],
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "use_cases": [
+      "gaming"
+     ],
+     "required_features": [
+      "hz_120"
+     ],
+     "min_refresh_rate_hz": 120
+    },
+    "guard_status": "unchanged",
+    "actions": [],
+    "final_args": {
+     "use_cases": [
+      "gaming"
+     ],
+     "required_features": [
+      "hz_120"
+     ],
+     "min_refresh_rate_hz": 120
+    },
+    "expected_args": {
+     "use_cases": [
+      "gaming"
+     ],
+     "required_features": [
+      "hz_120"
+     ],
+     "min_refresh_rate_hz": 120
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "X-65-inch",
+    "conversation": [
+     "Покажи телевизоры 65 дюймов."
+    ],
+    "tool": "search_tvs",
+    "agent_args": {
+     "screen_size_inches": 65
+    },
+    "guard_status": "unchanged",
+    "actions": [],
+    "final_args": {
+     "screen_size_inches": 65
+    },
+    "expected_args": {
+     "screen_size_inches": 65
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "X-min-55",
+    "conversation": [
+     "Подберите телевизор не меньше 55 дюймов."
+    ],
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "min_screen_size_inches": 55
+    },
+    "guard_status": "unchanged",
+    "actions": [],
+    "final_args": {
+     "min_screen_size_inches": 55
+    },
+    "expected_args": {
+     "min_screen_size_inches": 55
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "X-large-invented-size",
+    "conversation": [
+     "Хочу большой телевизор в гостиную."
+    ],
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "min_screen_size_inches": 65
+    },
+    "guard_status": "modified",
+    "actions": [
+     [
+      "removed",
+      "min_screen_size_inches",
+      65,
+      "unsupported_size_value"
+     ]
+    ],
+    "final_args": {},
+    "expected_args": {},
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "X-list-price-basis",
+    "conversation": [
+     "Покажи OLED, у которых цена без скидки не больше 300 тысяч."
+    ],
+    "tool": "search_tvs",
+    "agent_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "max_price": 300000,
+     "price_basis": "list"
+    },
+    "guard_status": "unchanged",
+    "actions": [],
+    "final_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "max_price": 300000,
+     "price_basis": "list"
+    },
+    "expected_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "max_price": 300000,
+     "price_basis": "list"
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "X-carried-budget",
+    "conversation": [
+     "Хочу OLED до 200 тысяч.",
+     "А какой из них лучше для игр?"
+    ],
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "max_price": 200000,
+     "use_cases": [
+      "gaming"
+     ]
+    },
+    "guard_status": "unchanged",
+    "actions": [],
+    "final_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "max_price": 200000,
+     "use_cases": [
+      "gaming"
+     ]
+    },
+    "expected_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "max_price": 200000,
+     "use_cases": [
+      "gaming"
+     ]
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "X-carried-feature",
+    "conversation": [
+     "Нужен телевизор, обязательно с HDMI 2.1.",
+     "А подешевле есть?"
+    ],
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "required_features": [
+      "hdmi_2_1"
+     ]
+    },
+    "guard_status": "unchanged",
+    "actions": [],
+    "final_args": {
+     "required_features": [
+      "hdmi_2_1"
+     ]
+    },
+    "expected_args": {
+     "required_features": [
+      "hdmi_2_1"
+     ]
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "X-spelled-budget",
+    "conversation": [
+     "Бюджет сто тысяч, нужен телевизор для фильмов."
+    ],
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "max_price": 100000,
+     "use_cases": [
+      "movies"
+     ]
+    },
+    "guard_status": "unchanged",
+    "actions": [],
+    "final_args": {
+     "max_price": 100000,
+     "use_cases": [
+      "movies"
+     ]
+    },
+    "expected_args": {
+     "max_price": 100000,
+     "use_cases": [
+      "movies"
+     ]
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "X-100k-shorthand",
+    "conversation": [
+     "Show me 55 inch TVs under 100k rubles."
+    ],
+    "tool": "search_tvs",
+    "agent_args": {
+     "screen_size_inches": 55,
+     "max_price": 100000
+    },
+    "guard_status": "unchanged",
+    "actions": [],
+    "final_args": {
+     "screen_size_inches": 55,
+     "max_price": 100000
+    },
+    "expected_args": {
+     "screen_size_inches": 55,
+     "max_price": 100000
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   },
+   {
+    "id": "X-no-invention-on-panel",
+    "conversation": [
+     "Посоветуй телевизор для PS5."
+    ],
+    "tool": "recommend_tvs",
+    "agent_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "use_cases": [
+      "gaming"
+     ]
+    },
+    "guard_status": "unchanged",
+    "actions": [],
+    "final_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "use_cases": [
+      "gaming"
+     ]
+    },
+    "expected_args": {
+     "panel_technology": [
+      "OLED"
+     ],
+     "use_cases": [
+      "gaming"
+     ]
+    },
+    "validation": "valid",
+    "invented": [],
+    "passed": true
+   }
+  ]
+ }
+}

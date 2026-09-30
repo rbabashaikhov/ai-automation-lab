@@ -3,6 +3,8 @@
 Status: **Gate 4E.1 evaluated (isolated spike, not integrated).** Recommendation: `4E.1 ACCEPT — READY
 FOR MINIMAL RUNTIME INTEGRATION`, scoped as described in §9.
 
+Gate 4E.2 (semantic guard) is recorded at the end of this document: `4E.2 HOLD — REVIEW REQUIRED`.
+
 Baseline: `main == origin/main == e333dadee058b1ce2ff33c8bcc6d2434298f5579` (Phase 4D accepted).
 Branch: `feature/samsung-ai-consultant-intent-semantics`.
 
@@ -312,3 +314,223 @@ The 117 skipped tests are the DB-backed suites. They need the disposable contain
   `.env` holds only `INDEXING_DATABASE_URL`; its value was not read.
 - Runtime modules do not import the spike (tested). `agent_cases.json` and all earlier results files
   are unchanged.
+
+---
+
+# Gate 4E.2 — Semantic guard integration
+
+Status: **the guard is implemented and integrated in the Python runtime, and the offline replay
+passes. It is not activated in production and has no live 42-case confirmation.** Recommendation:
+`4E.2 HOLD — REVIEW REQUIRED` (§12.9).
+
+Baseline: `feature/samsung-ai-consultant-intent-semantics` at
+`f9d18eb3c3a0553f17e4da3131cd89d24283858e` (Gate 4E.1), with `main == origin/main == e333dad`.
+
+## 12.1 What the guard does (`consultant/semantic_guard.py`)
+
+The Agent still selects the tool and fills its arguments. The guard only checks the Agent's **hard
+constraints**, and it removes one only on positive evidence that the user never stated it.
+
+| Argument | Removed when | Kept (examples) |
+|---|---|---|
+| `min_price`, `max_price` | The value appears as **no number** in any user message of the conversation. A number counts ×1, ×1 000 and ×1 000 000, so "150", "150к", "150 000" and "0,15 млн" all support 150000. | "до 150 тысяч", "under 100k", "от 100 до 150 тысяч" (the 4E.1 parser misses the minimum; the guard does not) |
+| `price_basis` | Only together with the price bound it qualified | "цена без скидки не больше 300 тысяч" keeps `list` |
+| `screen_size_inches`, `min_`/`max_screen_size_inches` | The value appears as no number. Digits inside a named model code count. | "65 дюймов", "не меньше 55", `QE65…` → 65, "S95H на 55 дюймов" |
+| `min_refresh_rate_hz` | The value appears as no number | "120 Гц", "не меньше 120 Гц" |
+| `required_features` (each) | The feature is **mentioned in no user message**. There is one closed pattern per Feature Registry id (14; a test asserts full coverage). | "обязательно HDMI 2.1", "нужен VRR", "120 Гц обязательно" (hz_120), "Dolby Atmos", "VESA" |
+| `use_cases` | **Never removed.** If the guard removed something from a `recommend_tvs` call, use cases implied by the user's own words (gaming / movies / sound / bright_room) are merged in, so the soft ranking signal survives | `thin_wall`, `compact` and every other Agent use case pass through |
+| panel, category, resolution, availability, models, sort, limit, stat, attributes, question, preferred features | **Never changed** (pass-through) | — |
+
+- Spelled-out numbers ("бюджет сто тысяч") disable the numeric rules for that conversation, because
+  the guard cannot read them.
+- **Absence from `QuerySemantics.filters` is never used as evidence.** `QuerySemantics` supplies only
+  the implied use cases for the merge.
+- The guard only removes arguments or merges use cases, so it cannot add a price, size, refresh
+  rate, feature, technology or resolution. A property check runs over every replayed call.
+- **Intent is not used.** Tool routing stays with the Agent (4E.1 F5).
+- `consultant.extract`'s reversed negated bounds (4E.1 F3) are not on the guard's decision path:
+  the guard does not use bounds. It was left unchanged.
+
+**Why the conversation, not one query.** In 4D.2E, follow-up turn 2 correctly carried OLED / 65"
+from turn 1. A single-message guard would strip them. Known failure 2 ("А подешевле?" →
+`max_price 150000`) is only distinguishable from a carried budget with the earlier messages.
+
+**Fail-safe:** the guard never raises. In each of these cases the original arguments continue
+unchanged into the 4D path:
+- no conversation → `skipped`;
+- original arguments the tool boundary rejects anyway → `skipped`;
+- guarded arguments that fail `validate_arguments` / `constraints_from_args` → `fallback`;
+- an internal error → `fallback`.
+
+`ConsultantTools.call` also wraps the guard call itself.
+
+## 12.2 Runtime flow and integration point
+
+```text
+user message ──(n8n)── Agent ── tools/call {name, arguments}
+                                   │  /mcp?turn=<execution>&conv=<sessionId>&q=<message>   (q/conv: optional)
+                                   ▼
+mcp_server.do_POST ── parse_guard_params ── ConversationStore.record (derived evidence only, per turn)
+                                   ▼
+ConsultantTools.call:  per-turn cap → semantic_guard.guard_tool_arguments → run_tool
+                                                                              │ validate_arguments (unchanged)
+                                                                              ▼
+                                  QueryPlanDelta → resolve_plan → route → execute → build_evidence (unchanged)
+```
+
+- **Integration point:** `ConsultantTools.call`, after the per-turn cap and before `run_tool`. The
+  existing validation is not bypassed; guarded arguments are validated twice.
+- **Agent-facing result:** when something was removed, the result gets
+  `request.not_applied = {constraints: [{argument, value}], note}`. The note says the constraints were
+  not stated by the user and not applied, and that results must not be presented as satisfying them.
+  It is an additive field; the contract stays `agent-result-v2`. End users see nothing unless the
+  Agent says it.
+- **Log:** one `tool_call` line gains `guard`, `detail` and `[action, argument, value, reason]`.
+  User text is never logged (tested). `q=` is redacted from the request log line (tested).
+- **`ConversationStore`:**
+  - keeps derived evidence only: numbers, feature ids and implied use cases, never text;
+  - one entry per turn key, a window of 12 (≥ the Agent's memory window of 6);
+  - the session TTL and a bound of 1000 conversations.
+- **Transport modes:**
+  - without `q` → no guard, and the exact 4D call shape (tested). This is **the deployed state**: the
+    deployed workflow does not send `q`;
+  - `q` without `conv` → report-only (`would_remove`), because earlier messages are unknown;
+  - `q` with `conv` → the guard acts.
+
+**Activation is not done.** It needs the workflow's MCP endpoint expression to become
+`…/mcp?turn={{ $execution.id }}&conv={{ encodeURIComponent($json.sessionId) }}&q={{ encodeURIComponent($json.chatInput) }}`
+in `consultant/n8n_workflow.py`. It also needs the regenerated workflow, a new Consultant image, and
+the n8n update. All of these are n8n / Docker changes outside this gate. The generator was **not**
+changed, so the committed workflow still equals the deployed one. Whether `$json.chatInput` resolves
+inside the MCP Client Tool's endpoint expression is **unverified**. `$execution.id` was verified in
+4D.2B-R.
+
+## 12.3 Offline replay (`python -m evaluation.guard_replay` → `results/guard_replay_4e2.json`)
+
+This is the frozen 4D.2E record (sha256 `fc47bd48…`). Each recorded Agent call was guarded with that
+case's user messages so far. The expectation was registered in the replay module before the first
+run: exactly the two known inventions change.
+
+| Metric | Result |
+|---|---|
+| Recorded tool calls | 35 |
+| Unchanged | 33 |
+| Modified | 2, both expected. Judged correct: 2. False modifications: **0** |
+| Validation failures of final arguments | 0 |
+| Constraints added or altered by the guard | 0 |
+
+| Turn | Agent (4D.2E) | Guard | Final args | Core outcome of identical args |
+|---|---|---|---|---|
+| `rec-gaming` "Посоветуй телевизор для PS5." | `{use_cases [gaming], required_features [hdmi_2_1]}` → `no_match` | removed `required_features=hdmi_2_1` (`required_feature_not_mentioned`) | `{use_cases [gaming]}` = the 4D gold | 4D.1 offline, same args: `ok`, `strong`, 8 ranked TVs |
+| `followup-oled65-spike[2]` "А подешевле?" | `{OLED, 65, gaming, max_price 150000}` → `no_match` | removed `max_price=150000` (`unsupported_price_value`) | `{OLED, 65, gaming}` (carried OLED / 65 / gaming kept) | 4D.1 offline, same args (turn 2's call): `ok`, `strong`, the three 65" OLEDs |
+
+Preserved (unchanged in the replay):
+- `compare-exact`'s `screen_size_inches 65` from the named `QE65…` codes (the benign 4E.1 flag);
+- `rec-thin-wall` `{55, use_cases [thin_wall]}`;
+- follow-up turn 2's carried OLED / 65;
+- every explicit price, size, list-price basis and availability.
+
+**Supplementary cases** (`evaluation/guard_cases.json`, 22 cases written before the run, sha256
+`e677d98b…`): **22/22**. They cover:
+- brief tests A–I;
+- "нужен VRR", "120 Гц обязательно" (`hz_120` + 120 Hz), "хороший игровой режим" → VRR removed;
+- `compact` with and without an invented price;
+- an invented size from "большой";
+- a carried budget and a carried HDMI 2.1 (kept);
+- a spelled budget (kept) and "100k" (kept);
+- an invented OLED from "для PS5" (**kept**, documenting that the panel is out of the guard's scope).
+
+## 12.4 Tests
+
+| Suite | 4E.1 | 4E.2 |
+|---|---|---|
+| Unit (`cd projects/samsung-ai-consultant && python3 -m pytest -q`) | 612 passed, 117 skipped | **694 passed, 0 failed, 117 skipped** (82 new in `tests/test_semantic_guard.py`) |
+| Disposable DB (`DOCKER_HOST=unix:///var/run/docker.sock bash tests/run_db_tests.sh`, local throwaway container) | not run | **123 passed** (4D.2E: 123) |
+| 4E.1 semantic gold (`python -m evaluation.semantic_eval`) | 30/30, 0 invented | **30/30, 0 invented**; the results file regenerates byte-identical |
+| Workflow artifact (`python -m consultant.n8n_workflow --check`) | clean | clean |
+
+No existing test was changed. The 4D call shape without guard context is asserted by the unchanged
+4D MCP tests plus a new one.
+
+## 12.5 Final 42-case confirmation: **not run**
+
+- **What a live run needs:**
+  1. the n8n endpoint change (§12.2), without which the deployed runtime never sends `q`, so the
+     guard stays inactive and a live run would only re-measure 4D;
+  2. a new Consultant image recreated through the compose project;
+  3. a temporary n8n driver workflow.
+
+  The brief excludes n8n, Docker and compose changes, so none of this was done.
+- **What is established offline:**
+  - 33/35 recorded calls are unchanged. Their Core inputs are identical, so their tool results are
+    identical: the Core is deterministic on a fixed catalog.
+  - The two changed calls now equal calls whose Core outcome is recorded (`ok` / `strong`).
+- **Not established:** the Agent's answers to the new results, and whether the Agent handles
+  `request.not_applied` correctly. There is **no measured improvement or regression at the answer
+  level**.
+
+## 12.6 Production safety
+
+- No database connection except the local disposable test container, which was removed on exit.
+- Catalog, schema, n8n workflows and credentials untouched; no embeddings.
+- No image build, deploy, restart or compose change. The deployed Consultant and workflow are
+  unchanged.
+- No credential read or printed. No other project touched.
+
+## 12.7 Findings
+
+- **G1 — Python cannot see the user's message.** Tool calls carry only `{name, arguments}` and the
+  turn key. A live guard therefore depends on the workflow forwarding the message (§12.2). This is a
+  transport gap, not a guard limitation.
+- **G2 — The guard needs the conversation, not the query.** Carried constraints are legitimate
+  (4D.2E follow-up turn 2), and known failure 2 is a relative follow-up. The server-side evidence is
+  in memory, so after a Consultant restart the earlier messages of an ongoing conversation are
+  unknown. A constraint stated before the restart and carried by the Agent would then be removed.
+  The Agent is told through `not_applied` and can ask.
+- **G3 — "Appears anywhere" is deliberately permissive.** A number from another context supports an
+  Agent value. For example, after "Покажи OLED 65 дюймов" an invented `max_price 65000` would be kept
+  (false keep, safe direction). Feature patterns are the opposite risk: a paraphrase outside the 14
+  closed patterns would remove a stated requirement. The Agent would see `not_applied`. Neither was
+  observed in the replay, but real-traffic coverage is unmeasured.
+- **G4 — Some inventions stay out of scope.** Invented panel, resolution or availability pass
+  through (supplementary case `X-no-invention-on-panel`). None occurred in 4D.2E.
+- **G5 — One 4E.1 test checks less than its name says.** The 4E.1 isolation test
+  (`test_runtime_does_not_use_the_spike`) is still true textually: `agent_tools` / `mcp_server` reach
+  the parser only through `semantic_guard`, by a lazy import. By design it no longer proves they are
+  isolated from it. The new test asserts that the pipeline modules (planning, router, retrieval,
+  ranking, evidence, features, repository, payload) do not use the guard or the parser.
+
+## 12.8 Stop conditions
+
+None were triggered:
+- the feature patterns are one per registry id, 14 in total, with no ontology;
+- explicit and implied requirements are separated by an explicit mention in the text;
+- integration is additive;
+- the replay has no regression, and `thin_wall` / `compact` survive;
+- no extra LLM call.
+
+The guard is ~200 lines of pure functions.
+
+## 12.9 Gate recommendation
+
+**`4E.2 HOLD — REVIEW REQUIRED`**
+
+- **Met offline:** every acceptance criterion that can be met without production changes:
+  - both known inventions fixed;
+  - 0 false modifications and 0 inventions by the guard;
+  - explicit price / size / Hz / features, `thin_wall` / `compact` and model-code size preserved;
+  - fail-safe tested;
+  - existing suites green.
+- **Not met:**
+  - the mandatory live 42-case confirmation;
+  - runtime activation.
+
+  Both require the n8n endpoint change, an image deploy and a temporary driver, which this gate
+  excludes.
+- **For review:**
+  - G2, restart behaviour;
+  - G3, pattern coverage;
+  - whether `$json.chatInput` resolves in the MCP endpoint expression.
+
+  An approved activation gate would verify the last item first, then run the frozen 42-case
+  confirmation.
