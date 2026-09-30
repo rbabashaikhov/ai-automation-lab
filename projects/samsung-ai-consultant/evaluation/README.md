@@ -79,6 +79,10 @@ Tests: `python -m pytest tests/test_evaluation_*.py`.
   output adapter (verified on real executions in 4D.2B).
 - `results/agent_smoke_4d2b.json` — Gate 4D.2B live smoke and the 4D.2B-R reruns plus policy
   probes (compact transcripts, scores, held-out probe registration, runtime cap test).
+- `agent_live.py` — Gate 4D.2C live-run tooling: temporary driver per case (all turns in one session),
+  sub-execution extraction via the n8n public API, and measurement layers over the unchanged scorer.
+- `results/agent_eval_4d2c.json` — Gate 4D.2C full evaluation: 42 cases / 44 turns, automated and
+  manual verdicts per turn, metrics, latency and token estimates.
 - `run_agent_offline.py` — Gate 4D.1: executes the expected tool calls through the real facade in
   the read-only session -> `results/agent_offline_4d1.json`. No LLM.
 - `agent_injection.py` — evaluation-only test double adding instruction-like text to tool evidence.

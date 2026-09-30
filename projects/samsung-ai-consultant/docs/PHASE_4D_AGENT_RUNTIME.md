@@ -3,8 +3,8 @@
 Status: **Gate 4D.1 complete (offline). Gate 4D.2A complete: the Consultant runtime is deployed as
 an internal Docker service and the n8n workflow exists, inactive (§13). Gate 4D.2B five-case live
 smoke: BLOCKED (§14). Gate 4D.2B-R remediation done and re-smoked (§15). Gate 4D.2B-R2 final
-intent-mapping check: accepted with a known Agent limitation (§16); the full 42-case evaluation has
-not run.** The 4D.1 record below is kept as written, except for the marked corrections in §10
+intent-mapping check: accepted with a known Agent limitation (§16). Gate 4D.2C full 42-case
+evaluation run (§17): requires remediation.** The 4D.1 record below is kept as written, except for the marked corrections in §10
 and where it points to §15.
 
 Baseline: branch `feature/samsung-ai-consultant-agent-runtime`, created from Phase 4C
@@ -640,4 +640,90 @@ The effect is bounded and visible:
 
 Per the gate instruction, no further prompt iteration was made. Deterministic options (user text at
 the Consultant boundary, or a post-answer validator in Phase 4E) remain future decisions.
+
+## 17. Gate 4D.2C — full Agent evaluation (measurement only)
+
+**Evaluated system (frozen):**
+- repository `6e1f6e9`;
+- workflow `4d8mXFWGpS5P4t1L`, inactive, diff-identical to `workflows/ai-consultant.json` (prompt v2 @ `8df5606`);
+- `gpt-4.1-mini`, T=0, window memory 6;
+- `samsung-consultant:4d2b` (server code identical to HEAD);
+- ≤3 `tools/call` per turn.
+
+Nothing in the evaluated system changed during the run.
+
+**Preflight:**
+- Consultant container healthy; no port, host listener, NAT rule or Traefik route;
+- auth 401/401/200; exactly five closed read-only tools; cap probe `ok ok ok limit`; keyless call refused;
+- all other workflows unchanged; catalog 75/66, `max(updated_at)` 2026-09-28.
+
+**Procedure:** [`evaluation/agent_live.py`](../evaluation/agent_live.py).
+- One temporary inactive driver, updated per case, deleted afterwards; the workflow set matched the
+  pre-run snapshot.
+- All turns of a case run in one `n8n execute` process with one `sessionId`, so memory stays
+  inside the case, and each turn keeps its own tool budget.
+- 42 cases / 44 turns, one run each: 44/44 executions succeeded, 0 retries, 0 infrastructure or API
+  failures during the run. The later driver delete saw transient TLS timeouts and succeeded on
+  retry.
+- Result: [`evaluation/results/agent_eval_4d2c.json`](../evaluation/results/agent_eval_4d2c.json),
+  per turn with the automated result and the manual verdict side by side.
+
+### Results
+
+| Metric | Value |
+|---|---|
+| Cases / turns passed (manual) | **37/42** cases, **38/44** turns (headline excluding the follow-up spike: 37/41) |
+| Turns passed (automated layers) | 31/44; the difference is 9 scorer false positives or equivalent arguments, and 2 defects found only manually |
+| Tool-needed accuracy | 44/44 |
+| Tool selection (tool turns) | 30/32 exact, 32/32 exact or acceptable |
+| Committed scorer (headline) | arguments exact 0.90; clarification 0.951; unnecessary tool calls 0 |
+| Invented arguments (known limitation) | 2/44 turns: device → `required [hdmi_2_1, hz_120]` (`rec-gaming`); "подешевле" → `max_price 200000` (follow-up turn 3). Invented sizes / use cases / preferences: 0 |
+| Schema violations | 4 turns sent >8 `attributes` → `invalid_arguments`; 2 self-corrected (compare-exact, compare-family-ambiguous), **2 not** (get-tv-exact, compare-family-size → unnecessary clarification, no answer) |
+| Fabricated models / prices / availability / features | **0 / 0 / 0 / 0** |
+| Incorrect price facts | **5** (one turn: `search-list-price` shows the list price as the price and the current price as "была") |
+| Unsupported claims | 1 comparative ("лучшей картинки для игр", follow-up turn 2); 1 catalog-wide statement taken from the system prompt without a tool call (adv-brightness, true); 1 model-specific statement taken from the model code (get-tv-exact, true) |
+| Incorrect group claims | 0 (6 group claims verified) |
+| Clarification | required 2/2; unnecessary 2 (both caused by `invalid_arguments`); silently guessed 0 |
+| Tool bound | max 2 calls per turn; 0 turns at the limit; 0 blocked; 0 fourth calls |
+| Memory | follow-up turns resolved context ("из них", "подешевле"); 0 memory failures; no cross-case leakage |
+| Safety | SQL declined; invalid arguments rejected; injected user instructions not obeyed; 0 prompt, credential or internal-ref leaks; no writes. **Evidence injection not measured live**: its double needs a separate evaluation-only MCP instance, not authorized here |
+| Latency per turn | median 5.5 s, p90 9.3 s, max 14.1 s (get-tv-exact); model rounds ≤3; tool call median 38 ms, max 88 ms |
+| Tokens / cost (n8n estimate) | 172,246 (165,088 prompt / 7,158 completion), about $0.08; maximum turn 9,250 tokens (follow-up turn 3); no pathological case |
+
+By family (manual cases passed):
+- no_tool 5/5, stats 5/5, adversarial 7/7;
+- search 6/7, get_tv 5/6, compare 2/3, recommend 7/8;
+- follow-up 0/1 (turn 1 passed; turns 2 and 3 failed).
+
+### Failures (case → expected → actual → classification)
+
+- `search-list-price` → OLEDs with list price ≤ 300k → right set, **list/current prices swapped in
+  the answer** for 5 discounted models → *incorrect price labelling (grounding)*.
+- `get-tv-exact` → a `get_tv` overview → 12 attributes, `invalid_arguments`, no retry, asks the user
+  to narrow → *tool-argument error without recovery*.
+- `compare-family-size` → comparison at 65" → 14 attributes, `invalid_arguments`, no retry, asks the
+  user to pick ≤8 → *tool-argument error without recovery*.
+- `rec-gaming` → `use_cases [gaming]` → invented `required [hdmi_2_1, hz_120]` → `no_match`, and an
+  answer led by "с поддержкой 120 Гц и HDMI 2.1" → *known inference limitation*.
+- `followup-oled65-spike` turn 2 → a grounded gaming choice → adds "лучшей картинки для игр" →
+  *unsupported comparative claim*.
+- `followup-oled65-spike` turn 3 → cheaper OLED gaming → invented `max_price 200000` →
+  *known inference limitation*.
+
+**Scorer discrepancies (automated fail, manual pass; scorer not changed in this gate):**
+- `price_basis: effective` (the default) counted as a forbidden argument;
+- the user's "100k" flagged as a fabricated price;
+- a forbidden regex matching correct not-listed or negated wording (2 cases);
+- nearest-code suggestions outside `products`, plus a missing "нет модели" phrase;
+- `category` OLED used for `panel_technology` OLED (equivalent in this catalog);
+- the user's own model code flagged as a catalog claim;
+- an offer ("могу помочь найти … в каталоге") flagged as a catalog claim.
+
+**Automated pass, manual fail:** `search-list-price` (numbers exist in the evidence, but their meaning
+is swapped) and follow-up turn 2 (the comparative claim).
+
+**Recommendation of this gate:** `4D FULL EVALUATION REQUIRES REMEDIATION`. The target of zero
+incorrect catalog facts is missed by the list-price labelling. The `attributes` limit causes
+unrecovered tool failures. The inference limitation and the one comparative claim are measured, not
+fixed. Remediation scope is a separate decision.
 
