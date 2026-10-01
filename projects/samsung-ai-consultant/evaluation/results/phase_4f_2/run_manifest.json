@@ -1,0 +1,142 @@
+{
+ "phase": "4F.2",
+ "run_id": "20261001T1050Z",
+ "confirmation_run_id": "20261001T1050Z-confirm",
+ "git": {
+  "Branch": "feature/samsung-ai-consultant-final-acceptance",
+  "Starting HEAD": "791eb67771bb960a2b9485fad0800e37c6d68f01 (Phase 4F.1, clean tree)",
+  "main / origin/main": "1924e754ee7b434bffe876f4ad28626f6c66645c, untouched; nothing pushed or merged",
+  "Final HEAD": "the commit that adds this report",
+  "Files changed": "evaluation/acceptance_run.py, evaluation/acceptance_report.py (evaluation-only), evaluation/results/phase_4f_2/ (results), tests/test_acceptance_results.py, and status lines in three documents. Nothing under consultant/, workflows/, deploy/, db/, ingestion/ or indexing/."
+ },
+ "preflight": {
+  "checked_at_utc": "2026-10-01T10:47Z",
+  "frozen_state_match": true,
+  "evidence": {
+   "Source": "repository HEAD 791eb67 (Phase 4F.1); runtime source = image revision label 8ea84f0ff54dca101f9bbde9d10595d312b45faa (Gate 4E.2A)",
+   "Consultant image": "samsung-consultant:4e2a, id sha256:a2e8649625b8b65490a6dfd77e8fe94b7b576da8a82e8be44735aaa1d205b856; started 2026-09-30T19:46:08Z, 0 restarts, healthy — the same container as in the bake-off record",
+   "Runtime files in the container": "14 files (13 consultant modules and prompt v3) sha256-identical to the repository; guard 3df933547f8e579d…, agent_tools 31687370cc272556…",
+   "Model": "gpt-4.1-mini, temperature 0, max tokens unset (workflow node); confirmed per turn from what n8n sent",
+   "Prompt": "consultant/prompts/agent_system_v3.md, sha256 c01403537c7fdf8d… in the container and the repository; embedded in the workflow",
+   "Workflow": "4d8mXFWGpS5P4t1L «Samsung — AI Consultant», inactive, updatedAt 2026-09-30T19:42:05.797Z (the 4E.2A deploy); `n8n-tool workflows diff` against workflows/ai-consultant.json: no meaningful differences, 7 nodes, 8 connections",
+   "Tools": "five: search_tvs, get_tv, compare_tvs, recommend_tvs, get_catalog_stats; no other tool; closed schemas, readOnlyHint, contract agent-result-v2; tool-schema hash 4645dac666b7ce5e in the container = repository = Phase 4E",
+   "Health and authentication": "healthz 200; 401 without and with a wrong credential; 200 authenticated (token piped on the VPS, never displayed); a call without a turn key is refused; per-turn cap: ok, ok, ok, tool_call_limit_reached",
+   "Exposure": "no published port, no host listener on 8765, traefik.enable=false, network n8n-compose_default only, read-only root FS, cap_drop ALL, no mounts",
+   "Semantic guard probe": "as in 4E.2A: invented HDMI 2.1 removed when the message is known, kept when the user states it, report-only without a conversation key; explicit budget kept, invented budget removed",
+   "Catalog": "75 products / 66 available; md5(code:price:sale:availability) 7c1acf943e7d6f430d8566dcb2357faa — equal to the accepted fingerprint; 4151 spec rows; 75 documents; 514 chunks, 514 embedded; max(updated_at) 2026-09-28 18:03:49Z; role samsung_consultant, transaction_read_only on",
+   "n8n": "2.17.7; 16 workflows recorded (id, name, active, updatedAt); n8n, postgres, redis and traefik not restarted",
+   "Not run": "deploy/consultant/verify_readonly.py (it attempts writes by design; not needed for this run)"
+  },
+  "probe_outputs": {
+   "container": {
+    "python": "3.12.14",
+    "files": {
+     "semantic_guard.py": "3df933547f8e579db878b260445c700bad99caddd1e51128f445e494c1256e7c",
+     "agent_tools.py": "31687370cc2725561516595f31949be899adf63e7c295e86a571960015011e35",
+     "mcp_server.py": "7b0bd186feacb24728cec6dbb537fa743d9810edf6eec0b05ef2a07245ae24c0",
+     "agent_payload.py": "4b18ca5a8e8d7146ae49e42dd49a73ea83365a285b9e6490452015bfdb3c336e",
+     "evidence.py": "8cac8fb7b4147fcefeea4461c09c3936a44a16e4c73baa58cc734570b9bb08fd",
+     "features.py": "159c8a063771398a9d4337c505902c3019db2eec46bd6b0e49984bf5606635a1",
+     "ranking.py": "81907d5be1ba721cf9ae9d684636c73df82890791bfa739da71e65c50da87da1",
+     "retrieval.py": "d06564111e0e43a82b91b4258901f0209d05e6282f31d8cb811ef73bcb726747",
+     "planning.py": "4ebd5c776d32609ffc2783bd43f01d659b257b210c49ecc5c4a752cffd0c2947",
+     "router.py": "42f075aba390ccf055628de8c0c5bbe80562626c318e72cf5c85176ca1d4372b",
+     "catalog_repository.py": "1c134e961116c6458e1a4f4652965da81b165a9298c30a4a8427cf0599577e95",
+     "query_semantics.py": "f9a3c5fe9417d33391b7f7d53d5da04fb23e7ed8075fa8ca467bda9e667e9f5e",
+     "schemas.py": "770ca1fe34ff9dca3088fab181047638293fb517fafc0e56a90f6de57a959ed6",
+     "prompts/agent_system_v3.md": "c01403537c7fdf8d44db7e068cdba918cf15c6c504be994d212782a666ccd655"
+    },
+    "tool_names": [
+     "search_tvs",
+     "get_tv",
+     "compare_tvs",
+     "recommend_tvs",
+     "get_catalog_stats"
+    ],
+    "tool_schemas_sha256_16": "4645dac666b7ce5e",
+    "tool_call_cap": 3,
+    "env_names": [
+     "CONSULTANT_DATABASE_URL",
+     "CONSULTANT_MAX_TOOL_CALLS_PER_TURN",
+     "CONSULTANT_MCP_TOKEN"
+    ],
+    "db_role": "samsung_consultant",
+    "transaction_read_only": "on",
+    "products": 75,
+    "available": 66,
+    "max_updated_at": "2026-09-28 18:03:49.341187+00",
+    "product_specs": 4151,
+    "chunks": 514,
+    "chunks_embedded": 514
+   },
+   "catalog_md5": "7c1acf943e7d6f430d8566dcb2357faa"
+  }
+ },
+ "run": {
+  "original_window_utc": "2026-10-01T10:51:08Z – 2026-10-01T10:57:24Z",
+  "confirmation_window_utc": "2026-10-01T11:03:15Z – 2026-10-01T11:07:32Z",
+  "driver": "one temporary inactive driver workflow (tt76m2nSnPO2lake, «…(temporary, safe to delete)») with the committed Consultant workflow inline; created before the run and deleted after the confirmation run",
+  "sessions": [
+   "pa4f2-20261001T1050Z-PA-01",
+   "pa4f2-20261001T1050Z-PA-02",
+   "pa4f2-20261001T1050Z-PA-03",
+   "pa4f2-20261001T1050Z-PA-04",
+   "pa4f2-20261001T1050Z-PA-05",
+   "pa4f2-20261001T1050Z-PA-06",
+   "pa4f2-20261001T1050Z-PA-07",
+   "pa4f2-20261001T1050Z-PA-08",
+   "pa4f2-20261001T1050Z-PA-09",
+   "pa4f2-20261001T1050Z-PA-10",
+   "pa4f2-20261001T1050Z-PA-11",
+   "pa4f2-20261001T1050Z-PA-12",
+   "pa4f2-20261001T1050Z-PA-13",
+   "pa4f2-20261001T1050Z-PA-14",
+   "pa4f2-20261001T1050Z-PA-15",
+   "pa4f2-20261001T1050Z-confirm-PA-01",
+   "pa4f2-20261001T1050Z-confirm-PA-02",
+   "pa4f2-20261001T1050Z-confirm-PA-03",
+   "pa4f2-20261001T1050Z-confirm-PA-04",
+   "pa4f2-20261001T1050Z-confirm-PA-05",
+   "pa4f2-20261001T1050Z-confirm-PA-07",
+   "pa4f2-20261001T1050Z-confirm-PA-08",
+   "pa4f2-20261001T1050Z-confirm-PA-12",
+   "pa4f2-20261001T1050Z-confirm-PA-13",
+   "pa4f2-20261001T1050Z-confirm-PA-14",
+   "pa4f2-20261001T1050Z-confirm-PA-15"
+  ],
+  "session_isolation": "the workflow's own «Prior turns» node read 0 earlier user turns on the first turn of every scenario and turn − 1 on every later turn; for every turn with a tool call the Consultant logged conv = that scenario's session id and the same h; the 26 session ids of both runs are all different",
+  "effective_configuration": "gpt-4.1-mini, temperature 0, max tokens unset, Responses API — as sent by n8n in 53 of 53 turns (37 of 37 in the confirmation run); prompt v3; window memory 6; at most 3 tool calls per user message; the Agent's input is {chatInput, sessionId} only: no evaluator hint, no model override",
+  "runtime_errors": "0 execution errors, 0 infrastructure events. Tool level, original run: one `invalid_arguments` (PA-07 turn 1, corrected by the Agent), one call refused by the per-turn cap (PA-03 turn 2), one `not_found` for a code the Agent guessed (PA-09 turn 3) and one for the user's unknown code (PA-13 turn 4, expected)",
+  "unresolved_infrastructure_failures": [],
+  "runner": {
+   "evaluation/acceptance_run.py": "7949d2fff32c84664134ac8a7fb3f81f21f381b4f04bffb87b2c9596356af577",
+   "note": "written before the first live turn; unchanged since"
+  }
+ },
+ "hashes": {
+  "evaluation/acceptance_scenarios.json": "31305175741b738f2981797ab809ea7e2ac6a087074e2157f4f92ad10777168d",
+  "consultant/prompts/agent_system_v3.md": "c01403537c7fdf8d44db7e068cdba918cf15c6c504be994d212782a666ccd655",
+  "workflows/ai-consultant.json": "67eb55d6693ab641cf915eddd07295e4b57c501ccd964b8bd2618c4c8efafdc7",
+  "consultant/semantic_guard.py": "3df933547f8e579db878b260445c700bad99caddd1e51128f445e494c1256e7c",
+  "consultant/agent_tools.py": "31687370cc2725561516595f31949be899adf63e7c295e86a571960015011e35",
+  "evaluation/agent_eval.py": "64604e7d3179bf25db33c6b1a22d7c1b621c402d4e1c566c8dc39176092e4bfb",
+  "evaluation/agent_live.py": "ab7afcdd4f5cf839204330ff92b8c53ba75f31eb108ed1b960a752d47f578e94"
+ },
+ "post_run": {
+  "checked_at_utc": "2026-10-01T11:13Z",
+  "driver": "deleted; the 16 workflows are identical to the pre-run snapshot (id, name, active, updatedAt); the Consultant workflow is still diff-identical to the repository",
+  "consultant": "same container: started 2026-09-30T19:46:08Z, 0 restarts, healthy, no port; n8n, postgres, redis, traefik: same StartedAt",
+  "catalog": "identical: 75 / 66, md5 7c1acf943e7d6f430d8566dcb2357faa, the same 75 per-product lines, 4151 spec rows, 514 chunks, max(updated_at) unchanged",
+  "runtime_files": "the 14 hashes in the container are unchanged",
+  "consultant_log": "1220 lines for the window of both runs; 837 MCP requests, q redacted in all of them; 0 lines with user text, raw or percent-encoded"
+ },
+ "safety": [
+  "No runtime tuning: the evaluated system was frozen at preflight and nothing was changed after a failure was seen.",
+  "No change to the prompt, the model, retrieval, ranking, the guard, the Feature Registry, tools or tool schemas: the hashes in the container are identical before and after.",
+  "n8n: the Consultant workflow and the 15 other workflows are unchanged. One temporary inactive driver was created for the run and deleted afterwards, as in the procedure of the design document §9.",
+  "No Docker or compose change; no container was restarted.",
+  "No database or catalog mutation: read-only role and read-only transactions only; the catalog fingerprint is identical before and after.",
+  "No ingestion, no indexing, no embedding generated. The only model calls are the 90 Consultant turns themselves (53 + 37), through the existing n8n credential.",
+  "No secret was read, printed or stored: the MCP token was piped on the VPS; the n8n API key was used only inside the existing tooling; every generated file is scanned for key patterns before it is written."
+ ]
+}

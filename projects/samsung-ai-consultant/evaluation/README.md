@@ -139,4 +139,15 @@ Tests: `python -m pytest tests/test_evaluation_*.py`.
 - `acceptance.py` — offline validator and coverage report (`python -m evaluation.acceptance`), generator of the
   dataset-derived parts of the design document (`render`; `--check` fails when they are stale), and `manifest` (sha256 of
   the dataset and of the frozen product files for the 4F.2 preflight). No DB, LLM or n8n.
-- The live run (4F.2) and the release decision (4F.3) are not started.
+
+## Phase 4F.2 — live product acceptance run (see [results/phase_4f_2/PHASE_4F_2_PRODUCT_ACCEPTANCE_REPORT.md](results/phase_4f_2/PHASE_4F_2_PRODUCT_ACCEPTANCE_REPORT.md))
+
+- `acceptance_run.py` — evaluation-only loop of the unchanged live tooling (`model_bakeoff.run_case`: temporary inactive
+  driver, committed workflow inline, no model override) over `acceptance_scenarios.json`: one session per scenario, each
+  scenario once, plus the Agent's memory evidence per turn. A confirmation run is the same command with the failed ids.
+- `acceptance_report.py` — `collect` turns the traces and the Consultant's guard log into `evidence_<run>.json`; `render`
+  (offline) joins the evidence with `manual_review.json` and `run_manifest.json`, applies the decision rule of the design
+  document §4 mechanically, and writes `results.json`, one transcript per scenario and the report; `--check` fails when
+  one of them is stale.
+- `results/phase_4f_2/` — the run of 2026-10-01: `4F.2 HOLD — PRODUCT ACCEPTANCE FAILED` (4 of 15 scenarios pass;
+  3 release blockers). The release decision and any remediation (4F.3) are not started.

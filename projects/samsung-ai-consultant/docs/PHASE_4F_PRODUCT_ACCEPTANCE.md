@@ -1,7 +1,8 @@
 # Phase 4F — Final Product Acceptance
 
-Status: **Phase 4F.1 (design) complete. No live acceptance run has been made.** Phase 4F.2 (the live run)
-and Phase 4F.3 (the release decision) each need explicit approval.
+Status: **Phase 4F.1 (design) complete. Phase 4F.2 (the live run) complete: `4F.2 HOLD — PRODUCT ACCEPTANCE
+FAILED` (§12).** Phase 4F.3 (the release decision) needs explicit approval. Sections 1–11 are the Phase 4F.1
+design as accepted; the 4F.2 run did not change them.
 
 This document designs the final acceptance of the Samsung AI Consultant: 15 realistic conversations,
 the rules for judging them, and the rule for the release decision. Nothing in the product was changed
@@ -13,6 +14,7 @@ to write it.
 | [`evaluation/acceptance_scenarios.json`](../evaluation/acceptance_scenarios.json) | the scenarios, machine-readable; the single source of §3.2, §5, §6 and §7.1 |
 | [`evaluation/acceptance.py`](../evaluation/acceptance.py) | offline validator, coverage report, and generator of those four parts (`--check` fails when they are stale) |
 | [`tests/test_acceptance_scenarios.py`](../tests/test_acceptance_scenarios.py) | the same checks in the test suite |
+| [`evaluation/results/phase_4f_2/`](../evaluation/results/phase_4f_2/PHASE_4F_2_PRODUCT_ACCEPTANCE_REPORT.md) | Phase 4F.2: report, per-scenario transcripts, evidence, review and the mechanical decision (§12) |
 
 Naming: the Phase 4A plan used "4F" for durable conversation state. That work was not built: the
 conversation lives in the n8n window memory and the semantic guard (4E.2 / 4E.2A). "Phase 4F" now means
@@ -1647,3 +1649,29 @@ Scenarios executed:          __ / 15      Turns: __ / 53      Infrastructure re-
 What did not change in 4F.1: everything under `consultant/`, `workflows/`, `deploy/`, `db/`,
 `ingestion/`, `indexing/`, and every earlier file under `evaluation/` and `tests/`. No database
 connection, n8n call, LLM call or embedding call was made.
+
+---
+
+## 12. Phase 4F.2 — live run (result)
+
+Recorded here as a pointer; the source of truth is
+[`evaluation/results/phase_4f_2/PHASE_4F_2_PRODUCT_ACCEPTANCE_REPORT.md`](../evaluation/results/phase_4f_2/PHASE_4F_2_PRODUCT_ACCEPTANCE_REPORT.md).
+
+| Item | Result |
+|---|---|
+| Run | 2026-10-01, run id `20261001T1050Z`; preflight found no drift from the accepted Phase 4E runtime; nothing was changed during the run |
+| Executed | 15 scenarios, 53 user turns, one session per scenario; 0 execution or infrastructure errors |
+| Scenarios | 4 passed (PA-06, PA-09, PA-10, PA-11), 11 failed |
+| Issues (original run) | 3 RELEASE_BLOCKER, 22 MAJOR, 18 MINOR |
+| RELEASE_BLOCKER | HDMI 2.1 attributed to the recommended TVs (PA-02 turn 1, PA-04 turn 1); a count of all available products presented as the Dolby Atmos count (PA-15 turn 3) |
+| Systemic MAJOR classes | G7 quality claims, G8 catalog statements without evidence, G6 group claims, A3 data gap not stated |
+| What held | no invented model, price or availability; no product outside an active hard constraint; no memory failure in 90 turns |
+| Confirmation run | the 11 failed scenarios once more (37 turns): all failed again; the PA-02 blocker reproduced |
+| Outcome by §4.3 | **HOLD** |
+
+Deviations from this design, both in the 4F.2 brief:
+
+- The result files are in `evaluation/results/phase_4f_2/` (`run_manifest.json`, `evidence_*.json`, `manual_review.json`,
+  `results.json`, `transcripts/PA-xx.md`, the report), not under the names of §8.3.
+- The report lists eight ambiguities found in this design while grading. They were applied as written and are not
+  corrected here.

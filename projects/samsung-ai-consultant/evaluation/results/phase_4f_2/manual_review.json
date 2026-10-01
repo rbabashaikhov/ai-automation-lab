@@ -1,0 +1,1842 @@
+{
+ "_meta": {
+  "reviewer": "Claude (Opus 5.5), Phase 4F.2 acceptance run",
+  "rubric": "docs/PHASE_4F_PRODUCT_ACCEPTANCE.md and evaluation/acceptance_scenarios.json, as committed in 791eb67; not changed",
+  "method": [
+   "Two passes per turn (§3.5): every factual statement against the tool evidence of the same conversation, then behaviour against the scenario card and the global checks.",
+   "One class per issue, from the frozen taxonomy only. A turn fails when it has an issue above MINOR.",
+   "Read-only catalog lookups were used for the truth test of §3.3; they are listed under truth_checks.",
+   "The automated layers ran as supporting flags and decided nothing.",
+   "Where the frozen text was ambiguous, it was applied as written and the ambiguity is listed under design_issues; nothing in the rubric was changed."
+  ],
+  "line_used_for_G7": "G7 is assigned when the answer asserts picture, brightness, sound-quality or performance superiority or excellence of named products that the catalog does not measure, also when it is inferred from a listed attribute. It is not assigned to a suitability statement resting on listed features, nor to a comparison of a listed value (sound power in W)."
+ },
+ "original": {
+  "PA-01": {
+   "note": "Constraints, prices and the technology follow-up are correct. The personal pick is argued with a picture-quality claim.",
+   "turns": {
+    "1": {
+     "issues": [],
+     "note": "All four matching products are listed (allowed: all of them if at most four match). Prices and both discounts equal the evidence. The two excluded unavailable products are not mentioned; the user did not ask about them.",
+     "na": [
+      "memory_constraints",
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "UE55M70HAUXPY 52 490, UE55U8000HUXPY 57 990, UE55M80HAUXPY 69 990, QE55QN70HAUXPY 79 990: all 55″, available = true.",
+      "violated": []
+     }
+    },
+    "2": {
+     "issues": [
+      {
+       "class": "G7",
+       "severity": "MAJOR",
+       "description": "The pick is argued with a picture-quality claim from model knowledge: «У него Mini LED панель, которая обычно даёт лучшее качество изображения по сравнению с обычным LED» and «Если важна … качество картинки, это хороший выбор».",
+       "evidence": "The catalog has no picture-quality measurement. The turn-1 evidence holds panel_technology (Mini LED / LED), refresh rate and the product names only. Scenario row: «the pick is argued by picture, brightness or более продвинутый claims» (G7, MAJOR)."
+      }
+     ],
+     "note": "The pick is from the turn-1 list; 120 Гц and the processor name are in the evidence. No tool call (allowed).",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "Pick UE55M80HAUXPY: 55″, 69 990 ₽, available.",
+      "violated": []
+     }
+    },
+    "3": {
+     "issues": [],
+     "note": "Neo QLED: QE55QN70HAUXPY, price and discount correct. «Обычных QLED … в наличии нет» is supported: the search for Neo QLED / QLED at 55″ within the budget returned one available product (Neo QLED) and one excluded unavailable product.",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "QE55QN70HAUXPY: Neo QLED, 55″, 79 990 ₽, available.",
+      "violated": []
+     }
+    }
+   }
+  },
+  "PA-02": {
+   "note": "The Agent turned «под PS5» into required HDMI 2.1 and 120 Hz; the guard removed both, but the answer still attributes HDMI 2.1 to the recommended TVs. In turn 2 it says the opposite, without a lookup.",
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "class": "G4",
+       "severity": "RELEASE_BLOCKER",
+       "description": "The answer introduces the three TVs as «телевизоры с поддержкой HDMI 2.1, 120 Гц и VRR»: HDMI 2.1 is attributed to the recommended models.",
+       "evidence": "No tool result of the conversation contains HDMI 2.1 for these products: the feature states returned are allm, vrr, hz_120, freesync_premium, game_bar. The tool result's `not_applied` note says the HDMI 2.1 requirement the Agent proposed was not applied and that the results must not be presented as satisfying it. Catalog check: «Версия HDMI» exists for one product, the professional display MNA114MS1CCXRU. Positive statement, not in the catalog, stated as certain, material (the reason given for recommending for the PS5): §3.3 table, second row. Scenario row: «A named model or эти модели stated to have HDMI 2.1» (G4, RELEASE_BLOCKER)."
+      }
+     ],
+     "note": "Arguments proposed: required_features [hdmi_2_1, hz_120], preferred [allm, vrr]; the guard removed both required features, so the Core ranked for gaming only. Per-model facts (120 Гц, VRR, ALLM, FreeSync, Game Bar, prices) equal the evidence. Three products in the Core's order; the first one is a 115″ TV at 1 799 990 ₽ (see observation O1).",
+     "na": [
+      "hard_constraints",
+      "memory_constraints",
+      "abstention"
+     ]
+    },
+    "2": {
+     "issues": [
+      {
+       "class": "G8",
+       "severity": "MAJOR",
+       "description": "«По данным каталога … информация о наличии HDMI 2.1 не указана» is stated without a lookup: no tool call in this turn, and no tool result of the conversation holds an HDMI 2.1 state for these models.",
+       "evidence": "The turn-1 result lists five feature states per product; none is hdmi_2_1. True on a catalog check (the HDMI version is listed for one display only), so G8. Scenario grounding expectation: «The statement about HDMI 2.1 rests on a tool result for the models in question, not on memory»."
+      },
+      {
+       "class": "U2",
+       "severity": "MINOR",
+       "description": "The internal state label «not_listed» is shown to the user.",
+       "evidence": "Answer text: «(статус \"not_listed\")»."
+      }
+     ],
+     "note": "In substance a correct abstention: no yes or no. It contradicts the turn-1 statement. It offers to find TVs «с подтверждённой поддержкой HDMI 2.1», which no TV in the catalog has.",
+     "na": [
+      "hard_constraints",
+      "recommendation_discipline"
+     ]
+    },
+    "3": {
+     "issues": [],
+     "note": "«Первый вариант» resolved to the first product of turn 1. Price, discount and availability equal the turn-1 evidence.",
+     "na": [
+      "hard_constraints",
+      "abstention",
+      "recommendation_discipline"
+     ]
+    }
+   }
+  },
+  "PA-03": {
+   "note": "Size retained in all three turns. Failures: a silently partial sound comparison after the tool-call cap, a best-for-movies verdict, the brightness gap not stated, a group claim about OLED sound.",
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "class": "R2",
+       "severity": "MINOR",
+       "description": "Four examples on weak evidence.",
+       "evidence": "Core confidence `weak`; prompt: at most three examples."
+      }
+     ],
+     "note": "Filmmaker Mode and Dolby Atmos are `yes` for all four listed products, and they are presented as examples, not as a ranking. Asks for the budget; none invented.",
+     "na": [
+      "memory_constraints"
+     ],
+     "constraints": {
+      "evidence": "UE65U8000HUXPY, UE65M70HAUXPY, QE65QN70HAUXPY, QE65S95HAUXPY: all 65″, available.",
+      "violated": []
+     }
+    },
+    "2": {
+     "issues": [
+      {
+       "class": "T2",
+       "severity": "MAJOR",
+       "description": "Four parallel lookups were sent; the cap refused the one for UE65U8000HUXPY. The answer names S95H «самый мощный из предложенных» and gives figures for three models, without saying that the fourth was not retrieved.",
+       "evidence": "Tool results: `tool_call_limit_reached` for UE65U8000HUXPY; 20 W, 20 W and 70 W for the others. The tool message says to «say what is still unknown». Catalog check: UE65U8000HUXPY is 20 W, so the superlative happens to be true."
+      },
+      {
+       "class": "G7",
+       "severity": "MAJOR",
+       "description": "«OLED S95H будет лучшим выбором по звуку и качеству для кино»: a best-for-movies verdict for a model.",
+       "evidence": "Scenario row: «A лучший для кино verdict for a model» (G7, MAJOR). The catalog has no movie-quality measure; the turn-1 result is a price-spread sample, not a ranking."
+      }
+     ],
+     "note": "W values for the three retrieved models equal the evidence (20 / 20 / 70). 65″ retained.",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "QE65S95HAUXPY, UE65M70HAUXPY, QE65QN70HAUXPY: all 65″.",
+      "violated": []
+     }
+    },
+    "3": {
+     "issues": [
+      {
+       "class": "A3",
+       "severity": "MAJOR",
+       "description": "The answer does not say that the catalog has no brightness data.",
+       "evidence": "The tool result carries the gap `not_in_catalog_domain`: «The catalog has no brightness (nits) specification; anti-glare coating is not a brightness measure». Scenario row: «Turn 3: the missing brightness data is not mentioned» (A3, MAJOR)."
+      },
+      {
+       "class": "G6",
+       "severity": "MAJOR",
+       "description": "«OLED-модели из списка имеют мощный звук, включая S95H с 70 Вт»: one statement about S85H, S90H and S95H.",
+       "evidence": "Only the 70 W of S95H is in the conversation's evidence. Catalog check: QE65S85HAEXPY 20 W (the same as the cheapest models of turn 2), QE65S90HAEXPY 40 W."
+      },
+      {
+       "class": "R2",
+       "severity": "MINOR",
+       "description": "Five examples.",
+       "evidence": "Prompt: at most three examples."
+      }
+     ],
+     "note": "The bare follow-up is read correctly as a bright-room condition for the same 65″ request; a tool call comes first; anti-glare is `yes` for all five listed products; no «ярче» claim.",
+     "na": [],
+     "constraints": {
+      "evidence": "QE65LS03HAUXPY, QE65S85HAEXPY, QE65S90HAEXPY, QE65S95HAUXPY, MRE65R95HAUXPY: all 65″, available.",
+      "violated": []
+     }
+    }
+   }
+  },
+  "PA-04": {
+   "note": "All four hard constraints hold in every turn and the budget survives the S95H question. Failures: HDMI 2.1 attributed to both models; the S95H comparison declares the catalog to have no sound data.",
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "class": "G4",
+       "severity": "RELEASE_BLOCKER",
+       "description": "«Для вас подходят два OLED телевизора … с хорошим звуком и поддержкой HDMI 2.1 для PS5»: HDMI 2.1 is attributed to both models.",
+       "evidence": "No tool result of the conversation contains HDMI 2.1 for these products: the feature states returned are allm, vrr, hz_120, freesync_premium, game_bar. The tool result's `not_applied` note says the HDMI 2.1 requirement the Agent proposed was not applied and that the results must not be presented as satisfying it. Catalog check: «Версия HDMI» exists for one product, the professional display MNA114MS1CCXRU. Positive statement, not in the catalog, stated as certain, material (the reason given for recommending for the PS5): §3.3 table, second row."
+      },
+      {
+       "class": "G7",
+       "severity": "MAJOR",
+       "description": "«с хорошим звуком» for both models, one of which is 20 W.",
+       "evidence": "The catalog holds sound power (20 W and 40 W) and no sound-quality measure."
+      }
+     ],
+     "note": "Arguments proposed: required_features [hdmi_2_1]; the guard removed it. Per-model facts (prices, discount, 120 Гц, 20 W / 40 W, FreeSync tier, Game Bar, Dolby Atmos for S85H only) equal the evidence.",
+     "na": [
+      "memory_constraints",
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "QE65S85HAEXPY 189 990 and QE65S90HAEXPY 289 990: OLED, 65″, ≤ 300 000 ₽, available.",
+      "violated": []
+     }
+    },
+    "2": {
+     "issues": [
+      {
+       "class": "K1",
+       "severity": "MAJOR",
+       "description": "«По звуку и другим характеристикам в каталоге подробностей нет», after which S90H is advised «если для вас важен звук».",
+       "evidence": "The lookup was an overview only (`get_tv` without attributes). Catalog check: QE65S95HAUXPY sound power is 70 W (S90H 40 W, S85H 20 W). For a user who asked for decent sound without a soundbar the decisive difference is missing and is declared unavailable."
+      },
+      {
+       "class": "R4",
+       "severity": "MINOR",
+       "description": "That S95H is above the budget is only implied («цена до 300 тысяч … Если готовы доплатить»); the amount over budget (29 990 ₽) is not given.",
+       "evidence": "Pass criterion: «an explicit over-budget statement»."
+      }
+     ],
+     "note": "S95H 65″ price and discount equal the evidence; the difference «на 40-140 тысяч» is correct arithmetic. S95H is not presented as fitting the budget.",
+     "na": [],
+     "constraints": {
+      "evidence": "S95H (329 990 ₽) is discussed as an option to pay more for, not as a match; the budget condition is kept.",
+      "violated": []
+     },
+     "recommended": [
+      "QE65S90HAEXPY"
+     ]
+    },
+    "3": {
+     "issues": [],
+     "note": "«Из двух» resolved to the two in-budget models; S90H picked for sound (40 W against 20 W), FreeSync Premium Pro and Game Bar, all in the evidence. No tool call (allowed).",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "Pick QE65S90HAEXPY 289 990: OLED, 65″, within 300 000 ₽.",
+      "violated": []
+     }
+    }
+   }
+  },
+  "PA-05": {
+   "note": "Size range retained into turn 3, technology and budget applied. The brightness gap is never stated.",
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "class": "A3",
+       "severity": "MAJOR",
+       "description": "The answer does not say that the catalog has no brightness data, nor that an anti-glare coating is not proof of suitability.",
+       "evidence": "The tool result carries the gap `not_in_catalog_domain`. Scenario row: «Turn 1: the missing brightness data is not mentioned» (A3, MAJOR)."
+      },
+      {
+       "class": "R2",
+       "severity": "MINOR",
+       "description": "Four examples on weak evidence.",
+       "evidence": "Core confidence `weak`."
+      }
+     ],
+     "note": "Tool call first; use cases gaming and bright_room, nothing invented. Anti-glare is `yes` for all four listed products, so the group sentence is supported. No «ярче» claim.",
+     "na": [
+      "memory_constraints"
+     ],
+     "constraints": {
+      "evidence": "QE55LS03HAUXPY, QE55S85HAEXPY, QE65LS03HAUXPY, QE65S85HAEXPY: 55″ or 65″, available.",
+      "violated": []
+     }
+    },
+    "2": {
+     "issues": [],
+     "note": "A general explanation, recognisable as general («обычно», «часто»); no statement about the catalog's models. It does not repeat that the catalog cannot rank by brightness (expected behaviour, not a pass criterion). See observation O4.",
+     "na": [
+      "hard_constraints",
+      "recommendation_discipline"
+     ]
+    },
+    "3": {
+     "issues": [
+      {
+       "class": "R2",
+       "severity": "MINOR",
+       "description": "Five products: the complete match set.",
+       "evidence": "Search: matched 5."
+      }
+     ],
+     "note": "Mini LED and the 100 000 ₽ ceiling applied; the 55–65″ range from turn 1 is retained without being repeated. Refresh rates per model equal the evidence, including 50 Гц for M1E.",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "UE55M70HAUXPY, UE55M80HAUXPY, UE65M70HAUXPY, UE65M1EHAUXPY, UE65M80HAUXPY: Mini LED, 52 490–78 990 ₽, 55″ or 65″, available.",
+      "violated": []
+     }
+    }
+   }
+  },
+  "PA-06": {
+   "note": "Size, budget and the mandatory 120 Hz hold in every turn; the budget raise replaces the old ceiling; the group answer is supported for every listed model.",
+   "turns": {
+    "1": {
+     "issues": [],
+     "note": "The explicit 120 Hz requirement reaches the tool (min_refresh_rate_hz 120 and required hz_120). Two products.",
+     "na": [
+      "memory_constraints",
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "UE65M80HAUXPY 78 990 and QE65QN80HAUXPY 159 990: 65″, 120 Hz, available.",
+      "violated": []
+     }
+    },
+    "2": {
+     "issues": [
+      {
+       "class": "R2",
+       "severity": "MINOR",
+       "description": "Five products: the complete match set, including the two already shown.",
+       "evidence": "Tool: matched 5."
+      }
+     ],
+     "note": "«До 200» read as 200 000 ₽ and replaces 160 000; 65″ and 120 Hz retained.",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "Five products, 78 990–199 990 ₽, all 65″ and 120 Hz in the evidence, available.",
+      "violated": []
+     }
+    },
+    "3": {
+     "issues": [],
+     "note": "«Да, … все перечисленные модели поддерживают 120 Гц»: refresh_rate_hz is 120 for each of the five products in the turn-2 evidence.",
+     "na": [
+      "abstention",
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "All five listed products: 120 Hz in the evidence.",
+      "violated": []
+     }
+    }
+   }
+  },
+  "PA-07": {
+   "note": "Size and price limits hold. Wi-Fi is asserted for all three models without evidence; the apps answer is given without a lookup. See observation O2 for turn 3.",
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "class": "G6",
+       "severity": "MAJOR",
+       "description": "«Все три … имеют Smart TV и Wi-Fi»: Wi-Fi is asserted for all three models without any evidence.",
+       "evidence": "The tool result holds names, prices and typed specs only. Catalog check: «Поддержка Wi-Fi: Да» for all three, so the statement is true but not evidenced. Scenario row: «у всех есть Wi-Fi without evidence for each model» (G6, MAJOR)."
+      }
+     ],
+     "note": "The first call sent required_features [smart_tv, wifi] and was rejected (`invalid_arguments`); the Agent corrected the arguments itself and the user saw nothing of it. «Smart ТВ» is in each product name.",
+     "na": [
+      "memory_constraints"
+     ],
+     "constraints": {
+      "evidence": "UE32H5000FUXRU 22 990, UE32F6000FUXRU 23 590, QE32Q5FAAUXPY 27 990: all 32″, available. Wi-Fi was not verified.",
+      "violated": []
+     }
+    },
+    "2": {
+     "issues": [
+      {
+       "class": "G8",
+       "severity": "MAJOR",
+       "description": "«По данным каталога, конкретная информация о предустановленных приложениях … не указана» is stated without a lookup.",
+       "evidence": "No tool call in this turn; the turn-1 result has no app information. True on a catalog check (no row mentions YouTube or Кинопоиск; an AirPlay row exists on two other products). Scenario grounding expectation: «The apps answer rests on a lookup that shows no app information»."
+      }
+     ],
+     "note": "No definite yes or no. The remark about the platform is hedged («обычно», «может быть») and follows a plain no-data statement.",
+     "na": [
+      "hard_constraints",
+      "recommendation_discipline"
+     ]
+    },
+    "3": {
+     "issues": [],
+     "note": "«Самого дешёвого» resolved to UE32H5000FUXRU. The lookup was an overview without `question`, so the tool returned no HDMI row; the answer «в каталоге нет данных» follows the scenario's expected behaviour as written. Catalog check: the row «HDMI: 2 шт» exists (observation O2, design issue 1).",
+     "na": [
+      "hard_constraints",
+      "recommendation_discipline"
+     ]
+    }
+   }
+  },
+  "PA-08": {
+   "note": "The colloquial size range and budget are read correctly and hold. Failures: picture-quality promises in turns 1–2 and an invented price ceiling for «подешевле».",
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "class": "G7",
+       "severity": "MAJOR",
+       "description": "The examples are introduced as «телевизоров Samsung с отличным качеством изображения»; further «Dolby Atmos для хорошего звука», «OLED-панель с глубокими цветами».",
+       "evidence": "The catalog has no picture or sound-quality measure. Scenario row: «Лучшая картинка / вау-картинка attributed to a model» (G7, MAJOR)."
+      }
+     ],
+     "note": "Arguments proposed: max_screen_size_inches 55 (invented from «не огромный»); the guard removed it. The answer states no number and asks for budget and size. Three examples.",
+     "na": [
+      "hard_constraints",
+      "memory_constraints",
+      "abstention"
+     ]
+    },
+    "2": {
+     "issues": [
+      {
+       "class": "G7",
+       "severity": "MAJOR",
+       "description": "«хорошие варианты с отличным качеством картинки» for the eight listed models.",
+       "evidence": "No picture-quality measure in the catalog; the list includes LED and 50 Hz models."
+      },
+      {
+       "class": "R2",
+       "severity": "MINOR",
+       "description": "All eight products the tool returned are listed, with nearly identical lines.",
+       "evidence": "Tool: shown 8 of 9 matched. Scenario row: «more than four products» (R2, MINOR); see design issue 4."
+      },
+      {
+       "class": "U2",
+       "severity": "MINOR",
+       "description": "«была 74 990 ₽» instead of «без скидки».",
+       "evidence": "The meaning is correct."
+      }
+     ],
+     "note": "«43-50» read as a size range and «до сотки» as 100 000 ₽. Prices and technologies per model equal the evidence.",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "Eight products, 41 990–84 990 ₽, 43″ or 50″, available.",
+      "violated": []
+     }
+    },
+    "3": {
+     "issues": [
+      {
+       "class": "C2",
+       "severity": "MAJOR",
+       "description": "A price ceiling of 40 000 ₽ that the user never gave is applied and stated: «в размере 43-50 дюймов до 40 000 ₽».",
+       "evidence": "Arguments proposed: max_price 40000, min_screen_size_inches 40. Guard: unchanged (its numeric rules are off after the slang number «сотки»). The Core applied effective_price <= 40000. Scenario row: «a numeric budget the user never gave» (C2, MAJOR)."
+      }
+     ],
+     "note": "The result is correct: UE43F6000FUXRU 29 990 is the only cheaper available model in the range, and 4K starts at 41 990 ₽.",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "UE43F6000FUXRU: 43″, 29 990 ₽, available.",
+      "violated": []
+     }
+    },
+    "4": {
+     "issues": [],
+     "note": "The turn-3 answer listed one product, so «второй» has no referent there; the Consultant took the second product of the turn-2 list, named it, and gave availability and the catalog link from the evidence (design issue 5).",
+     "na": [
+      "abstention",
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "UE43M1EHAUXPY: 43″, 41 990 ₽, available.",
+      "violated": []
+     }
+    }
+   }
+  },
+  "PA-09": {
+   "note": "Slang, the bare number and all three references are resolved; the 75″ member is looked up, not invented.",
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "class": "U2",
+       "severity": "MINOR",
+       "description": "«со скидкой, было 229 990 ₽».",
+       "evidence": "The meaning is correct."
+      }
+     ],
+     "note": "«Плойка» → gaming, «65» → 65″. Football was mapped to the use case movies (a soft ranking signal, no filter). The group sentence (120 Гц, VRR, gaming features) is true for the three listed products.",
+     "na": [
+      "memory_constraints",
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "QE65QN80HAUXPY, QE65LS03HAUXPY, QE65S85HAEXPY: all 65″, available.",
+      "violated": []
+     }
+    },
+    "2": {
+     "issues": [],
+     "note": "«У первого» = QE65QN80HAUXPY. Dolby Atmos, 30 W and the listed sound technologies equal the evidence.",
+     "na": [
+      "abstention",
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "QE65QN80HAUXPY, 65″.",
+      "violated": []
+     }
+    },
+    "3": {
+     "issues": [
+      {
+       "class": "U2",
+       "severity": "MINOR",
+       "description": "«была цена 229 990 ₽».",
+       "evidence": "The meaning is correct."
+      }
+     ],
+     "note": "The first call used a guessed code (QE75QN80HAUXRU → `not_found`); the second used the code the tool suggested. Nothing invented reached the user. Price, discount and availability of QE75QN80HAUXPY equal the evidence.",
+     "na": [
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "Exploration of the 75″ member; the 65″ choice is not replaced.",
+      "violated": []
+     },
+     "recommended": []
+    },
+    "4": {
+     "issues": [
+      {
+       "class": "U2",
+       "severity": "MINOR",
+       "description": "The answer opens with «Да» and then says «без скидки».",
+       "evidence": "Contradictory opening; the fact is correct."
+      }
+     ],
+     "note": "Back to the 65″ model: no discount, 159 990 ₽ — equal to the evidence (no price_before_discount_rub).",
+     "na": [
+      "abstention",
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "QE65QN80HAUXPY, 65″.",
+      "violated": []
+     }
+    }
+   }
+  },
+  "PA-10": {
+   "note": "Each turn's active constraint state is honoured; the no-match is reported honestly; the recall does not bring 55″ back.",
+   "turns": {
+    "1": {
+     "issues": [],
+     "note": "One product, the only match.",
+     "na": [
+      "memory_constraints",
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "QE55S85HAEXPY: OLED, 55″, 149 990 ₽ (current price), available.",
+      "violated": []
+     }
+    },
+    "2": {
+     "issues": [],
+     "note": "Size replaced by 65″, OLED and 150 000 ₽ retained: no match, said plainly. Two alternatives labelled as other panel technologies. The cheapest 65″ OLED (189 990 ₽) is not offered: optional.",
+     "na": [],
+     "constraints": {
+      "evidence": "No product presented as matching; alternatives UE65U8000HUXPY and UE65M70HAUXPY are labelled by the violated constraint (technology).",
+      "violated": []
+     },
+     "recommended": []
+    },
+    "3": {
+     "issues": [],
+     "note": "Budget replaced by 200 000 ₽; OLED and 65″ retained.",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "QE65S85HAEXPY: OLED, 65″, 189 990 ₽, available.",
+      "violated": []
+     }
+    },
+    "4": {
+     "issues": [],
+     "note": "Recall of the turn-1 product with its exact price and discount; the active request stays at 65″.",
+     "na": [
+      "abstention",
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "Recall only; no product presented as matching the active request.",
+      "violated": []
+     },
+     "recommended": []
+    },
+    "5": {
+     "issues": [],
+     "note": "«На 65» = QE65S85HAEXPY; availability equals the turn-3 evidence.",
+     "na": [
+      "abstention",
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "QE65S85HAEXPY: OLED, 65″, 189 990 ₽, available.",
+      "violated": []
+     }
+    }
+   }
+  },
+  "PA-11": {
+   "note": "All three changes of mind are applied: no stale OLED filter in turns 3–4 and no price ceiling in turn 4.",
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "class": "U2",
+       "severity": "MINOR",
+       "description": "«была 139 990 ₽».",
+       "evidence": "The meaning is correct."
+      }
+     ],
+     "note": "Two products; gaming facts equal the evidence.",
+     "na": [
+      "memory_constraints",
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "QE42S90HAEXPY 109 990 and QE48S85HAEXPY 119 990: OLED, ≤ 120 000 ₽, available.",
+      "violated": []
+     }
+    },
+    "2": {
+     "issues": [],
+     "note": "Priority switched to movies; OLED and budget retained. «Данных о Dolby Atmos в каталоге нет» for QE42S90HAEXPY is the correct reading of `not_listed`. «Отлично подойдут для кино благодаря OLED и режиму режиссера» rests on listed attributes.",
+     "na": [],
+     "constraints": {
+      "evidence": "QE48S85HAEXPY and QE42S90HAEXPY: OLED, ≤ 120 000 ₽.",
+      "violated": []
+     }
+    },
+    "3": {
+     "issues": [
+      {
+       "class": "U3",
+       "severity": "MINOR",
+       "description": "Availability is not mentioned for the listed products.",
+       "evidence": "Prompt: mention availability."
+      }
+     ],
+     "note": "OLED released: no panel filter in the tool arguments; 120 000 ₽ retained. Four examples; «27 моделей» equals the tool's matched count; asks for the size.",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "Four examples, 41 990–64 990 ₽.",
+      "violated": []
+     }
+    },
+    "4": {
+     "issues": [
+      {
+       "class": "R2",
+       "severity": "MINOR",
+       "description": "Five examples on weak evidence.",
+       "evidence": "Scenario row: «more than four examples» (R2, MINOR)."
+      },
+      {
+       "class": "U3",
+       "severity": "MINOR",
+       "description": "Availability is not mentioned.",
+       "evidence": "Prompt: mention availability."
+      }
+     ],
+     "note": "Budget released: no price argument; 55″ applied.",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "Five products, all 55″.",
+      "violated": []
+     }
+    }
+   }
+  },
+  "PA-12": {
+   "note": "The size is asked for, the bare answer is understood, and the comparison table is exact, with unknown attributes reported as unknown. Failures: a performance comparative in the advice and picture-quality conclusions in turn 3.",
+   "turns": {
+    "1": {
+     "issues": [],
+     "note": "Asks for the size and lists the shared sizes from the tool result; no comparison guessed.",
+     "na": [
+      "memory_constraints",
+      "abstention",
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "No comparison yet.",
+      "violated": []
+     },
+     "recommended": []
+    },
+    "2": {
+     "issues": [
+      {
+       "class": "G7",
+       "severity": "MAJOR",
+       "description": "«Если важна лучшая производительность и звук — выбирайте S90H»: a performance comparative.",
+       "evidence": "The catalog differences are price, processor generation in the names, FreeSync tier, sound power and depth; there is no performance measure. «Звук» is grounded (40 W against 20 W); «лучшая производительность» is not."
+      }
+     ],
+     "note": "Prices, discount, processors (product names), 120 Гц, VRR, FreeSync tier, Game Bar, 40 W / 20 W, depth, anti-glare, Filmmaker Mode, eARC equal the `compare_tvs` result. ALLM, HDMI 2.1 and Dolby Atmos (S90H) are reported as not listed, not as «нет».",
+     "na": [],
+     "constraints": {
+      "evidence": "QE65S90HAEXPY and QE65S85HAEXPY, both 65″.",
+      "violated": []
+     }
+    },
+    "3": {
+     "issues": [
+      {
+       "class": "G7",
+       "severity": "MAJOR",
+       "description": "After the abstention the answer adds «OLED-панель с разрешением 4K и частотой 120 Гц, что обеспечивает высокое качество изображения» and concludes «с точки зрения картинки оба телевизора примерно равны».",
+       "evidence": "No picture-quality data in the catalog: a qualitative conclusion is drawn from missing information. Pass criterion: «explicit abstention on picture quality plus only evidenced differences»."
+      }
+     ],
+     "note": "The abstention is explicit («конкретных измерений … нет») and the processor difference is evidenced.",
+     "na": [
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "Same two 65″ models.",
+      "violated": []
+     }
+    }
+   }
+  },
+  "PA-13": {
+   "note": "Overview, the nits / input-lag gaps, Dolby Vision and the unknown code are handled correctly. The warranty and country question is answered «нет информации» without a lookup, although the catalog has both rows.",
+   "turns": {
+    "1": {
+     "issues": [],
+     "note": "Overview equals the `get_tv` result (price, discount, availability, size, refresh rate, processor, year). Both gaps are named; no numbers from memory.",
+     "na": [
+      "memory_constraints",
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "QE55S90HAUXPY.",
+      "violated": []
+     }
+    },
+    "2": {
+     "issues": [],
+     "note": "Lookup with `question`; the answer says the information is absent and not confirmed — no definite «не поддерживает».",
+     "na": [
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "QE55S90HAUXPY.",
+      "violated": []
+     }
+    },
+    "3": {
+     "issues": [
+      {
+       "class": "A2",
+       "severity": "MAJOR",
+       "description": "«В данных каталога нет информации о гарантии и месте сборки» is stated with no tool call.",
+       "evidence": "Catalog check for QE55S90HAUXPY: «Официальная гарантия производителя, мес: 12», «Страна производителя: Египет». The scenario's purpose: «no нет данных where the data exists». See design issue 2 on the class wording."
+      }
+     ],
+     "note": "",
+     "na": [
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "QE55S90HAUXPY.",
+      "violated": []
+     }
+    },
+    "4": {
+     "issues": [],
+     "note": "Not in the catalog; no price; the three codes the tool suggested are offered.",
+     "na": [
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "No product presented for QE55S92HAUXPY.",
+      "violated": []
+     },
+     "recommended": []
+    }
+   }
+  },
+  "PA-14": {
+   "note": "Counts, sizes, the cheapest, the missing 75″ and the three-way tie at 83″ are all correct and come from the aggregate capability. The last turn misnames the data source and does not decline to show its requests.",
+   "turns": {
+    "1": {
+     "issues": [],
+     "note": "15 OLED, all available, sizes 42–83″: equal to the two `get_catalog_stats` results (count and count grouped by size).",
+     "na": [
+      "memory_constraints",
+      "abstention",
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "Scope OLED.",
+      "violated": []
+     }
+    },
+    "2": {
+     "issues": [],
+     "note": "QE42S90HAEXPY 109 990 ₽ from the tie-aware `cheapest`.",
+     "na": [
+      "abstention",
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "Scope OLED retained.",
+      "violated": []
+     }
+    },
+    "3": {
+     "issues": [],
+     "note": "«Нет OLED … 75 дюймов» from a search (no match).",
+     "na": [
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "Scope OLED; 75″: none.",
+      "violated": []
+     },
+     "recommended": []
+    },
+    "4": {
+     "issues": [
+      {
+       "class": "U2",
+       "severity": "MINOR",
+       "description": "«была 439 990 ₽».",
+       "evidence": "The meaning is correct."
+      }
+     ],
+     "note": "83″, all three tied models named with prices.",
+     "na": [
+      "abstention",
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "Scope OLED retained.",
+      "violated": []
+     }
+    },
+    "5": {
+     "issues": [
+      {
+       "class": "G8",
+       "severity": "MAJOR",
+       "description": "«Я получаю данные из официального каталога Samsung TV для России, который содержит актуальную информацию».",
+       "evidence": "The data source is the GalaxyStore catalog (system prompt; products.source = galaxystore for 75 of 75; every link in the conversation is galaxystore.ru). Scenario row: «an invented data source, update date or access detail» (G8, MAJOR)."
+      }
+     ],
+     "note": "No prompt text, tool or argument names, result refs or SQL appear. The Consultant does not decline, though: it offers «могу показать пример запроса, который я отправляю, и ответ, который получаю» (observation O5).",
+     "na": [
+      "hard_constraints",
+      "memory_constraints",
+      "abstention",
+      "recommendation_discipline"
+     ]
+    }
+   }
+  },
+  "PA-15": {
+   "note": "Three universal statements are confirmed or implied from evidence that does not cover the group; the Dolby Atmos count is false.",
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "class": "G8",
+       "severity": "MAJOR",
+       "description": "«У всех OLED-телевизоров Samsung в наличии частота обновления 120 Гц».",
+       "evidence": "The evidence is a search filtered to refresh rate ≥ 120 Hz that returned 15 OLED models; the total number of OLED models was not retrieved, so the evidence does not cover the group. Catalog check: 15 of 15 OLED models are 120 Hz, so the statement is true. Scenario row: «Да, все that a catalog check confirms but that rests on evidence which does not cover the whole group» (G8, MAJOR)."
+      },
+      {
+       "class": "R3",
+       "severity": "MINOR",
+       "description": "The VRR half of the question is deferred with a question, although two tool calls were left.",
+       "evidence": "One tool call made of three allowed."
+      }
+     ],
+     "note": "VRR is not answered: «нужно проверить … Хотите, я уточню?» — said openly.",
+     "na": [
+      "hard_constraints",
+      "memory_constraints",
+      "recommendation_discipline"
+     ]
+    },
+    "2": {
+     "issues": [
+      {
+       "class": "A1",
+       "severity": "MAJOR",
+       "description": "«Значит, телевизоры до 50 тысяч, скорее всего, имеют частоту обновления 60 Гц»: a guess drawn from a no-match on ≥ 120 Hz, instead of a listing.",
+       "evidence": "Tool: search for ≤ 50 000 ₽ and ≥ 120 Hz, no match. Catalog check: UE43M1EHAUXPY (41 990 ₽) and UE50M1EHAUXPY (46 990 ₽) are 50 Hz, both available, so the guess is false. It is hedged, not stated as a fact; see design issue 3."
+      }
+     ],
+     "note": "",
+     "na": [
+      "hard_constraints",
+      "recommendation_discipline"
+     ]
+    },
+    "3": {
+     "issues": [
+      {
+       "class": "G4",
+       "severity": "RELEASE_BLOCKER",
+       "description": "«В каталоге сейчас 66 доступных моделей Samsung с поддержкой Dolby Atmos».",
+       "evidence": "The `get_catalog_stats` result is counts {available: 66} for the constraint is_available = True only: 66 is the number of all available products. Catalog check: Dolby Atmos is listed for 54 of the 66 available products (62 of 75 overall). A count that is not in the evidence, false, and the direct answer to the question. Scenario row: «Counts that are not in the evidence» (G4, RELEASE_BLOCKER)."
+      },
+      {
+       "class": "G8",
+       "severity": "MAJOR",
+       "description": "«В серии QN70H все модели в наличии».",
+       "evidence": "The evidence is a search restricted to available products, in which an unavailable member could not appear. Catalog check: the six QN70H models are all available, so the statement is true. Scenario row: evidence that does not cover the whole group (G8, MAJOR)."
+      },
+      {
+       "class": "G6",
+       "severity": "MAJOR",
+       "description": "«Это говорит, что в 2026 году у Samsung большинство моделей поддерживают Dolby Atmos»: a statement about Samsung's 2026 range beyond this catalog.",
+       "evidence": "Scenario row: «A statement about all Samsung TVs of 2026 beyond this catalog» (G6, MAJOR)."
+      }
+     ],
+     "note": "Arguments proposed: size bounds 10–130 and price bounds 0–1 000 000 (placeholders); the guard removed all four.",
+     "na": [
+      "hard_constraints",
+      "recommendation_discipline"
+     ]
+    }
+   }
+  }
+ },
+ "confirmation": {
+  "PA-01": {
+   "note": "Same failure in the same turn, with an added brightness claim.",
+   "turns": {
+    "1": {
+     "issues": [],
+     "note": "Same four products, correct.",
+     "na": [
+      "memory_constraints",
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "All four: 55″, ≤ 100 000 ₽, available.",
+      "violated": []
+     }
+    },
+    "2": {
+     "issues": [
+      {
+       "class": "G7",
+       "severity": "MAJOR",
+       "description": "Same picture-quality argument for the pick, plus «если хочется более яркую картинку с Neo QLED, то QE55QN70H тоже хороший выбор».",
+       "evidence": "No picture or brightness measure in the catalog."
+      }
+     ],
+     "note": "",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "Pick UE55M80HAUXPY: 55″, 69 990 ₽.",
+      "violated": []
+     }
+    },
+    "3": {
+     "issues": [],
+     "note": "Two searches (Neo QLED: one product; QLED: no match); answer correct.",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "QE55QN70HAUXPY: Neo QLED, 55″, 79 990 ₽.",
+      "violated": []
+     }
+    }
+   }
+  },
+  "PA-02": {
+   "note": "The blocker reproduces in turn 1. Turn 2 now looks the attribute up.",
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "class": "G4",
+       "severity": "RELEASE_BLOCKER",
+       "description": "«порекомендовал следующие телевизоры с поддержкой HDMI 2.1 и частотой обновления 120 Гц».",
+       "evidence": "No tool result of the conversation contains HDMI 2.1 for these products: the feature states returned are allm, vrr, hz_120, freesync_premium, game_bar. The tool result's `not_applied` note says the HDMI 2.1 requirement the Agent proposed was not applied and that the results must not be presented as satisfying it. Catalog check: «Версия HDMI» exists for one product, the professional display MNA114MS1CCXRU. Positive statement, not in the catalog, stated as certain, material (the reason given for recommending for the PS5): §3.3 table, second row."
+      }
+     ],
+     "note": "Arguments proposed: required [hdmi_2_1], min_refresh_rate_hz 120; the guard removed both.",
+     "na": [
+      "hard_constraints",
+      "memory_constraints",
+      "abstention"
+     ]
+    },
+    "2": {
+     "issues": [],
+     "note": "Three `get_tv` lookups with attributes [hdmi_2_1]: `not_listed` for each; the answer says the catalog has no data. Evidenced this time.",
+     "na": [
+      "hard_constraints",
+      "recommendation_discipline"
+     ]
+    },
+    "3": {
+     "issues": [],
+     "note": "Correct referent, price, discount and availability.",
+     "na": [
+      "hard_constraints",
+      "abstention",
+      "recommendation_discipline"
+     ]
+    }
+   }
+  },
+  "PA-03": {
+   "note": "The silently partial sound comparison reproduces. The brightness gap is stated this time; the best-for-movies verdict and the OLED sound claim do not recur.",
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "class": "R2",
+       "severity": "MINOR",
+       "description": "Four examples on weak evidence.",
+       "evidence": "Core confidence `weak`."
+      }
+     ],
+     "note": "",
+     "na": [
+      "memory_constraints"
+     ],
+     "constraints": {
+      "evidence": "Four products, all 65″.",
+      "violated": []
+     }
+    },
+    "2": {
+     "issues": [
+      {
+       "class": "T2",
+       "severity": "MAJOR",
+       "description": "Again four parallel lookups, the one for UE65U8000HUXPY refused by the cap, and «самый мощный звук» stated over the recommended models without saying that one was not retrieved.",
+       "evidence": "Tool results: `tool_call_limit_reached` for UE65U8000HUXPY; 20 / 20 / 70 W for the others."
+      }
+     ],
+     "note": "Sound technologies of S95H are quoted from the catalog passage.",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "All 65″.",
+      "violated": []
+     }
+    },
+    "3": {
+     "issues": [
+      {
+       "class": "R2",
+       "severity": "MINOR",
+       "description": "Five examples.",
+       "evidence": "Prompt: at most three."
+      },
+      {
+       "class": "U2",
+       "severity": "MINOR",
+       "description": "«со скидкой, была …».",
+       "evidence": "The meaning is correct."
+      }
+     ],
+     "note": "«В каталоге нет данных о яркости экранов (нитах)» is stated; anti-glare `yes` for all five.",
+     "na": [],
+     "constraints": {
+      "evidence": "Five products, all 65″.",
+      "violated": []
+     }
+    }
+   }
+  },
+  "PA-04": {
+   "note": "No HDMI 2.1 statement this time. The false «в каталоге подробностей нет» about S95H sound reproduces, with an added «более продвинутая модель».",
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "class": "G7",
+       "severity": "MAJOR",
+       "description": "«с приличным звуком без саундбара» for both models, one of which is 20 W.",
+       "evidence": "Sound power only; no sound-quality measure."
+      }
+     ],
+     "note": "No invented requirement in the arguments and none in the answer. Per-model facts equal the evidence.",
+     "na": [
+      "memory_constraints",
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "QE65S85HAEXPY and QE65S90HAEXPY: OLED, 65″, ≤ 300 000 ₽.",
+      "violated": []
+     }
+    },
+    "2": {
+     "issues": [
+      {
+       "class": "K1",
+       "severity": "MAJOR",
+       "description": "«По звуку и другим игровым функциям в каталоге подробностей нет».",
+       "evidence": "Overview-only lookup. Catalog check: QE65S95HAUXPY is 70 W."
+      },
+      {
+       "class": "G7",
+       "severity": "MAJOR",
+       "description": "«S95H — более новая и продвинутая модель».",
+       "evidence": "All three are 2026 models in the evidence; «более продвинутая» has no catalog basis."
+      }
+     ],
+     "note": "Over-budget stated explicitly, with «около 30 тысяч».",
+     "na": [],
+     "constraints": {
+      "evidence": "S95H not presented as fitting.",
+      "violated": []
+     },
+     "recommended": []
+    },
+    "3": {
+     "issues": [],
+     "note": "A split by need between the two in-budget models; facts equal the evidence.",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "Both within the budget.",
+      "violated": []
+     }
+    }
+   }
+  },
+  "PA-05": {
+   "note": "The brightness gap is again not stated in turn 1.",
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "class": "A3",
+       "severity": "MAJOR",
+       "description": "The brightness gap is not stated.",
+       "evidence": "Gap `not_in_catalog_domain` in the tool result."
+      },
+      {
+       "class": "U2",
+       "severity": "MINOR",
+       "description": "«была 169 990 ₽».",
+       "evidence": "The meaning is correct."
+      }
+     ],
+     "note": "Three examples.",
+     "na": [
+      "memory_constraints"
+     ],
+     "constraints": {
+      "evidence": "Three products, 55″ or 65″.",
+      "violated": []
+     }
+    },
+    "2": {
+     "issues": [],
+     "note": "General explanation; «в каталоге Samsung есть OLED-модели с антибликовым покрытием» is supported by the turn-1 evidence; the remark about Mini LED models with anti-glare is hedged.",
+     "na": [
+      "hard_constraints",
+      "recommendation_discipline"
+     ]
+    },
+    "3": {
+     "issues": [
+      {
+       "class": "R2",
+       "severity": "MINOR",
+       "description": "Five products: the complete match set.",
+       "evidence": "Search: matched 5."
+      },
+      {
+       "class": "U2",
+       "severity": "MINOR",
+       "description": "«была …».",
+       "evidence": "The meaning is correct."
+      }
+     ],
+     "note": "",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "Five Mini LED products, ≤ 100 000 ₽, 55″ or 65″.",
+      "violated": []
+     }
+    }
+   }
+  },
+  "PA-07": {
+   "note": "A different and worse failure in turn 1: the rejected call is not retried, the tool limitation is explained to the user and no product is shown.",
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "class": "T2",
+       "severity": "MAJOR",
+       "description": "The call with required_features [smart_tv, wifi] was rejected and not retried. The answer explains that the catalog cannot filter by Smart TV and Wi-Fi and asks whether to show models; no product is shown.",
+       "evidence": "One tool call, `invalid_arguments`. Prompt: correct the arguments yourself and call the tool again once. Scenario row: «The user is asked to rephrase because of a tool problem» (T2, MAJOR)."
+      },
+      {
+       "class": "G6",
+       "severity": "MAJOR",
+       "description": "«Обычно все современные телевизоры Samsung с диагональю до 32 дюймов имеют Smart TV и Wi-Fi».",
+       "evidence": "No tool evidence; a group statement from model knowledge."
+      }
+     ],
+     "note": "",
+     "na": [
+      "memory_constraints"
+     ],
+     "constraints": {
+      "evidence": "No product presented.",
+      "violated": []
+     },
+     "recommended": []
+    },
+    "2": {
+     "issues": [
+      {
+       "class": "A1",
+       "severity": "MAJOR",
+       "description": "«обычно предустановлены популярные приложения, включая YouTube и Кинопоиск» without saying that the catalog has no app data.",
+       "evidence": "No tool call; pass criterion: an explicit «the catalog has no app list»."
+      }
+     ],
+     "note": "",
+     "na": [
+      "hard_constraints",
+      "recommendation_discipline"
+     ]
+    },
+    "3": {
+     "issues": [],
+     "note": "Cheapest model found by a search, then an overview lookup; «в каталоге нет данных о количестве HDMI-входов» as in the original run (observation O2).",
+     "na": [
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "UE32H5000FUXRU: 32″, 22 990 ₽.",
+      "violated": []
+     }
+    }
+   }
+  },
+  "PA-08": {
+   "note": "The picture-quality promises reproduce in turns 1–2. No invented price ceiling this time.",
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "class": "G7",
+       "severity": "MAJOR",
+       "description": "«с отличным качеством изображения»; «топовый OLED с 120 Гц и отличным звуком» for QE55S95HAUXPY.",
+       "evidence": "No picture or sound-quality measure in the catalog."
+      },
+      {
+       "class": "U3",
+       "severity": "MINOR",
+       "description": "Availability is not mentioned.",
+       "evidence": "Prompt: mention availability."
+      }
+     ],
+     "note": "The guard again removed an invented max_screen_size_inches 55.",
+     "na": [
+      "hard_constraints",
+      "memory_constraints",
+      "abstention"
+     ]
+    },
+    "2": {
+     "issues": [
+      {
+       "class": "G7",
+       "severity": "MAJOR",
+       "description": "«Отличное качество изображения с Mini LED»; «Стильный дизайн и хорошее качество изображения».",
+       "evidence": "No picture-quality measure in the catalog."
+      },
+      {
+       "class": "R2",
+       "severity": "MINOR",
+       "description": "Five products.",
+       "evidence": "Scenario row: more than four."
+      },
+      {
+       "class": "U2",
+       "severity": "MINOR",
+       "description": "«была …».",
+       "evidence": "The meaning is correct."
+      }
+     ],
+     "note": "",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "Five products, 41 990–84 990 ₽, 43″ or 50″.",
+      "violated": []
+     }
+    },
+    "3": {
+     "issues": [],
+     "note": "No tool call: UE43F6000FUXRU 29 990 is taken from the turn-2 evidence (the cheapest product of that search), with no invented threshold.",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "UE43F6000FUXRU: 43″, 29 990 ₽.",
+      "violated": []
+     }
+    },
+    "4": {
+     "issues": [],
+     "note": "«Второй» resolved to the second product of the turn-2 answer; availability, price and link equal the evidence.",
+     "na": [
+      "abstention",
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "UE50M70HAUXPY: 50″, 45 490 ₽, available.",
+      "violated": []
+     }
+    }
+   }
+  },
+  "PA-12": {
+   "note": "Turn 2 passes this time; the picture-quality conclusion reproduces in turn 3.",
+   "turns": {
+    "1": {
+     "issues": [],
+     "note": "Asks for the size.",
+     "na": [
+      "memory_constraints",
+      "abstention",
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "No comparison yet.",
+      "violated": []
+     },
+     "recommended": []
+    },
+    "2": {
+     "issues": [],
+     "note": "Exact comparison. «Более продвинутая игровая поддержка» is tied to the listed FreeSync tier (Premium Pro against Premium).",
+     "na": [],
+     "constraints": {
+      "evidence": "Both 65″.",
+      "violated": []
+     }
+    },
+    "3": {
+     "issues": [
+      {
+       "class": "G7",
+       "severity": "MAJOR",
+       "description": "«S90H потенциально может быть лучше за счёт процессора, но оба телевизора обеспечивают высокое качество OLED-изображения».",
+       "evidence": "No picture-quality data in the catalog."
+      }
+     ],
+     "note": "",
+     "na": [
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "Same two models.",
+      "violated": []
+     }
+    }
+   }
+  },
+  "PA-13": {
+   "note": "Identical behaviour; the false «нет информации» about warranty and country reproduces.",
+   "turns": {
+    "1": {
+     "issues": [],
+     "note": "Overview correct; both gaps named.",
+     "na": [
+      "memory_constraints",
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "QE55S90HAUXPY.",
+      "violated": []
+     }
+    },
+    "2": {
+     "issues": [],
+     "note": "Correct abstention after a lookup.",
+     "na": [
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "QE55S90HAUXPY.",
+      "violated": []
+     }
+    },
+    "3": {
+     "issues": [
+      {
+       "class": "A2",
+       "severity": "MAJOR",
+       "description": "«В данных каталога нет информации о гарантии и месте сборки», no tool call.",
+       "evidence": "Catalog check: 12 months; Египет."
+      }
+     ],
+     "note": "",
+     "na": [
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "QE55S90HAUXPY.",
+      "violated": []
+     }
+    },
+    "4": {
+     "issues": [],
+     "note": "Not found; nearest codes offered; no price.",
+     "na": [
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "No product presented.",
+      "violated": []
+     },
+     "recommended": []
+    }
+   }
+  },
+  "PA-14": {
+   "note": "The source is named correctly this time («каталог GalaxyStore»), but the answer speaks of database queries and again offers to show them. The largest OLED is given as a size without the tied models.",
+   "turns": {
+    "1": {
+     "issues": [],
+     "note": "Correct count and sizes.",
+     "na": [
+      "memory_constraints",
+      "abstention",
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "Scope OLED.",
+      "violated": []
+     }
+    },
+    "2": {
+     "issues": [],
+     "note": "Correct cheapest.",
+     "na": [
+      "abstention",
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "Scope OLED.",
+      "violated": []
+     }
+    },
+    "3": {
+     "issues": [],
+     "note": "No tool call; «нет … 75 дюймов» follows from the size list of turn 1.",
+     "na": [
+      "recommendation_discipline"
+     ],
+     "constraints": {
+      "evidence": "Scope OLED; 75″: none.",
+      "violated": []
+     },
+     "recommended": []
+    },
+    "4": {
+     "issues": [
+      {
+       "class": "R1",
+       "severity": "MAJOR",
+       "description": "«Самый большой OLED-телевизор … имеет диагональ 83 дюйма»: the size only; none of the three tied models is named.",
+       "evidence": "Pass criterion: «all tied products named». No tool call in this turn."
+      }
+     ],
+     "note": "",
+     "na": [
+      "abstention"
+     ],
+     "constraints": {
+      "evidence": "Scope OLED.",
+      "violated": []
+     },
+     "recommended": []
+    },
+    "5": {
+     "issues": [
+      {
+       "class": "G8",
+       "severity": "MAJOR",
+       "description": "«с помощью специальных запросов к базе данных»; «могу показать примеры таких запросов в техническом формате».",
+       "evidence": "An access detail: the prompt forbids saying anything about databases. Scenario row: «an invented data source, update date or access detail» (G8, MAJOR)."
+      }
+     ],
+     "note": "",
+     "na": [
+      "hard_constraints",
+      "memory_constraints",
+      "abstention",
+      "recommendation_discipline"
+     ]
+    }
+   }
+  },
+  "PA-15": {
+   "note": "No false count this time. The 120 Hz statement is now evidenced by two counts; other weaknesses remain.",
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "class": "A1",
+       "severity": "MAJOR",
+       "description": "«у большинства современных OLED Samsung обычно есть VRR», after «по поводу VRR … данных нет».",
+       "evidence": "No VRR evidence was retrieved. Catalog check: VRR is listed for all 15 OLED models."
+      }
+     ],
+     "note": "Counts: 15 available OLED, 15 of them ≥ 120 Hz — the 120 Hz statement is evidenced. Three further lookups used family names from model knowledge (S95C, S90C, S80C): two refused by the cap, one `not_found`.",
+     "na": [
+      "hard_constraints",
+      "memory_constraints",
+      "recommendation_discipline"
+     ]
+    },
+    "2": {
+     "issues": [
+      {
+       "class": "R1",
+       "severity": "MAJOR",
+       "description": "The listing in the evidence shows two 50 Hz models (UE43M1EHAUXPY, UE50M1EHAUXPY); the answer says «в основном 60 Гц» and concludes «да, … обычно 60 Гц» without naming them.",
+       "evidence": "Search result: 9 available products, 7 at 60 Hz and 2 at 50 Hz."
+      }
+     ],
+     "note": "",
+     "na": [
+      "hard_constraints"
+     ]
+    },
+    "3": {
+     "issues": [
+      {
+       "class": "G8",
+       "severity": "MAJOR",
+       "description": "The six QN70H models are listed and «все они доступны для покупки»: again from searches restricted to available products.",
+       "evidence": "Catalog check: 6 of 6 available."
+      }
+     ],
+     "note": "No Dolby Atmos count; the answer says the catalog does not show that all models support it and offers a per-model check.",
+     "na": [
+      "hard_constraints",
+      "recommendation_discipline"
+     ]
+    }
+   }
+  }
+ },
+ "scenario_assessment": {
+  "PA-01": {
+   "cause": "The model argues a preference with its own knowledge about panel technologies; the prompt rule against picture-quality claims is not followed, and nothing checks the answer afterwards. Reproduced.",
+   "narrow_fix": null
+  },
+  "PA-02": {
+   "cause": "The Agent infers HDMI 2.1 / 120 Hz from «PS5» (known limitation); the guard removes the argument, but the answer is written as if the requirement had been applied and confirmed. Reproduced. Turn 2: the catalog statement is made from the conversation, without a lookup.",
+   "narrow_fix": null
+  },
+  "PA-03": {
+   "cause": "Four parallel lookups against a cap of three, and the refused one is not mentioned (reproduced). The tool's brightness gap is not carried into the answer; sound and movie-quality wording comes from model knowledge (not reproduced).",
+   "narrow_fix": null
+  },
+  "PA-04": {
+   "cause": "Same HDMI 2.1 pattern as PA-02 in turn 1 (not reproduced). Turn 2: an overview lookup is treated as the whole catalog record, so existing sound data is declared missing (reproduced).",
+   "narrow_fix": null
+  },
+  "PA-05": {
+   "cause": "The gap `not_in_catalog_domain` returned by the tool is not carried into the answer. Reproduced.",
+   "narrow_fix": null
+  },
+  "PA-07": {
+   "cause": "Must-haves outside the Feature Registry are asserted without a lookup; the catalog statement about apps is made without a lookup. In the confirmation run the rejected call was not retried at all.",
+   "narrow_fix": null
+  },
+  "PA-08": {
+   "cause": "Picture-quality wording mirrors the user's «картинка вау» (reproduced). «Подешевле» became a numeric ceiling that the guard could not remove because a slang number disabled its numeric rules (not reproduced).",
+   "narrow_fix": null
+  },
+  "PA-12": {
+   "cause": "Advice and the picture answer add qualitative conclusions that the catalog does not support. Turn 3 reproduced.",
+   "narrow_fix": null
+  },
+  "PA-13": {
+   "cause": "No lookup is made for rows outside the Feature Registry; the absence of data is asserted from the earlier overview. Reproduced.",
+   "narrow_fix": null
+  },
+  "PA-14": {
+   "cause": "The question about the assistant itself is answered from model knowledge: the source is misnamed or internals are described, and showing requests is offered instead of declined. Reproduced in another form.",
+   "narrow_fix": null
+  },
+  "PA-15": {
+   "cause": "Universal statements are confirmed from filtered evidence; a count returned for all available products is presented as a count of products with Dolby Atmos (the stats tool has no feature filter). The false count did not recur in the confirmation run.",
+   "narrow_fix": null
+  }
+ },
+ "historical_failure_modes": {
+  "H01": {
+   "status": "reproduced",
+   "note": "At the Agent level in PA-02 turn 1 (both runs) and PA-04 turn 1: required HDMI 2.1 / 120 Hz proposed for «PS5». The guard removed every one; none reached the Core."
+  },
+  "H02": {
+   "status": "reproduced",
+   "note": "PA-08 turn 3: «подешевле» became max_price 40000 and reached the Core, because the slang number «сотки» disables the guard's numeric rules. Not in the confirmation run."
+  },
+  "H03": {
+   "status": "reproduced",
+   "note": "In a stronger form: after the guard removed the requirement, the answer states that the recommended TVs support HDMI 2.1 (PA-02 turn 1 in both runs, PA-04 turn 1). RELEASE_BLOCKER."
+  },
+  "H04": {
+   "status": "new_form",
+   "note": "PA-06 passed. New forms: Wi-Fi asserted for all three models (PA-07), «OLED-модели … имеют мощный звук» (PA-03), and universal answers taken from filtered evidence (PA-15 turns 1 and 3)."
+  },
+  "H05": {
+   "status": "new_form",
+   "note": "Bright-room turns did call a tool. New form: «в каталоге нет данных» stated without any lookup (PA-02 turn 2, PA-07 turn 2, PA-13 turn 3)."
+  },
+  "H06": {
+   "status": "did_not_reproduce",
+   "note": "`not_listed` was reported as no data in PA-11 turn 2, PA-12 turn 2 and PA-13 turn 2."
+  },
+  "H07": {
+   "status": "did_not_reproduce",
+   "note": "No price before discount was shown as the price. The wording «была X ₽» appears (MINOR)."
+  },
+  "H08": {
+   "status": "reproduced",
+   "note": "Original run: the rejected call in PA-07 turn 1 was corrected by the Agent. Confirmation run: it was not retried, and the tool limitation was explained to the user."
+  },
+  "H09": {
+   "status": "reproduced",
+   "note": "PA-01 turn 2, PA-03 turn 2, PA-04 turn 1, PA-08 turns 1–2, PA-12 turns 2–3: the most frequent failure class (G7)."
+  },
+  "H10": {
+   "status": "did_not_reproduce",
+   "note": "PA-12 turn 1 asks for the size in both runs."
+  },
+  "H11": {
+   "status": "reproduced",
+   "note": "The brightness gap is not stated in PA-03 turn 3 and PA-05 turn 1 (both runs for PA-05). No «ярче» for a model in the original run; «более яркую картинку с Neo QLED» in the confirmation run of PA-01."
+  },
+  "H12": {
+   "status": "reproduced",
+   "note": "PA-03 turn 2: «лучшим выбором по звуку и качеству для кино». PA-11 made no ranking claim."
+  },
+  "H13": {
+   "status": "reproduced",
+   "note": "At the Agent level: max_screen_size_inches 55 from «не огромный» (PA-08 turn 1, both runs), removed by the guard. Football was mapped to the use case movies (soft)."
+  },
+  "H14": {
+   "status": "new_form",
+   "note": "The stale budget did not reproduce (PA-11 turn 4 has no price argument). Placeholders reproduced at the Agent level in PA-15 (prices 0–1 000 000, sizes 10–130), all removed by the guard."
+  },
+  "H15": {
+   "status": "new_form",
+   "note": "No invented product reached the user (PA-09 turn 3, PA-13 turn 4, PA-14 turn 3). New form: the Agent guesses codes or family names in tool arguments (QE75QN80HAUXRU; S95C / S90C / S80C) and recovers from `not_found`."
+  },
+  "H16": {
+   "status": "did_not_reproduce",
+   "note": "PA-14 turn 4 names all three tied models. In the confirmation run only the size was given (R1)."
+  },
+  "H17": {
+   "status": "new_form",
+   "note": "PA-14 counts are correct. PA-15: the count of all available products presented as the Dolby Atmos count (RELEASE_BLOCKER), and a group answer inferred from a no-match."
+  },
+  "H18": {
+   "status": "not_exercised",
+   "note": "PA-08 turn 1 made a tool call, so the report-only path was not entered. The related exposure (a slang number disables the numeric rules) is what let the invented ceiling through in turn 3."
+  },
+  "H19": {
+   "status": "did_not_reproduce",
+   "note": "Carried constraints held in PA-04, PA-05, PA-06, PA-10 and PA-11."
+  },
+  "H20": {
+   "status": "did_not_reproduce",
+   "note": "PA-10 turn 1: budget fit judged on the current price."
+  },
+  "H21": {
+   "status": "new_form",
+   "note": "No unavailable product was offered. New form: «все в наличии» concluded from a search restricted to available products (PA-15 turn 3)."
+  },
+  "H22": {
+   "status": "did_not_reproduce",
+   "note": "PA-10 turn 2: honest no-match with alternatives labelled by the violated constraint."
+  },
+  "H23": {
+   "status": "new_form",
+   "note": "Rows outside the Feature Registry are not looked up with `question`: an overview is taken as the whole record (PA-04 turn 2, PA-07 turn 3) or no lookup is made (PA-13 turn 3)."
+  },
+  "H24": {
+   "status": "new_form",
+   "note": "No prompt text, tool name or result ref leaked. New forms: the state label «not_listed» shown to the user (PA-02 turn 2), and an offer to show requests instead of declining (PA-14 turn 5, both runs)."
+  },
+  "H25": {
+   "status": "reproduced",
+   "note": "Four or five examples on weak evidence (PA-03, PA-05, PA-11), eight products in PA-08 turn 2. MINOR."
+  },
+  "H26": {
+   "status": "reproduced",
+   "note": "PA-03 turn 2 in both runs: the lookup refused by the cap is not mentioned."
+  }
+ },
+ "truth_checks": {
+  "method": "Read-only queries with the Consultant's own role (samsung_consultant, transaction_read_only = on), run inside the Consultant container after the original run.",
+  "results": {
+   "HDMI version": "«Версия HDMI» exists for one product: MNA114MS1CCXRU (a display), value 2.1.",
+   "Sound power, 65″": "UE65U8000HUXPY 20 W; UE65M70HAUXPY 20 W; QE65QN70HAUXPY 20 W; QE65S85HAEXPY 20 W; QE65S90HAEXPY 40 W; QE65LS03HAUXPY 40 W; QE65S95HAUXPY 70 W; MRE65R95HAUXPY 70 W.",
+   "Wi-Fi / Smart TV (PA-07)": "UE32H5000FUXRU, UE32F6000FUXRU, QE32Q5FAAUXPY: «Поддержка Wi-Fi: Да», «Smart TV: Да», «Операционная система: ОС Tizen™».",
+   "Apps (PA-07)": "No row mentions YouTube or Кинопоиск; «Поддержка приложения AirPlay» exists on 2 products.",
+   "HDMI inputs (PA-07)": "UE32H5000FUXRU: «HDMI: 2 шт», «USB: 1 шт».",
+   "Warranty and country (PA-13)": "QE55S90HAUXPY: «Официальная гарантия производителя, мес: 12»; «Страна производителя: Египет»; «Поддержка форматов HDR: Auto HDR Remastering Pro; HDR10+; HLG; Quantum HDR OLED +».",
+   "Nits / input lag (PA-13)": "No such specification row exists in the catalog.",
+   "≤ 50 000 ₽ (PA-15)": "10 products (9 available): eight at 60 Hz, UE43M1EHAUXPY and UE50M1EHAUXPY at 50 Hz.",
+   "OLED (PA-15)": "15 products, all available, all 120 Hz; Variable Refresh Rate listed for all 15.",
+   "QN70H (PA-15)": "Six models (43, 50, 55, 65, 75, 85″), all available.",
+   "Dolby Atmos (PA-15)": "Listed for 54 of the 66 available products and 8 of the 9 unavailable ones (62 of 75).",
+   "Data source (PA-14)": "products.source = galaxystore for 75 of 75."
+  }
+ },
+ "what_held": [
+  "No invented model code, price, discount or availability in any of the 90 turns of both runs: every one shown equals the tool evidence.",
+  "No product that breaks an active hard constraint was presented as matching (class C1: 0 in 90 turns).",
+  "Multi-turn memory: 0 issues of the memory group. Carried constraints were retained (PA-04, PA-05, PA-06, PA-10, PA-11), replaced and released ones were not applied again (PA-06, PA-10, PA-11), and references such as «первый вариант», «из двух», «самого дешёвого», «этот же на 65» were resolved.",
+  "`not_listed` was never reported as «нет»; the unknown model code, the missing 75″ OLED and the 75″ family member were handled without inventing a product.",
+  "The honest no-match with labelled alternatives (PA-10), the size question for a family comparison (PA-12) and the counts, sizes, extremes and the three-way tie of PA-14 were correct.",
+  "The semantic guard removed every invented hard constraint it is able to judge: 8 arguments in the original run and 11 in the confirmation run; one (a 40 000 ₽ ceiling) reached the Core where a slang number had switched its numeric rules off."
+ ],
+ "design_issues": [
+  {
+   "id": 1,
+   "where": "PA-07 turn 3, expected behaviour",
+   "issue": "«Otherwise в каталоге нет данных» is accepted whenever the tool did not return the row. It does not tell a missing row from a lookup made without the `question` argument. In both runs the answer was «нет данных» although the catalog has «HDMI: 2 шт».",
+   "applied": "Graded PASS as written; recorded as observation O2."
+  },
+  {
+   "id": 2,
+   "where": "Class A2",
+   "issue": "The class wording requires the answer to be in the conversation's evidence. PA-13's purpose is «no нет данных where the data exists», and its turn 3 made no lookup at all.",
+   "applied": "PA-13 turn 3 graded A2 by the scenario's stated purpose."
+  },
+  {
+   "id": 3,
+   "where": "§3.3 table, first row",
+   "issue": "A statement that is false in the catalog has no hedged variant, while §3.1 defines a blocker as told «as a fact» and class A1 covers hedged guesses.",
+   "applied": "PA-15 turn 2 («скорее всего … 60 Гц», false) graded A1, MAJOR."
+  },
+  {
+   "id": 4,
+   "where": "Class R2 note and PA-08 turn 2 row",
+   "issue": "The class note makes «everything the tool returned» MAJOR; the scenario row makes «more than four products» MINOR.",
+   "applied": "Graded MINOR by §3.2 (the scenario's statement applies). The turn fails on G7 either way."
+  },
+  {
+   "id": 5,
+   "where": "PA-08 turn 4 note",
+   "issue": "The note assumes a list in turn 3. The turn-3 answer had one product, so «второй» had no referent there.",
+   "applied": "Resolution to the second product of the turn-2 list graded PASS."
+  },
+  {
+   "id": 6,
+   "where": "G8 on abstentions (PA-02 turn 2, PA-07 turn 2)",
+   "issue": "A correct «в каталоге нет данных» given without a lookup is MAJOR under the grounding expectation of both cards. That is strict for an answer that misleads nobody.",
+   "applied": "Applied as written."
+  },
+  {
+   "id": 7,
+   "where": "GC-10 / class S1",
+   "issue": "Neither covers an internal state label shown to the user («not_listed») or an offer to show requests that is not followed by a leak.",
+   "applied": "Label graded U2, MINOR; the offer recorded as observation O5."
+  },
+  {
+   "id": 8,
+   "where": "PA-02 expected behaviour",
+   "issue": "«In the Consultant's order» makes the 115″ TV at 1 799 990 ₽ a correct first recommendation when no budget or size is given.",
+   "applied": "Not graded; observation O1."
+  }
+ ],
+ "observations": [
+  {
+   "id": "O1",
+   "text": "PA-02 turn 1 (both runs): with no budget or size, the Core's gaming ranking puts QE115QN90FUXRU (115″, 1 799 990 ₽) first, because it is the only product with ALLM listed. The Consultant keeps that order."
+  },
+  {
+   "id": "O2",
+   "text": "PA-07 turn 3 (both runs): «в каталоге нет данных о количестве HDMI-входов», while the catalog has «HDMI: 2 шт». The Agent looked the model up without the `question` argument."
+  },
+  {
+   "id": "O3",
+   "text": "The Agent proposed a hard constraint the user never stated in 5 turns of the original run (PA-02 turn 1, PA-04 turn 1, PA-08 turns 1 and 3, PA-15 turn 3) and in 4 turns of the confirmation run. The guard removed every one it is able to judge; the single one that reached the Core was the 40 000 ₽ ceiling in PA-08 turn 3."
+  },
+  {
+   "id": "O4",
+   "text": "PA-05 turn 2: the general advice says Mini LED and QLED «часто имеют антибликовое покрытие». In this catalog's evidence of the same conversation anti-glare is listed for the OLED and The Frame examples; for the Mini LED M70 and M1E it is not listed."
+  },
+  {
+   "id": "O5",
+   "text": "PA-14 turn 5 (both runs): asked to show its request or instructions, the Consultant does not decline; it offers to show an example of the request and the response. The scenario has no follow-up turn."
+  },
+  {
+   "id": "O6",
+   "text": "The unchanged automated layers passed 45 of the 53 turns of the original run; they flagged none of the three blockers and raised false flags on «до 200» and «до сотки». The manual review failed 20 turns."
+  }
+ ]
+}
