@@ -79,6 +79,7 @@ COUNT_GROUPS = {"panel_technology": GroupKey.PANEL_TECHNOLOGY, "category": Group
 LIST_TOOLS = ("search_tvs", "recommend_tvs")
 SUMMARY_FEATURE_IDS = tuple(f for f, d in FEATURES.items() if d.kind == "bool")
 STATES = ("yes", "no", "not_listed")
+MAX_LISTED_VALUES = 12                 # a feature count lists each distinct value up to this many, else the range
 
 # A full catalog-shaped model code (same shape as consultant.extract); anything else is a family token.
 FULL_CODE = re.compile(r"^[A-Z]{2,3}\d{2,3}[A-Z][A-Z0-9]{4,11}$")
@@ -204,7 +205,8 @@ TOOL_SCHEMAS = {
             "group_by": {"type": "string", "enum": list(COUNT_GROUPS),
                          "description": "Only with stat='count': the count per existing value."},
             "attributes": _arr(FEATURE_IDS, "Only with stat='count': registry features to count among the "
-                                            "counted products (yes / no / not_listed each). Not a filter."),
+                                            "counted products (yes / no / not_listed each; for hz_120, "
+                                            "sound_power_w and depth_cm also the listed values). Not a filter."),
             "model": {**_MODEL_REF, "description": "Only with stat='count': count inside this model family "
                                                    "('QN70H') or for one model code."},
             **_FILTERS,
@@ -424,21 +426,35 @@ def recommend_tvs(repo, args: dict) -> dict:
     return _pipeline(delta, repo, "recommend_tvs", args)
 
 
-def _attribute_counts(repo, filters, attributes: list, buckets: tuple) -> dict:
-    """Exact tri-state counts per attribute over the products ``filters`` select, per availability bucket.
-    Evaluated by the Feature Registry on the structured rows: never from a list sample or semantic search."""
+def _value_distribution(values: list) -> dict:
+    """``{value: products}`` for a short list of distinct values, otherwise the range."""
+    distinct = sorted(set(values))
+    if len(distinct) > MAX_LISTED_VALUES:
+        return {"min": distinct[0], "max": distinct[-1], "distinct_values": len(distinct)}
+    return {f"{v:g}": values.count(v) for v in distinct}
+
+
+def _attribute_counts(repo, filters, attributes: list, buckets: tuple) -> tuple:
+    """``(counts, values)`` per attribute over the products ``filters`` select, per availability bucket: the exact
+    tri-state counts, and for attributes that carry a value (refresh rate behind hz_120, sound power, depth) how
+    many products have each listed value -- "no" for hz_120 says "below 120 Hz", not which rate. Evaluated by the
+    Feature Registry on the structured rows: never from a list sample or semantic search."""
     found = repo.candidates(filters)
     if found.truncated:
         raise ToolArgumentError([f"attributes: more than {found.limit} products match; add filters"])
     specs = repo.get_specs([p.id for p in found.rows], spec_names_for(attributes))
     results = evaluate_features(found.rows, specs, attributes)
-    out = {}
+    counts, values = {}, {}
     for a in attributes:
-        out[a] = {}
+        counts[a] = {}
         for available, name in buckets:
-            states = [results[p.id][a].state.value for p in found.rows if available is None or p.is_available == available]
-            out[a][name] = {s: states.count(s) for s in STATES}
-    return out
+            rows = [results[p.id][a] for p in found.rows if available is None or p.is_available == available]
+            states = [r.state.value for r in rows]
+            counts[a][name] = {s: states.count(s) for s in STATES}
+            listed = [r.value for r in rows if r.value is not None]
+            if listed:
+                values.setdefault(a, {})[name] = _value_distribution(listed)
+    return counts, values
 
 
 def get_catalog_stats(repo, args: dict) -> dict:
@@ -473,8 +489,9 @@ def get_catalog_stats(repo, args: dict) -> dict:
                 if f.is_available is None:
                     g["available"] = avail.get(value, 0)
                 groups.append(g)
-        attribute_counts = _attribute_counts(repo, f, list(args["attributes"]), buckets) if "attributes" in args else None
-        return stats_payload(plan, counts, args.get("group_by"), groups, args, attribute_counts)
+        attribute_counts, attribute_values = (_attribute_counts(repo, f, list(args["attributes"]), buckets)
+                                              if "attributes" in args else (None, None))
+        return stats_payload(plan, counts, args.get("group_by"), groups, args, attribute_counts, attribute_values)
     key, direction = EXTREME_STATS[stat]
     if key is SortKey.EFFECTIVE_PRICE and args.get("price_basis") == "list":
         key = SortKey.LIST_PRICE

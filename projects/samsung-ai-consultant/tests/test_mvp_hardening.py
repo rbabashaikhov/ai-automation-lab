@@ -370,6 +370,11 @@ def test_a_count_states_what_was_counted():
                                   {"dolby_atmos": {"available": {"yes": 54, "no": 0, "not_listed": 12}}})
     assert list(with_features).index("counts") + 1 == list(with_features).index("attribute_counts")
     assert sum(with_features["attribute_counts"]["dolby_atmos"]["available"].values()) == with_features["counts"]["available"]
+    assert "attribute_values" not in with_features                                # only attributes that carry a value
+    rates = stats_payload(Plan, {"total": 10}, None, [], {}, {"hz_120": {"total": {"yes": 0, "no": 10, "not_listed": 0}}},
+                          {"hz_120": {"total": {"50": 2, "60": 8}}})
+    assert list(rates).index("attribute_counts") + 1 == list(rates).index("attribute_values")
+    assert "never implied by a 'no'" in COUNT_SCOPE_NOTE and "`attribute_values`" in COUNT_SCOPE_NOTE
 
 
 # ---- prompt v4 ----------------------------------------------------------------------------------------------
@@ -388,6 +393,7 @@ def test_prompt_v4_adds_the_three_rules_without_scenario_phrasing():
     groups = next(line for line in p.splitlines() if line.startswith("- Counts and statements about a whole group"))
     for needle in ("come only from get_catalog_stats, never from a list", "filtered selection", "`counted` scope",
                    "`attribute_counts`", "never present a total or an availability count as the number of models with a feature",
+                   "`attribute_values`", "never derive a value from a `no`",
                    "this catalog, not about all Samsung models"):
         assert needle in groups, needle
     assert "call get_tv with `question`" in p and "A general overview is not the whole record" in p

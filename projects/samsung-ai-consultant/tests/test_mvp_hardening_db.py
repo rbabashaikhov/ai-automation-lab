@@ -161,6 +161,29 @@ def test_unknown_series_counts_nothing(env):
     assert typo["status"] == "not_found" and typo["request"]["model_resolution"][0]["suggestions"]
 
 
+def test_a_no_for_120_hz_comes_with_the_refresh_rates_the_products_have(env):
+    """Phase 4F.3 targeted run 1, PA-15 turn 2: 'hz_120: no for all' was read as 'all are 60 Hz' although two of
+    the products are 50 Hz. The count now lists the values, so no value has to be inferred from a 'no'."""
+    tools, repo = env
+    catalog = repo.search(Filters(), limit=50).rows
+    band = next(p.effective_price for p in catalog if p.refresh_rate_hz == 50)          # the fixture's one 50 Hz product
+    r = tools.call("get_catalog_stats", {"stat": "count", "max_price": band, "attributes": ["hz_120"]})
+    rows = [p for p in catalog if p.effective_price <= band]
+    assert r["attribute_counts"]["hz_120"]["total"] == {"yes": 0, "no": len(rows), "not_listed": 0}
+    rates = [p.refresh_rate_hz for p in rows]
+    assert r["attribute_values"]["hz_120"]["total"] == {str(v): rates.count(v) for v in sorted(set(rates))}
+    assert set(r["attribute_values"]["hz_120"]["total"]) == {"50", "60"}                # "no" for all, and two rates
+    assert sum(r["attribute_values"]["hz_120"]["total"].values()) == r["counts"]["total"]
+    assert list(r).index("attribute_counts") + 1 == list(r).index("attribute_values")
+    sound = tools.call("get_catalog_stats", {"stat": "count", "panel_technology": ["OLED"], "attributes": ["sound_power_w", "vrr"]})
+    assert set(sound["attribute_values"]) == {"sound_power_w"}                           # vrr has no value: counts only
+    assert sum(sound["attribute_values"]["sound_power_w"]["total"].values()) == sound["counts"]["total"] == 11
+    assert "unavailable" not in sound["attribute_values"]["sound_power_w"]               # no product in that bucket
+    depth = tools.call("get_catalog_stats", {"stat": "count", "attributes": ["depth_cm"]})["attribute_values"]["depth_cm"]["total"]
+    assert set(depth) == {"min", "max", "distinct_values"} and depth["min"] < depth["max"] and depth["distinct_values"] > 12
+    assert "attribute_values" not in tools.call("get_catalog_stats", {"stat": "count", "attributes": ["dolby_atmos"]})
+
+
 def test_refresh_rates_that_exist_in_a_price_band(env):
     """PA-15 turn 2 ('are they all 60 Hz?'): the distribution, with unavailable products included."""
     tools, repo = env

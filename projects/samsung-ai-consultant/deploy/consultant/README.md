@@ -19,6 +19,7 @@ n8n ──MCP + Bearer token──> samsung-consultant:8765 ──read-only role
 | `create_consultant_role.sql`, `verify_consultant_role.sql` | Least-privilege read-only role `samsung_consultant` and its verification |
 | `verify_readonly.py` | Write-denial check run inside the container with its own role |
 | `guard_probe.js` | Gate 4E.2 semantic-guard probe run with Node inside the n8n container: guard decisions over the real MCP boundary (PS5 without/with message, explicit HDMI 2.1, report-only without `conv`, explicit vs invented budget) and the two halves of the in-memory restart check |
+| `mvp_probe.js` | Phase 4F.3 probe run with Node inside the n8n container: an unapplied required feature is reported as `not_listed` per product, an invented number after a slang budget is removed and a stated one kept, feature / series counts with their scope and listed values |
 | `mcp_probe.js` | Boundary probe run with Node inside the n8n container: health, 401 without or with a wrong token, authenticated `tools/list` + closed-schema check, one deterministic call; since 4D.2B-R also the per-turn cap across four fresh sessions (`ok ok ok tool_call_limit_reached`) and refusal of a call without `?turn=`; since 4D.2D also the result contract and the `attributes` limit |
 
 ## Runbook (as executed in Gate 4D.2A)
@@ -29,8 +30,8 @@ and the scripts. Commands run as root on the VPS unless marked *local*.
 ```bash
 # local: build from the deployed commit and ship the image (no registry, no repo on the VPS)
 docker build -f deploy/consultant/Dockerfile --label org.opencontainers.image.revision=$(git rev-parse HEAD) \
-  -t samsung-consultant:4f3 .                                        # 4F.3 (4E.2A: 4e2a / 8ea84f0; 4E.2: 4e2 / 657e0e4)
-docker save samsung-consultant:4f3 -o consultant.tar && gzip consultant.tar       # a piped save|ssh stalled in 4D.2B-R
+  -t samsung-consultant:4f3a .                                       # 4F.3 (4E.2A: 4e2a / 8ea84f0; 4E.2: 4e2 / 657e0e4)
+docker save samsung-consultant:4f3a -o consultant.tar && gzip consultant.tar      # a piped save|ssh stalled in 4D.2B-R
 scp consultant.tar.gz n8n-vps:/root/ && ssh n8n-vps 'gunzip -c /root/consultant.tar.gz | docker load && rm /root/consultant.tar.gz'
 
 python3 provision_env.py init-env consultant.env                       # secrets generated here, never printed

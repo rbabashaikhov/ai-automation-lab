@@ -38,7 +38,9 @@ PROMPT_FILE = Path(__file__).parent / "prompts" / "agent_system_v4.md"
 
 WORKFLOW_NAME = "Samsung — AI Consultant"
 AGENT_MODEL = "gpt-4.1-mini"          # measured via this credential in Phase 3D; temperature 0
-OPENAI_CREDENTIAL = {"id": "mcixQy0sFVXl7nU9", "name": "OpenAI account"}
+# The name is n8n's label for the credential id. The owner renamed the credential in n8n ("OpenAI account" until the
+# Phase 4F.3 deploy, when n8n wrote the current label into the saved workflow); the id is unchanged.
+OPENAI_CREDENTIAL = {"id": "mcixQy0sFVXl7nU9", "name": "OpenAI account samsung-ai"}
 MCP_CREDENTIAL = {"id": "9Ak6Ely4Wbp63RUn", "name": "Samsung Consultant MCP"}   # Header Auth; value only in n8n
 # Internal Docker service on n8n-compose_default (Phase 4D.2A; deploy/consultant/compose.yml), reached by
 # service name -- never a container IP and never the bridge gateway (see ADR 004 correction).
