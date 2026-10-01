@@ -1,0 +1,170 @@
+{
+ "phase": "4F.3",
+ "git": {
+  "Branch": "feature/samsung-ai-consultant-final-acceptance",
+  "Starting HEAD": "d05da1fd104469bdd9218ddc40ccc9506a11b5b5 (Phase 4F.2, clean tree, no drift)",
+  "HEAD at the final runs": "afc8678fac4f385fcc8ad43cfd3cb3c2d4adbad0 (the revision label of the deployed image)",
+  "main / origin/main": "1924e754ee7b434bffe876f4ad28626f6c66645c, untouched; nothing pushed or merged; no history rewritten",
+  "Commits of the phase": [
+   "b8bb58a docs(samsung): define MVP demo hardening plan",
+   "9ca118b fix(samsung): harden consultant evidence semantics",
+   "2a3784b fix(samsung): list the values behind a feature count",
+   "0856ba4 fix(samsung): bind each price to its model code and fix how an unknown feature is phrased",
+   "98e663c fix(samsung): name what all shown models have and what the catalog does not list",
+   "b4a55cb fix(samsung): reduce the evidence step to asked features only",
+   "751473f fix(samsung): keep prompt v3 and state an all-unknown feature in the result's caveats",
+   "afc8678 fix(samsung): put the listed values and a same-value flag inside the count entry",
+   "and the commit that adds this report"
+  ]
+ },
+ "deployment": {
+  "Consultant image": "`samsung-consultant:4f3f`, id `sha256:f9e26b657efd58f7f8b436462ea57edccc340559d74602bac3763e72e57528d0`, revision label `afc8678fac4f385fcc8ad43cfd3cb3c2d4adbad0`; started 2026-10-01T14:56:31Z, 0 restarts, healthy",
+  "Runtime files": "23 files under consultant/ in the container are sha256-identical to the image built locally and to the repository at `afc8678`",
+  "Semantic guard": "`semantic-guard-4f3-v1` (4F.2: `semantic-guard-4e2a-v2`): reads spelled and slang numbers («до сотки», «полтинник», «сто тысяч»)",
+  "Tools": "the same five tools, contract `agent-result-v2`; tool-schema hash `f215b7d33c1495f2` (4F.2: `4645dac666b7ce5e`): `get_catalog_stats` gained `attributes`, `model` and `group_by: refresh_rate_hz`; cap of 3 tool calls per turn unchanged",
+  "Prompt": "`consultant/prompts/agent_system_v3.md`, sha256 `c01403537c7fdf8d…` — **unchanged from Phase 4F.2**. A prompt v4 was written, measured and not adopted",
+  "Model": "`gpt-4.1-mini`, temperature 0, max tokens unset — unchanged; confirmed per turn from what n8n sent",
+  "Workflow": "`4d8mXFWGpS5P4t1L` «Samsung — AI Consultant», inactive; `n8n-tool workflows diff` against `workflows/ai-consultant.json`: no meaningful differences, 7 nodes, 8 connections. The file differs from the 4F.2 one in one string: the OpenAI credential's display name, which n8n now reports as `OpenAI account samsung-ai` for the same credential id",
+  "Exposure": "no published port, no host listener on 8765, traefik.enable=false, network n8n-compose_default only, read-only root FS, cap_drop ALL, no mounts — as before",
+  "Probes": "`mcp_probe.js`, `guard_probe.js` and the new `mvp_probe.js` gave identical output on the smoke container and on production (token piped on the VPS, never displayed)",
+  "Catalog": "75 products / 66 available; 4151 spec rows; 514 chunks, 514 embedded; max(updated_at) 2026-09-28 18:03:49Z; md5 products 34f4d64c4ffd0a6af3c18dd68be06637, specs 13a479974cb7c87cb89806cba064238a, chunks 38b8dfe7f372c0f4e64cb9ef571fbcda; role `samsung_consultant`, read-only transaction",
+  "Previous state": "image `samsung-consultant:4e2a` and workflow backup `tools/n8n-tool/backups/samsung-ai-consultant/20261001T121823Z_4d8mXFWGpS5P4t1L.json` (rollback: deploy/consultant/README.md)"
+ },
+ "deployments": [
+  {
+   "image": "samsung-consultant:4f3",
+   "revision": "9ca118b",
+   "deployed_utc": "2026-10-01T12:16:58Z",
+   "workflow_updated_utc": "2026-10-01T12:18:24Z",
+   "prompt": "v4 (first version)",
+   "status": "superseded",
+   "used_by": "targeted run 20261001T1224Z (evidence_targeted_run1.json)"
+  },
+  {
+   "image": "samsung-consultant:4f3a",
+   "revision": "2a3784b",
+   "deployed_utc": "2026-10-01T12:34:44Z",
+   "workflow_updated_utc": "2026-10-01T12:35:31Z",
+   "prompt": "v4",
+   "status": "superseded",
+   "used_by": "targeted run 20261001T1236Z (evidence_targeted_run2.json); measurement RATE"
+  },
+  {
+   "image": "samsung-consultant:4f3b",
+   "revision": "0856ba4",
+   "deployed_utc": "2026-10-01T12:54:11Z",
+   "workflow_updated_utc": "2026-10-01T12:54:55Z",
+   "prompt": "v4",
+   "status": "superseded",
+   "used_by": "measurement PS5B"
+  },
+  {
+   "image": "samsung-consultant:4f3c",
+   "revision": "98e663c",
+   "deployed_utc": "2026-10-01T13:01:41Z",
+   "workflow_updated_utc": "2026-10-01T13:02:00Z",
+   "prompt": "v4",
+   "status": "superseded",
+   "used_by": "measurement PS5C"
+  },
+  {
+   "image": "samsung-consultant:4f3d",
+   "revision": "b4a55cb",
+   "deployed_utc": "2026-10-01T13:14:25Z",
+   "workflow_updated_utc": "2026-10-01T13:14:44Z",
+   "prompt": "v4",
+   "status": "superseded",
+   "used_by": "measurement PS5D"
+  },
+  {
+   "image": "samsung-consultant:4f3d",
+   "revision": "b4a55cb",
+   "deployed_utc": null,
+   "workflow_updated_utc": "2026-10-01T13:57:50Z",
+   "prompt": "v3 restored (the workflow's last update)",
+   "status": "superseded",
+   "used_by": null
+  },
+  {
+   "image": "samsung-consultant:4f3e",
+   "revision": "751473f",
+   "deployed_utc": "2026-10-01T14:21:44Z",
+   "workflow_updated_utc": null,
+   "prompt": "v3",
+   "status": "superseded",
+   "used_by": "targeted run 20261001T1422Z (evidence_targeted_run3.json); measurements FIN_PS5, FIN_PA04, FIN_HZ, FIN_ATMOS"
+  },
+  {
+   "image": "samsung-consultant:4f3f",
+   "revision": "afc8678",
+   "deployed_utc": "2026-10-01T14:56:21Z",
+   "workflow_updated_utc": null,
+   "prompt": "v3",
+   "status": "final",
+   "used_by": "targeted run 20261001T1457Z, demo run 20261001T1459Z; measurements F_PA08T1, F_CHEAPER"
+  }
+ ],
+ "preflight": {
+  "before_the_first_deploy_utc": "2026-10-01T12:14Z",
+  "evidence": {
+   "Git": "clean tree at d05da1f, the Phase 4F.2 HEAD",
+   "Production before": "samsung-consultant:4e2a, started 2026-09-30T19:46:08Z; workflow updatedAt 2026-09-30T19:42:05.797Z; 16 n8n workflows recorded (id, name, active, updatedAt)",
+   "Catalog before": "75 products / 66 available; 4151 spec rows; 514 chunks, 514 embedded; max(updated_at) 2026-09-28 18:03:49Z; md5 products 34f4d64c4ffd0a6af3c18dd68be06637, specs 13a479974cb7c87cb89806cba064238a, chunks 38b8dfe7f372c0f4e64cb9ef571fbcda",
+   "Each deploy": "image built from the committed tree only (the script refuses a dirty consultant/, indexing/ or deploy/), files in the image compared with the repository, shipped with docker save / load, smoke container on the internal network with the three probes, then compose up for the one service, the same probes on production, files in the container compared again"
+  }
+ },
+ "run": {
+  "targeted_run_id": "20261001T1457Z",
+  "targeted_window_utc": "2026-10-01T14:57:25Z – 2026-10-01T14:59:05Z",
+  "demo_run_id": "20261001T1459Z",
+  "demo_window_utc": "2026-10-01T14:59:21Z – 2026-10-01T15:02:21Z",
+  "driver": "one temporary inactive driver workflow (HbBFfiahFaWXu1cH, «…(temporary, safe to delete)») with the committed Consultant workflow inline; created for the phase's runs and deleted after them",
+  "sessions": [
+   "mvp4f3-20261001T1457Z-PA-02",
+   "mvp4f3-20261001T1457Z-PA-04",
+   "mvp4f3-20261001T1457Z-PA-08",
+   "mvp4f3-20261001T1457Z-PA-15",
+   "mvp4f3-20261001T1459Z-DEMO-01",
+   "mvp4f3-20261001T1459Z-DEMO-02",
+   "mvp4f3-20261001T1459Z-DEMO-03",
+   "mvp4f3-20261001T1459Z-DEMO-04",
+   "mvp4f3-20261001T1459Z-DEMO-05",
+   "mvp4f3-20261001T1459Z-DEMO-06",
+   "mvp4f3-20261001T1459Z-DEMO-07",
+   "mvp4f3-20261001T1459Z-DEMO-08"
+  ],
+  "session_isolation": "one fresh session per conversation; the workflow's «Prior turns» node read 0 earlier user turns on every first turn and turn − 1 on every later one; for every turn with a tool call the Consultant logged conv = that conversation's session id",
+  "runtime_errors": "none: every execution succeeded and no tool returned an error status. Two tool calls were refused by the cap of three calls per turn (`tool_call_limit_reached`, by design; DEMO-02 turns 2 and 3)",
+  "infrastructure_events_final_runs": [],
+  "unresolved_infrastructure_failures": [],
+  "other_runs": "Three earlier targeted runs on superseded builds (kept as evidence_targeted_run1–3.json) and 18 repeated-session measurements, 306 sessions (measurements.json). Transport events in them, all retried in a new session and recorded: a Docker Hub TLS timeout during one image build, n8n API / SSH timeouts in the baseline measurement, one model connection error in FIN_PS5. No demo conversation was re-run: the demo suite ran once, on the final build"
+ },
+ "hashes": {
+  "evaluation/mvp_demo_scenarios.json": "0044d23803523d00e1552566a99389c8055b26de7ee18a147b100540ade5fd8a",
+  "evaluation/acceptance_scenarios.json": "31305175741b738f2981797ab809ea7e2ac6a087074e2157f4f92ad10777168d",
+  "consultant/prompts/agent_system_v3.md": "c01403537c7fdf8d44db7e068cdba918cf15c6c504be994d212782a666ccd655",
+  "workflows/ai-consultant.json": "d61c5f49b5e5b3e1e0ec10d75f864caacf3e0ea3837d71bf1d26377de58e19ee",
+  "consultant/semantic_guard.py": "7a9da8ede17e7c1d1f5b6e8d038f99b8d905d94a0cace4beadcc70514adf3cd0",
+  "consultant/agent_tools.py": "53b9563a7fc0f26bf985d1cb6745e5dd3aba8a1ac09a740a476d92dd1d88fe5c",
+  "consultant/agent_payload.py": "882dab4104a8a18f982d95e6c8439460a071cc09c1f03e675d12feb2b696892e",
+  "consultant/catalog_repository.py": "a081d0fa3db8b457ce1cd6fbe76b84707716094419f9933d9b794db1410a2d72",
+  "consultant/schemas.py": "60a4fb57b8af93d93968b18018e90bdfc3392da1d778999ad71936d6e44ad407"
+ },
+ "post_run": {
+  "checked_at_utc": "2026-10-01T18:40Z",
+  "driver": "deleted (404 on lookup); the 16 workflows are identical to the pre-phase snapshot (id, name, active) and differ in one updatedAt: the Consultant workflow, 2026-10-01T13:57:50.021Z, its last update of this phase; it is diff-identical to the repository",
+  "consultant": "samsung-consultant:4f3f, started 2026-10-01T14:56:31Z, 0 restarts, healthy, no port; n8n, postgres, redis, traefik: the same StartedAt as before the phase (2026-06-14 / 2026-09-28), never restarted",
+  "catalog": "identical to the pre-phase fingerprint: 75 products / 66 available; 4151 spec rows; 514 chunks, 514 embedded; max(updated_at) 2026-09-28 18:03:49Z; md5 products 34f4d64c4ffd0a6af3c18dd68be06637, specs 13a479974cb7c87cb89806cba064238a, chunks 38b8dfe7f372c0f4e64cb9ef571fbcda",
+  "consultant_log": "container log since the final deploy: 1002 MCP request lines, q redacted in all of them; 0 lines with an unredacted q; 0 lines with a bearer, authorization or key pattern",
+  "left_on_the_vps": "images samsung-consultant:4f3 … 4f3e (superseded, unused) and compose.yml.<tag>.bak files, next to the earlier 4d2*/4e2* ones; no side or smoke container remains"
+ },
+ "safety": [
+  "No ingestion, no indexing run, no embedding generated or regenerated. The only model calls are the Consultant turns of the runs and measurements, through the existing n8n credential and the accepted model.",
+  "No product-data mutation: the Consultant's read-only role and read-only transactions only; the catalog fingerprint (products, prices, availability, spec rows, chunks, embeddings) is identical before the first deploy and after the last run.",
+  "No credential exposure: no API key, password or token was read, printed, exported or stored. The MCP token was piped on the VPS between two processes; the n8n API key was used only inside the existing tooling; every generated file is scanned for key patterns before it is written.",
+  "No unrelated n8n change: the 15 other workflows are unchanged (id, name, active, updatedAt). The Consultant workflow was updated with `n8n-tool` (a backup before each update) and stays inactive. One temporary inactive driver was created and deleted.",
+  "No unrelated infrastructure change: only the `samsung-consultant` service was redeployed (image tag in its compose file). n8n, PostgreSQL, Redis and Traefik were not restarted; no database role, schema, network, port or proxy rule was changed. finance_tracker was not touched.",
+  "The OpenAI credential was not touched. n8n reports a new display name for the same credential id (`OpenAI account samsung-ai`); the workflow generator's label was aligned with it so that the read-back comparison is clean.",
+  "The model was not changed and its cost was not raised: gpt-4.1-mini, temperature 0; no bake-off."
+ ]
+}

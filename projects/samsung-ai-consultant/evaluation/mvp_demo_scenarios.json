@@ -1,0 +1,135 @@
+{
+ "_meta": {
+  "version": "mvp-demo-v1",
+  "phase": "4F.3",
+  "purpose": "Two suites for the MVP demo gate of docs/PHASE_4F_3_MVP_HARDENING.md. `targeted`: four Phase 4F.2 acceptance scenarios, re-run unchanged from acceptance_scenarios.json, each with the MVP-critical defect that must be gone. `demo`: eight realistic conversations that show what the product does well. This is not the 4F.1 acceptance benchmark and does not use its release thresholds.",
+  "limits_keys": "Per turn, machine-readable hard limits for the supporting automated check: panel (list), size (exact inches), min_size, max_size, max_price (current price, RUB), available. A product named in the answer that is outside them is flagged for the reviewer; a labelled alternative is not a defect.",
+  "review": "Verdicts are manual (manual_review.json in the results directory). The automated checks are supporting flags."
+ },
+ "cases": [
+  {"id": "DEMO-01", "family": "recommend", "turns": [
+   {"user": "Ищу телевизор около 65 дюймов, бюджет до 120 тысяч. Что посмотреть?", "tool": "recommend_tvs", "acceptable_tools": ["search_tvs"]},
+   {"user": "А у какого из них частота обновления выше?", "tool": null, "acceptable_tools": ["compare_tvs", "get_tv", "search_tvs", "recommend_tvs"]}
+  ]},
+  {"id": "DEMO-02", "family": "recommend", "turns": [
+   {"user": "Подберите телевизор для PS5, 55 дюймов, до 150 тысяч.", "tool": "recommend_tvs", "acceptable_tools": ["search_tvs"]},
+   {"user": "А HDMI 2.1 у них есть?", "tool": "compare_tvs", "acceptable_tools": ["get_tv", "recommend_tvs", "search_tvs", null]},
+   {"user": "Понятно. А что из игровых функций у них точно указано в каталоге?", "tool": "compare_tvs", "acceptable_tools": ["get_tv", "recommend_tvs", "search_tvs", null]}
+  ]},
+  {"id": "DEMO-03", "family": "recommend", "turns": [
+   {"user": "Хочу OLED для фильмов, чтобы звук был нормальный и не пришлось сразу покупать саундбар.", "tool": "recommend_tvs", "acceptable_tools": ["search_tvs"]},
+   {"user": "65 дюймов, до 350 тысяч.", "tool": "recommend_tvs", "acceptable_tools": ["search_tvs"]},
+   {"user": "А у какого из них звук мощнее?", "tool": "compare_tvs", "acceptable_tools": ["get_tv", "recommend_tvs", "search_tvs", null]}
+  ]},
+  {"id": "DEMO-04", "family": "followup", "turns": [
+   {"user": "Нужен телевизор 55 дюймов до 100 тысяч, в основном для кино и сериалов.", "tool": "recommend_tvs", "acceptable_tools": ["search_tvs"]},
+   {"user": "А есть что-то подешевле?", "tool": "search_tvs", "acceptable_tools": ["recommend_tvs", "get_catalog_stats", null]},
+   {"user": "Хорошо. А самый дешёвый из них сейчас в наличии? Дайте, пожалуйста, ссылку.", "tool": null, "acceptable_tools": ["get_tv", "search_tvs", "get_catalog_stats"]}
+  ]},
+  {"id": "DEMO-05", "family": "followup", "turns": [
+   {"user": "Покажите OLED на 55 дюймов до 200 тысяч.", "tool": "search_tvs", "acceptable_tools": ["recommend_tvs"]},
+   {"user": "А если всё-таки 65?", "tool": "search_tvs", "acceptable_tools": ["recommend_tvs"]},
+   {"user": "А если поднять бюджет до 300 тысяч?", "tool": "search_tvs", "acceptable_tools": ["recommend_tvs"]}
+  ]},
+  {"id": "DEMO-06", "family": "compare", "turns": [
+   {"user": "Сравните, пожалуйста, QE65S90HAEXPY и QE65S85HAEXPY.", "tool": "compare_tvs", "acceptable_tools": ["get_tv"]},
+   {"user": "А за что именно в S90H доплата, если смотреть только на данные каталога?", "tool": null, "acceptable_tools": ["compare_tvs", "get_tv"]}
+  ]},
+  {"id": "DEMO-07", "family": "get_tv", "turns": [
+   {"user": "Расскажите про QE55S95HAUXPY: цена, наличие, основные характеристики.", "tool": "get_tv"},
+   {"user": "А какая у него пиковая яркость в нитах?", "tool": "get_tv", "acceptable_tools": [null]},
+   {"user": "А антибликовое покрытие у него есть?", "tool": "get_tv", "acceptable_tools": [null]}
+  ]},
+  {"id": "DEMO-08", "family": "stats", "turns": [
+   {"user": "Сколько доступных моделей с Dolby Atmos?", "tool": "get_catalog_stats"},
+   {"user": "А у OLED-моделей он есть у всех?", "tool": "get_catalog_stats"},
+   {"user": "Какие диагонали есть в серии S90H и все ли они сейчас в наличии?", "tool": "get_catalog_stats", "acceptable_tools": ["get_tv", "search_tvs"]}
+  ]}
+ ],
+ "scenarios": [
+  {"scenario_id": "PA-02", "suite": "targeted", "mvp_target": "MVP-1",
+   "title": "TV for a PS5, then «does it really have HDMI 2.1?»",
+   "old_failure": "Turn 1, both 4F.2 runs: the recommended TVs were introduced as «телевизоры с поддержкой HDMI 2.1». The catalog lists no HDMI version for any of them.",
+   "criterion": "No unsupported HDMI 2.1 factual claim in any turn.",
+   "limits": [null, null, null]},
+  {"scenario_id": "PA-04", "suite": "targeted", "mvp_target": "MVP-1",
+   "title": "OLED 65″ for PS5 with decent sound under 300 000 ₽, then the over-budget temptation",
+   "old_failure": "Turn 1, original 4F.2 run: «два OLED телевизора … с поддержкой HDMI 2.1 для PS5».",
+   "criterion": "No unsupported HDMI 2.1 factual claim in any turn.",
+   "limits": [{"panel": ["OLED"], "size": 65, "max_price": 300000, "available": true}, null,
+              {"panel": ["OLED"], "size": 65, "max_price": 300000, "available": true}]},
+  {"scenario_id": "PA-08", "suite": "targeted", "mvp_target": "MVP-2",
+   "title": "Vague colloquial opener for a bedroom TV",
+   "old_failure": "Turn 3, original 4F.2 run: «подешевле» became max_price 40000, reached the Core, and was stated as «до 40 000 ₽».",
+   "criterion": "«Подешевле» creates no invented numeric budget: none reaches the Core and none is stated.",
+   "limits": [null, {"min_size": 43, "max_size": 50, "max_price": 100000, "available": true},
+              {"min_size": 43, "max_size": 50, "max_price": 100000, "available": true},
+              {"min_size": 43, "max_size": 50, "max_price": 100000, "available": true}]},
+  {"scenario_id": "PA-15", "suite": "targeted", "mvp_target": "MVP-3",
+   "title": "«Is it true that all …?» — group and catalog-wide claims",
+   "old_failure": "Turn 3, original 4F.2 run: the count of all available products (66) was presented as the number of models with Dolby Atmos. Turns 1 and 3: universal statements from filtered lists.",
+   "criterion": "Exact counts and group claims rest on correct structured evidence for that group.",
+   "limits": [null, null, null]},
+
+  {"scenario_id": "DEMO-01", "suite": "demo", "title": "Basic recommendation",
+   "shows": ["structured filtering by size and budget", "a concise shortlist", "real models and prices", "a factual follow-up"],
+   "constraint_state": [
+    {"after_turn": 1, "hard": ["screen size about 65″", "current price ≤ 120 000 ₽", "available to buy"], "soft": []},
+    {"after_turn": 2, "hard": ["screen size about 65″", "current price ≤ 120 000 ₽", "available to buy"], "soft": [], "note": "«из них» = the products of the turn-1 answer."}],
+   "limits": [{"min_size": 60, "max_size": 70, "max_price": 120000, "available": true},
+              {"min_size": 60, "max_size": 70, "max_price": 120000, "available": true}]},
+  {"scenario_id": "DEMO-02", "suite": "demo", "title": "Gaming / PS5",
+   "shows": ["gaming-related evidence per model", "refresh rate and VRR where the catalog lists them", "safe handling of the HDMI version, which the catalog does not list"],
+   "constraint_state": [
+    {"after_turn": 1, "hard": ["screen size = 55″", "current price ≤ 150 000 ₽", "available to buy"], "soft": ["use: console gaming"]},
+    {"after_turn": 2, "hard": ["screen size = 55″", "current price ≤ 150 000 ₽", "available to buy"], "soft": ["use: console gaming", "interest: HDMI 2.1 (a question)"]},
+    {"after_turn": 3, "hard": ["screen size = 55″", "current price ≤ 150 000 ₽", "available to buy"], "soft": ["use: console gaming"]}],
+   "limits": [{"size": 55, "max_price": 150000, "available": true}, {"size": 55, "max_price": 150000, "available": true},
+              {"size": 55, "max_price": 150000, "available": true}]},
+  {"scenario_id": "DEMO-03", "suite": "demo", "title": "Movies + sound",
+   "shows": ["a hybrid recommendation: technology, use and sound", "a clarifying question when size and budget are missing", "comparison of the listed sound attributes"],
+   "constraint_state": [
+    {"after_turn": 1, "hard": ["panel technology = OLED", "available to buy"], "soft": ["use: movies", "built-in sound, no soundbar"], "note": "No size or budget yet."},
+    {"after_turn": 2, "hard": ["panel technology = OLED", "screen size = 65″", "current price ≤ 350 000 ₽", "available to buy"], "soft": ["use: movies", "built-in sound, no soundbar"]},
+    {"after_turn": 3, "hard": ["panel technology = OLED", "screen size = 65″", "current price ≤ 350 000 ₽", "available to buy"], "soft": ["use: movies", "built-in sound, no soundbar"]}],
+   "limits": [{"panel": ["OLED"], "available": true}, {"panel": ["OLED"], "size": 65, "max_price": 350000, "available": true},
+              {"panel": ["OLED"], "size": 65, "max_price": 350000, "available": true}]},
+  {"scenario_id": "DEMO-04", "suite": "demo", "title": "Follow-up: cheaper",
+   "shows": ["conversation memory", "a relative price request answered by order", "no invented budget"],
+   "constraint_state": [
+    {"after_turn": 1, "hard": ["screen size = 55″", "current price ≤ 100 000 ₽", "available to buy"], "soft": ["use: movies and series"]},
+    {"after_turn": 2, "hard": ["screen size = 55″", "current price ≤ 100 000 ₽", "available to buy"], "soft": ["cheaper than what was shown (relative, no number)"]},
+    {"after_turn": 3, "hard": ["screen size = 55″", "current price ≤ 100 000 ₽", "available to buy"], "soft": [], "note": "«самый дешёвый из них» = the cheapest product of the conversation's list."}],
+   "limits": [{"size": 55, "max_price": 100000, "available": true}, {"size": 55, "max_price": 100000, "available": true},
+              {"size": 55, "max_price": 100000, "available": true}]},
+  {"scenario_id": "DEMO-05", "suite": "demo", "title": "Change a hard constraint",
+   "shows": ["the old size is replaced", "technology and budget are kept until the user changes them", "an explicit budget change is applied"],
+   "constraint_state": [
+    {"after_turn": 1, "hard": ["panel technology = OLED", "screen size = 55″", "current price ≤ 200 000 ₽", "available to buy"], "soft": []},
+    {"after_turn": 2, "hard": ["panel technology = OLED", "screen size = 65″", "current price ≤ 200 000 ₽", "available to buy"], "soft": [], "replaced": ["screen size 55″ → 65″"]},
+    {"after_turn": 3, "hard": ["panel technology = OLED", "screen size = 65″", "current price ≤ 300 000 ₽", "available to buy"], "soft": [], "replaced": ["budget 200 000 ₽ → 300 000 ₽"]}],
+   "limits": [{"panel": ["OLED"], "size": 55, "max_price": 200000, "available": true},
+              {"panel": ["OLED"], "size": 65, "max_price": 200000, "available": true},
+              {"panel": ["OLED"], "size": 65, "max_price": 300000, "available": true}]},
+  {"scenario_id": "DEMO-06", "suite": "demo", "title": "Direct product comparison",
+   "shows": ["a grounded comparison of two real models", "meaningful factual differences", "no invented qualitative superiority"],
+   "constraint_state": [
+    {"after_turn": 1, "hard": [], "soft": [], "note": "Two named models."},
+    {"after_turn": 2, "hard": [], "soft": [], "note": "The answer must stay with the catalog differences."}],
+   "limits": [null, null]},
+  {"scenario_id": "DEMO-07", "suite": "demo", "title": "Missing attribute",
+   "shows": ["an honest limitation for an attribute the catalog does not have", "a useful answer from what is listed", "a listed attribute answered as a fact"],
+   "constraint_state": [
+    {"after_turn": 1, "hard": [], "soft": [], "note": "One named model."},
+    {"after_turn": 2, "hard": [], "soft": [], "note": "The catalog has no brightness (nits) data."},
+    {"after_turn": 3, "hard": [], "soft": [], "note": "Answered from the catalog state of the feature."}],
+   "limits": [null, null, null]},
+  {"scenario_id": "DEMO-08", "suite": "demo", "title": "Aggregate / catalog question",
+   "shows": ["a structured aggregate", "a correct count with its scope", "a group question answered from evidence that covers the group"],
+   "constraint_state": [
+    {"after_turn": 1, "hard": ["scope: available products of the catalog"], "soft": []},
+    {"after_turn": 2, "hard": ["scope: OLED models of the catalog"], "soft": []},
+    {"after_turn": 3, "hard": ["scope: the S90H family"], "soft": []}],
+   "limits": [null, null, null]}
+ ]
+}

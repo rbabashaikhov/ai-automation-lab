@@ -1,0 +1,320 @@
+{
+ "_meta": {
+  "phase": "4F.3",
+  "reviewed_runs": {
+   "targeted": "20261001T1457Z",
+   "demo": "20261001T1459Z"
+  },
+  "method": "Every turn was read against its tool evidence: each model code, price, pre-discount price, availability, feature and count in the answer was looked up in the tool results of that conversation. Automated checks are supporting flags; each flag was read.",
+  "issue_kinds": {
+   "blocking": "invented_model, invented_price, invented_availability, unsupported_claim, invented_numeric_constraint, incorrect_aggregate, hard_constraint_violation, constraint_change_failed, runtime_error",
+   "noted": "observed and recorded; does not block the MVP demo gate"
+  },
+  "mvp_defect_gone": "For a targeted scenario: whether the specific Phase 4F.2 defect named in the scenario file is gone. A conversation can still fail on a different blocking issue."
+ },
+ "scenarios": {
+  "PA-02": {
+   "summary": "No HDMI 2.1 claim in any turn; the answer says the catalog has no HDMI 2.1 data for the models; prices and availability correct.",
+   "new_behaviour": "Turn 1 introduces the TVs by 120 Hz and gaming functions and closes with «в каталоге нет данных о поддержке HDMI 2.1 для этих моделей». Turn 2 repeats that the catalog does not say and refuses to confirm.",
+   "evidence": "Turn 1: the model again proposed required_features [hdmi_2_1, hz_120] and min_refresh_rate_hz 120; the guard removed them; the result carries hdmi_2_1 = not_listed for all 8 products, a gap for it and the caveat note «The catalog lists hdmi_2_1 for none of these products…». Repeated sessions of this turn: HDMI 2.1 attributed in 20/20 on the 4F.2 build, 0/20 on the hardened build (measurements.json, BASE and FIN_PS5).",
+   "mvp_defect_gone": true,
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "kind": "noted",
+       "text": "Five products are listed where the prompt asks for a short list of up to three."
+      }
+     ],
+     "note": "Five products named, each with the price, the pre-discount price and the feature values of its own evidence row (FreeSync Premium Pro for QN90F and QN80H is the catalog row's value; ALLM named only for the one model that lists it)."
+    },
+    "2": {
+     "issues": [],
+     "note": "No tool call; consistent with turn 1's evidence (hdmi_2_1 not_listed for every listed model)."
+    },
+    "3": {
+     "issues": [],
+     "note": "«Первый вариант» resolved to QE115QN90FUXRU; 1 799 990 ₽, 1 999 990 ₽ before the discount and availability match turn 1's evidence."
+    }
+   }
+  },
+  "PA-04": {
+   "summary": "No HDMI 2.1 claim; both OLED 65″ models within 300 000 ₽ with correct prices and sound values; the invented price band of turn 2 was removed and not voiced.",
+   "new_behaviour": "Turn 1: «В каталоге нет данных о наличии HDMI 2.1 у этих моделей». Sound power (20 W, 40 W) and Dolby Atmos (listed for S85H only) are stated per model from the evidence.",
+   "evidence": "Turn 1: the model proposed required_features [hdmi_2_1]; the guard removed it; hdmi_2_1 = not_listed for both products, with the caveat note. Repeated sessions of this turn on the hardened build: HDMI 2.1 attributed in 0/10 (measurements.json, FIN_PA04).",
+   "mvp_defect_gone": true,
+   "turns": {
+    "1": {
+     "issues": [],
+     "note": "Hard limits kept: OLED, 65″, ≤ 300 000 ₽, available. Dolby Atmos is not attributed to S90H (not_listed)."
+    },
+    "2": {
+     "issues": [
+      {
+       "kind": "noted",
+       "text": "The model proposed min_price 290000 and max_price 400000, numbers no user stated; the guard removed both, they did not reach the Core and the answer does not state them."
+      },
+      {
+       "kind": "noted",
+       "text": "The answer does not say that 329 990 ₽ is above the user's 300 000 ₽ limit."
+      },
+      {
+       "kind": "noted",
+       "text": "«возможно более мощный звук или улучшенные функции» is a hedged remark with no evidence in this turn (the search result carries no sound data)."
+      }
+     ],
+     "note": "S95H 329 990 ₽ (349 990 ₽ before the discount) is correct. The automated price flag is a false positive: the prices of S90H and S85H are named on the S95H line for comparison."
+    },
+    "3": {
+     "issues": [],
+     "note": "The choice is made between the two in-budget models; 20 W / 40 W, Dolby Atmos for S85H and FreeSync Premium Pro for S90H match turn 1's evidence."
+    }
+   }
+  },
+  "PA-08": {
+   "summary": "«Подешевле» no longer creates a budget: no tool call, no invented number, options inside the stated 43–50″ / 100 000 ₽. Turn 1 fails on a different invented number: «не огромный» is voiced as «до 55 дюймов».",
+   "new_behaviour": "Turn 3 answers from the conversation's evidence with three models inside the limits the user stated; no 40 000 ₽ and no other number the user did not give. Turn 2 reads «до сотки» as 100 000 ₽ and applies 43–50″.",
+   "evidence": "Turn 3: no tool call, so nothing reached the Core; every model named is in turn 2's result (43–50″, ≤ 100 000 ₽, available). Turn 2: arguments unchanged by the guard, the slang budget is read as stated (4F.3 number reader). The same pattern in another conversation still voices an invented ceiling: see DEMO-04 turn 2 and measurements.json, F_CHEAPER (12/12).",
+   "mvp_defect_gone": true,
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "kind": "invented_numeric_constraint",
+       "text": "«несколько вариантов телевизоров с диагональю до 55 дюймов»: a numeric size limit the user never stated («не огромный»). The guard kept it from the Core; the answer states it anyway."
+      }
+     ],
+     "note": "The guard removed max_screen_size_inches 55 (not stated by the user): the Core searched without it and the result says so in not_applied. The model still chose only models up to 55″ from the result and worded the invented limit as the selection rule. Present before this phase at a similar rate: 11/20 on the 4F.2 build, 15/20 on the final build (measurements.json, B_PA08T1 and F_PA08T1)."
+    },
+    "2": {
+     "issues": [],
+     "note": "43–50″ and ≤ 100 000 ₽ applied exactly as stated; four of the eight matching products shown with correct prices."
+    },
+    "3": {
+     "issues": [
+      {
+       "kind": "noted",
+       "text": "Answered from memory without a new search: the options are cheaper than the Neo QLED models of turn 2 but not cheaper than the cheapest one already shown (41 990 ₽ again)."
+      }
+     ],
+     "note": "No invented budget. All three models are inside 43–50″ and ≤ 100 000 ₽ and available."
+    },
+    "4": {
+     "issues": [],
+     "note": "«Этот второй» resolved to UE50M1EHAUXPY; 46 990 ₽, 53 990 ₽ before the discount, in stock and the link match the evidence."
+    }
+   }
+  },
+  "PA-15": {
+   "summary": "Every count and group statement is taken from exact attribute counts for that group; no universal claim from a filtered list.",
+   "new_behaviour": "Turn 3: «62 из 75 поддерживают» Dolby Atmos, not the availability total. Turn 1: all 15 OLED models have 120 Hz and VRR, from attribute counts over the whole group. Turn 2: none at 120 Hz, «все они работают на 50 или 60 Гц».",
+   "evidence": "get_catalog_stats with attributes: turn 1 hz_120 and vrr yes 15 / no 0 / not_listed 0 of 15; turn 2 hz_120 no 10 of 10 with values {50: 2, 60: 8}, same_value_for_all false; turn 3 dolby_atmos yes 62 / not_listed 13 of 75, and the QN70H family resolved to 6 sizes with 6 available. Repeated sessions: the false «все на 60 Гц» in 3/10 before the value flag, 0/20 with it; exact Dolby Atmos counts in 10/10 (measurements.json, FIN_HZ, X3_HZ, FIN_ATMOS).",
+   "mvp_defect_gone": true,
+   "turns": {
+    "1": {
+     "issues": [],
+     "note": "Counted scope: all 15 OLED products of the catalog; the claim is confirmed for the group, not inferred from a list."
+    },
+    "2": {
+     "issues": [],
+     "note": "Both refresh rates named; no «все на 60 Гц»."
+    },
+    "3": {
+     "issues": [
+      {
+       "kind": "noted",
+       "text": "«Не все модели имеют Dolby Atmos» words the 13 not-listed products as lacking it; the exact statement is that the catalog lists it for 62 of 75 and has no data for 13."
+      }
+     ],
+     "note": "Two exact counts in one turn. 13 products have no Dolby Atmos data, none says «no»; «не все модели имеют» is the cautious reading the brief allows."
+    }
+   }
+  },
+  "DEMO-01": {
+   "summary": "Four real 65″ models within 120 000 ₽ with correct prices; the follow-up names the one 120 Hz model from the evidence.",
+   "turns": {
+    "1": {
+     "issues": [],
+     "note": "All four matching products, cheapest first, with the discount shown where the catalog has one."
+    },
+    "2": {
+     "issues": [],
+     "note": "No tool call needed: 120 Hz for M80H, 60 Hz and 50 Hz for the others, as in turn 1's evidence."
+    }
+   }
+  },
+  "DEMO-02": {
+   "summary": "Gaming shortlist from listed 120 Hz / VRR / FreeSync evidence; the HDMI version is reported as not listed, never attributed.",
+   "turns": {
+    "1": {
+     "issues": [],
+     "note": "Four 55″ models within 150 000 ₽, all with 120 Hz and VRR listed; FreeSync tiers are the catalog rows' values. No HDMI claim."
+    },
+    "2": {
+     "issues": [
+      {
+       "kind": "noted",
+       "text": "Four parallel lookups for four models; the fourth call was refused by the cap of three tool calls per turn (status tool_call_limit_reached, by design). The answer covers QN80H as well, whose lookup was the refused one: true in the catalog, not evidenced in this turn."
+      },
+      {
+       "kind": "noted",
+       "text": "Technical wording: «статус \"неизвестно\", не \"нет\"»."
+      }
+     ],
+     "note": "HDMI 2.1 reported as not listed for the models; no claim that they have it."
+    },
+    "3": {
+     "issues": [
+      {
+       "kind": "noted",
+       "text": "The same four parallel lookups, one refused by the cap; this time the answer covers only the three models it has evidence for and drops QN80H without saying so."
+      },
+      {
+       "kind": "noted",
+       "text": "A feature id leaks into the answer: «120 Гц (hz_120)»."
+      }
+     ],
+     "note": "120 Hz, VRR, FreeSync tier and Game Bar stated for the three models looked up; ALLM stated as not listed. The closing line (игровой режим, Game Motion Plus, ультраширокий обзор) comes from the catalog passages of the same results."
+    }
+   }
+  },
+  "DEMO-03": {
+   "summary": "OLED for films with built-in sound: Dolby Atmos, Filmmaker Mode and sound power from the evidence; the stated size and budget are applied exactly.",
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "kind": "noted",
+       "text": "Size and budget were missing; the answer shows options and offers to narrow by size or budget instead of asking first."
+      }
+     ],
+     "note": "Three of fifteen OLED models with sound power 70 W / 70 W / 20 W and correct prices."
+    },
+    "2": {
+     "issues": [],
+     "note": "OLED, 65″, ≤ 350 000 ₽: all three matching models, 70 W / 20 W / 40 W as listed."
+    },
+    "3": {
+     "issues": [],
+     "note": "No tool call needed: 70 W > 40 W > 20 W from turn 2's evidence."
+    }
+   }
+  },
+  "DEMO-04": {
+   "summary": "The stated 55″ / 100 000 ₽ are kept and the cheapest model is right, but «подешевле» is answered with a ceiling the user never gave: «до 50 000 ₽».",
+   "turns": {
+    "1": {
+     "issues": [],
+     "note": "All four 55″ models within 100 000 ₽ with correct prices and the listed film features."
+    },
+    "2": {
+     "issues": [
+      {
+       "kind": "invented_numeric_constraint",
+       "text": "«В каталоге нет телевизоров Samsung 55 дюймов с ценой до 50 000 ₽»: a numeric budget the user never stated. The guard kept it from the Core; the answer states it anyway."
+      }
+     ],
+     "note": "The model proposed max_price 50000; the guard removed it, the Core searched 55″ without it and returned ten products, cheapest 52 490 ₽ — the model already shown. The conclusion (nothing cheaper than 52 490 ₽ at 55″) is right; the stated threshold is invented. Reproducible: 12/12 fresh sessions of this conversation (measurements.json, F_CHEAPER)."
+    },
+    "3": {
+     "issues": [],
+     "note": "UE55M70HAUXPY, 52 490 ₽ (59 990 ₽ before the discount), in stock, with its link: correct."
+    }
+   }
+  },
+  "DEMO-05": {
+   "summary": "The size is replaced (55″ → 65″) while OLED and the budget stay; the explicit new budget is applied.",
+   "turns": {
+    "1": {
+     "issues": [],
+     "note": "OLED, 55″, ≤ 200 000 ₽: both matching models."
+    },
+    "2": {
+     "issues": [],
+     "note": "Size replaced by 65″; OLED and 200 000 ₽ kept: the one matching model."
+    },
+    "3": {
+     "issues": [],
+     "note": "Budget raised to 300 000 ₽ as stated; OLED and 65″ kept: both matching models."
+    }
+   }
+  },
+  "DEMO-06": {
+   "summary": "A grounded comparison of two real models: price, FreeSync tier, sound power, depth and processor differ as the evidence says; unknowns are named as unknown.",
+   "turns": {
+    "1": {
+     "issues": [
+      {
+       "kind": "noted",
+       "text": "The closing advice calls the Gen3 processor «новейший»: a reading of the generation number, not a catalog statement."
+      }
+     ],
+     "note": "Every difference is in the comparison result (289 990 vs 189 990 ₽, FreeSync Premium Pro yes/no, 40 W vs 20 W, 3.99 vs 3.39 cm) or the product names (NQ4 AI Gen3 vs Gen2). Dolby Atmos: listed for S85H, no data for S90H. HDMI 2.1 and ALLM: not listed for both."
+    },
+    "2": {
+     "issues": [
+      {
+       "kind": "noted",
+       "text": "Reason 5 lists the anti-glare coating, which both models have, and adds «у S90H оно отмечено явно», which the evidence does not say."
+      },
+      {
+       "kind": "noted",
+       "text": "Reason 4 lists the greater case depth among the reasons for the surcharge."
+      }
+     ],
+     "note": "Reasons 1–3 are catalog differences. AI Motion Enhancer Pro is in the S90H row and not in the S85H row, so the hedged reason 6 has evidence."
+    }
+   }
+  },
+  "DEMO-07": {
+   "summary": "A listed attribute is answered as a fact, an attribute the catalog does not have is answered as «нет данных».",
+   "turns": {
+    "1": {
+     "issues": [],
+     "note": "Price 219 990 ₽ (269 990 ₽ before the discount), availability and the main specifications match the evidence."
+    },
+    "2": {
+     "issues": [],
+     "note": "Peak brightness in nits is not a catalog attribute; the answer says the catalog has no such data and gives no number."
+    },
+    "3": {
+     "issues": [],
+     "note": "anti_glare = yes in the evidence (catalog row «Антибликовое покрытие: Да»)."
+    }
+   }
+  },
+  "DEMO-08": {
+   "summary": "Exact counts with their scope: 54 of 66 available with Dolby Atmos, 9 of 15 OLED, six S90H sizes all in stock.",
+   "turns": {
+    "1": {
+     "issues": [],
+     "note": "Attribute counts over the 66 available products: yes 54, not_listed 12. The availability total is not presented as the Dolby Atmos count."
+    },
+    "2": {
+     "issues": [
+      {
+       "kind": "noted",
+       "text": "«Dolby Atmos есть не у всех OLED-моделей» words 6 not-listed products as lacking it; the sentence before it gives the exact split."
+      }
+     ],
+     "note": "Attribute counts over the 15 available OLED products: yes 9, not_listed 6."
+    },
+    "3": {
+     "issues": [],
+     "note": "The S90H family grouped by size: 42, 48, 55, 65, 77, 83″, one product each, all available."
+    }
+   }
+  }
+ },
+ "limitations": [
+  "**Phase 4F.2 stands.** `4F.2 HOLD — PRODUCT ACCEPTANCE FAILED` is not changed by this phase. The 4F.1 release gate (15 scenarios, its thresholds) was not re-run and is not met; the product is not accepted as production-ready. The other 4F.2 findings (qualitative language, bright-room and best-for-movies reasoning, ranking, MINOR issues) were out of scope and are untouched.",
+  "**Invented numeric limits are still voiced (the reason for the hold).** Since 4E.2 the guard removes a number the user never stated before it reaches the Core, and 4F.3 extended it to slang and spelled numbers. That part is deterministic. The answer text is not checked: in the «подешевле» conversation the model words its removed ceiling as a fact in 12/12 sessions («до 50 000 ₽»), and after «не огромный» it words «до 55 дюймов» in 15/20. A result-side note for removed numeric limits was tried and changed nothing (14/20), so it was not adopted.",
+  "**Rates, not guarantees.** gpt-4.1-mini at temperature 0 does not repeat itself. The HDMI 2.1 claim went from 20/20 to 0/20 and 0/10 on the two recorded questions, the false «все на 60 Гц» from 3/10 to 0/20, the Dolby Atmos count is exact in 10/10. A zero rate in 20 sessions is not a proof of zero.",
+  "**No answer-level check.** Feature evidence is deterministic for a feature that was asked about (named by the user, or required by the model and removed by the guard): the result then says yes / no / not listed per product. A claim about a feature nobody asked about, or wording beyond the evidence, is still only governed by the prompt.",
+  "**Three tool calls per turn.** A question about four models makes the model issue four parallel lookups; the fourth is refused by design and the answer covers that model from memory or drops it (DEMO-02).",
+  "**«Подешевле» without a search.** When the model answers from the previous result instead of searching in price order, the options respect the stated limits but are not necessarily the cheapest ones (PA-08 turn 3).",
+  "**Wording.** Lists are sometimes longer than three (5 in PA-02; all 8 shown products in 3/20 sessions), a feature id appeared once («hz_120»), and «не у всех» is used where the exact statement is «listed for N, no data for M».",
+  "**Counts cover registry features and structured columns only.** `get_catalog_stats` counts the 14 Feature Registry features (yes / no / not listed) and groups by structured columns; listed values are given for features that carry a value, as a range above 12 distinct values. An attribute outside the registry has no count.",
+  "**Evaluation path.** As in 4F.2, conversations run through a temporary inactive n8n driver with the committed workflow inline; the Consultant workflow itself stays inactive and has no public trigger."
+ ]
+}
