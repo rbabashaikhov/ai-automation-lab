@@ -34,6 +34,13 @@ def codes(payload, key="products"):
     return [p["model_code"] for p in payload.get(key, [])]
 
 
+STATES = ("yes", "no", "not_listed")
+
+
+def states_only(bucket: dict) -> dict:
+    return {s: bucket[s] for s in STATES}
+
+
 def expected_states(feature: str, available=None) -> dict:
     """The registry's own evaluation over the fixture: the independent oracle for a feature count."""
     rows, specs, _ = product_rows()
@@ -123,9 +130,11 @@ def test_every_registry_feature_is_counted_exactly_in_every_bucket(env, feature)
     tools, _ = env
     r = tools.call("get_catalog_stats", {"stat": "count", "attributes": [feature]})
     got = r["attribute_counts"][feature]
-    assert got == {"total": expected_states(feature), "available": expected_states(feature, True),
-                   "unavailable": expected_states(feature, False)}
-    assert {k: sum(v.values()) for k, v in got.items()} == r["counts"]
+    assert {k: states_only(v) for k, v in got.items()} == {"total": expected_states(feature), "available": expected_states(feature, True),
+                                                           "unavailable": expected_states(feature, False)}
+    assert {k: sum(states_only(v).values()) for k, v in got.items()} == r["counts"]
+    carries_value = feature in ("hz_120", "sound_power_w", "depth_cm")
+    assert all(("values" in v) == (carries_value and v["yes"] + v["no"] > 0) for v in got.values())
 
 
 def test_feature_count_is_scoped_to_the_filters_that_were_passed(env):
@@ -133,10 +142,12 @@ def test_feature_count_is_scoped_to_the_filters_that_were_passed(env):
     r = tools.call("get_catalog_stats", {"stat": "count", "panel_technology": ["OLED"], "attributes": ["hz_120", "vrr"]})
     assert r["counts"] == {"total": 11, "available": 11, "unavailable": 0}
     assert r["counted"] == "products matching: panel_technology in ['OLED']"
-    assert r["attribute_counts"]["hz_120"]["total"] == {"yes": 11, "no": 0, "not_listed": 0}
+    assert r["attribute_counts"]["hz_120"]["total"] == {"yes": 11, "no": 0, "not_listed": 0, "values": {"120": 11},
+                                                         "same_value_for_all": True}
     assert r["attribute_counts"]["vrr"]["unavailable"] == {"yes": 0, "no": 0, "not_listed": 0}
     whole = tools.call("get_catalog_stats", {"stat": "count", "attributes": ["hz_120"]})
-    assert whole["attribute_counts"]["hz_120"]["total"] == {"yes": 22, "no": 9, "not_listed": 0}   # the subset is not the catalog
+    assert states_only(whole["attribute_counts"]["hz_120"]["total"]) == {"yes": 22, "no": 9, "not_listed": 0}   # not the subset
+    assert whole["attribute_counts"]["hz_120"]["total"]["same_value_for_all"] is False
     assert repo.count(Filters(panel_technology=("OLED",)))[0][1] == 11
 
 
@@ -171,19 +182,23 @@ def test_a_no_for_120_hz_comes_with_the_refresh_rates_the_products_have(env):
     band = next(p.effective_price for p in catalog if p.refresh_rate_hz == 50)          # the fixture's one 50 Hz product
     r = tools.call("get_catalog_stats", {"stat": "count", "max_price": band, "attributes": ["hz_120"]})
     rows = [p for p in catalog if p.effective_price <= band]
-    assert r["attribute_counts"]["hz_120"]["total"] == {"yes": 0, "no": len(rows), "not_listed": 0}
+    entry = r["attribute_counts"]["hz_120"]["total"]
+    assert states_only(entry) == {"yes": 0, "no": len(rows), "not_listed": 0}
     rates = [p.refresh_rate_hz for p in rows]
-    assert r["attribute_values"]["hz_120"]["total"] == {str(v): rates.count(v) for v in sorted(set(rates))}
-    assert set(r["attribute_values"]["hz_120"]["total"]) == {"50", "60"}                # "no" for all, and two rates
-    assert sum(r["attribute_values"]["hz_120"]["total"].values()) == r["counts"]["total"]
-    assert list(r).index("attribute_counts") + 1 == list(r).index("attribute_values")
+    assert entry["values"] == {str(v): rates.count(v) for v in sorted(set(rates))}
+    assert set(entry["values"]) == {"50", "60"} and entry["same_value_for_all"] is False       # "no" for all, and two rates
+    assert sum(entry["values"].values()) == r["counts"]["total"] and "attribute_values" not in r
     sound = tools.call("get_catalog_stats", {"stat": "count", "panel_technology": ["OLED"], "attributes": ["sound_power_w", "vrr"]})
-    assert set(sound["attribute_values"]) == {"sound_power_w"}                           # vrr has no value: counts only
-    assert sum(sound["attribute_values"]["sound_power_w"]["total"].values()) == sound["counts"]["total"] == 11
-    assert "unavailable" not in sound["attribute_values"]["sound_power_w"]               # no product in that bucket
-    depth = tools.call("get_catalog_stats", {"stat": "count", "attributes": ["depth_cm"]})["attribute_values"]["depth_cm"]["total"]
-    assert set(depth) == {"min", "max", "distinct_values"} and depth["min"] < depth["max"] and depth["distinct_values"] > 12
-    assert "attribute_values" not in tools.call("get_catalog_stats", {"stat": "count", "attributes": ["dolby_atmos"]})
+    assert "values" not in sound["attribute_counts"]["vrr"]["total"]                     # vrr has no value: counts only
+    watts = sound["attribute_counts"]["sound_power_w"]
+    assert sum(watts["total"]["values"].values()) == sound["counts"]["total"] == 11
+    assert "values" not in watts["unavailable"]                                          # no product in that bucket
+    depth = tools.call("get_catalog_stats", {"stat": "count", "attributes": ["depth_cm"]})["attribute_counts"]["depth_cm"]["total"]
+    assert set(depth["values"]) == {"min", "max", "distinct_values"} and depth["values"]["min"] < depth["values"]["max"]
+    assert depth["values"]["distinct_values"] > 12 and depth["same_value_for_all"] is False
+    one = tools.call("get_catalog_stats", {"stat": "count", "model": "QE65S95HAUXPY", "attributes": ["hz_120"]})
+    assert one["attribute_counts"]["hz_120"]["total"] == {"yes": 1, "no": 0, "not_listed": 0, "values": {"120": 1},
+                                                           "same_value_for_all": True}
 
 
 def test_refresh_rates_that_exist_in_a_price_band(env):

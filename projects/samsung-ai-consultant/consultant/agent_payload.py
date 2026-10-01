@@ -62,7 +62,8 @@ COUNT_SCOPE_NOTE = ("`counts` are the numbers of products in the `counted` scope
                     "of products with any feature: a feature count exists only in `attribute_counts` (pass "
                     "`attributes`), where not_listed = the catalog has no data for that product (unknown, not 'no'). "
                     "yes / no say only whether the feature is present; which values the products have (Hz, W, cm) is "
-                    "in `attribute_values` or `groups`, never implied by a 'no'.")
+                    "in `values` of the same entry (value: number of products) or in `groups`, never implied by a 'no'; "
+                    "`same_value_for_all` says whether every counted product has one and the same value.")
 NOT_LISTED_FOR_ALL_NOTE = ("The catalog lists {features} for none of these products: unknown, neither 'yes' nor 'no'. Do not "
                            "say that they have it or support it; say that the catalog has no data.")
 NOT_LISTED_DETAIL = "Not listed in the catalog for these products: unknown, neither 'yes' nor 'no'."
@@ -306,11 +307,11 @@ def counted_scope(plan: ResolvedPlan) -> str:
 
 
 def stats_payload(plan: ResolvedPlan, counts: Optional[dict], group_by: Optional[str], groups: list, args: dict,
-                  attribute_counts: Optional[dict] = None, attribute_values: Optional[dict] = None) -> dict:
+                  attribute_counts: Optional[dict] = None) -> dict:
     """``counts`` is ``None`` when the named model is not in the catalog: then nothing was counted.
-    ``attribute_counts`` (Phase 4F.3): ``{feature id: {bucket: {yes, no, not_listed}}}`` over exactly the
-    counted products, with the buckets of ``counts``. ``attribute_values``: for the attributes that carry a
-    value, ``{feature id: {bucket: {value: products}}}`` (or the range when there are many values)."""
+    ``attribute_counts`` (Phase 4F.3): ``{feature id: {bucket: {yes, no, not_listed[, values]}}}`` over exactly
+    the counted products, with the buckets of ``counts``; ``values`` (attributes that carry a value) is
+    ``{value: products}``, or the range when there are many values."""
     request = {"constraints": [describe(k, plan.filters) for k in plan.user_constraint_keys]}
     if plan.resolutions:
         request["model_resolution"] = _model_resolution(plan)
@@ -324,8 +325,6 @@ def stats_payload(plan: ResolvedPlan, counts: Optional[dict], group_by: Optional
     payload.update(counted=counted_scope(plan), counts=counts)
     if attribute_counts is not None:
         payload["attribute_counts"] = attribute_counts
-    if attribute_values:
-        payload["attribute_values"] = attribute_values
     if group_by:
         payload["group_by"] = group_by
         payload["groups"] = [{**g, "value": _num(str(g["value"])) if group_by == "screen_size_inches" else g["value"]}

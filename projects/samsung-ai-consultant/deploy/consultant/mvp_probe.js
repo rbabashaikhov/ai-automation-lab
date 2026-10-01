@@ -79,7 +79,7 @@ const notApplied = (payload) => ((payload.request || {}).not_applied || {}).cons
   const hz = await call(auth, "get_catalog_stats", { stat: "count", max_price: 50000, group_by: "refresh_rate_hz" }, null, null);
   out.refresh_rates_in_band = { counts: hz.counts, groups: hz.groups };
   const below = await call(auth, "get_catalog_stats", { stat: "count", max_price: 50000, attributes: ["hz_120"] }, null, null);
-  out.values_behind_a_no = { attribute_counts: below.attribute_counts, attribute_values: below.attribute_values };
+  out.values_behind_a_no = { attribute_counts: below.attribute_counts };
   const unknown = await call(auth, "get_catalog_stats", { stat: "count", model: "S80C" }, null, null);
   out.unknown_series = { status: unknown.status, counts: unknown.counts || null };
   const bad = await call(auth, "get_catalog_stats", { stat: "cheapest", attributes: ["vrr"] }, null, null);

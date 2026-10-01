@@ -385,11 +385,8 @@ def test_a_count_states_what_was_counted():
                                   {"dolby_atmos": {"available": {"yes": 54, "no": 0, "not_listed": 12}}})
     assert list(with_features).index("counts") + 1 == list(with_features).index("attribute_counts")
     assert sum(with_features["attribute_counts"]["dolby_atmos"]["available"].values()) == with_features["counts"]["available"]
-    assert "attribute_values" not in with_features                                # only attributes that carry a value
-    rates = stats_payload(Plan, {"total": 10}, None, [], {}, {"hz_120": {"total": {"yes": 0, "no": 10, "not_listed": 0}}},
-                          {"hz_120": {"total": {"50": 2, "60": 8}}})
-    assert list(rates).index("attribute_counts") + 1 == list(rates).index("attribute_values")
-    assert "never implied by a 'no'" in COUNT_SCOPE_NOTE and "`attribute_values`" in COUNT_SCOPE_NOTE
+    assert "never implied by a 'no'" in COUNT_SCOPE_NOTE and "`values` of the same entry" in COUNT_SCOPE_NOTE
+    assert "`same_value_for_all`" in COUNT_SCOPE_NOTE and "attribute_values" not in with_features
 
 
 # ---- the prompt is not part of the fix ------------------------------------------------------------------------

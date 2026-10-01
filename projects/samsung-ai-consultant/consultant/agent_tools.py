@@ -202,7 +202,8 @@ TOOL_SCHEMAS = {
                          "description": "Only with stat='count': the count per existing value."},
             "attributes": _arr(FEATURE_IDS, "Only with stat='count': registry features to count among the "
                                             "counted products (yes / no / not_listed each; for hz_120, "
-                                            "sound_power_w and depth_cm also the listed values). Not a filter."),
+                                            "sound_power_w and depth_cm also `values`: the listed values and how "
+                                            "many products have each). Not a filter."),
             "model": {**_MODEL_REF, "description": "Only with stat='count': count inside this model family "
                                                    "('QN70H') or for one model code."},
             **_FILTERS,
@@ -430,17 +431,18 @@ def _value_distribution(values: list) -> dict:
     return {f"{v:g}": values.count(v) for v in distinct}
 
 
-def _attribute_counts(repo, filters, attributes: list, buckets: tuple) -> tuple:
-    """``(counts, values)`` per attribute over the products ``filters`` select, per availability bucket: the exact
-    tri-state counts, and for attributes that carry a value (refresh rate behind hz_120, sound power, depth) how
-    many products have each listed value -- "no" for hz_120 says "below 120 Hz", not which rate. Evaluated by the
-    Feature Registry on the structured rows: never from a list sample or semantic search."""
+def _attribute_counts(repo, filters, attributes: list, buckets: tuple) -> dict:
+    """Per attribute and availability bucket, over the products ``filters`` select: the exact tri-state counts
+    and, for attributes that carry a value (refresh rate behind hz_120, sound power, depth), ``values``: how many
+    products have each listed value -- "no" for hz_120 says "below 120 Hz", not which rate. The values sit inside
+    the same entry as the counts: as a separate field they were overlooked in 3 of 10 measured answers.
+    Evaluated by the Feature Registry on the structured rows: never from a list sample or semantic search."""
     found = repo.candidates(filters)
     if found.truncated:
         raise ToolArgumentError([f"attributes: more than {found.limit} products match; add filters"])
     specs = repo.get_specs([p.id for p in found.rows], spec_names_for(attributes))
     results = evaluate_features(found.rows, specs, attributes)
-    counts, values = {}, {}
+    counts = {}
     for a in attributes:
         counts[a] = {}
         for available, name in buckets:
@@ -449,8 +451,11 @@ def _attribute_counts(repo, filters, attributes: list, buckets: tuple) -> tuple:
             counts[a][name] = {s: states.count(s) for s in STATES}
             listed = [r.value for r in rows if r.value is not None]
             if listed:
-                values.setdefault(a, {})[name] = _value_distribution(listed)
-    return counts, values
+                counts[a][name]["values"] = _value_distribution(listed)
+                # The direct answer to "do they all have the same value?" -- asked as "are they all 60 Hz?", a
+                # 'no' for 120 Hz was read as "all are 60 Hz" in 3 of 20 measured answers even with the values listed.
+                counts[a][name]["same_value_for_all"] = len(set(listed)) == 1 and len(listed) == len(rows)
+    return counts
 
 
 def get_catalog_stats(repo, args: dict) -> dict:
@@ -485,9 +490,8 @@ def get_catalog_stats(repo, args: dict) -> dict:
                 if f.is_available is None:
                     g["available"] = avail.get(value, 0)
                 groups.append(g)
-        attribute_counts, attribute_values = (_attribute_counts(repo, f, list(args["attributes"]), buckets)
-                                              if "attributes" in args else (None, None))
-        return stats_payload(plan, counts, args.get("group_by"), groups, args, attribute_counts, attribute_values)
+        attribute_counts = _attribute_counts(repo, f, list(args["attributes"]), buckets) if "attributes" in args else None
+        return stats_payload(plan, counts, args.get("group_by"), groups, args, attribute_counts)
     key, direction = EXTREME_STATS[stat]
     if key is SortKey.EFFECTIVE_PRICE and args.get("price_basis") == "list":
         key = SortKey.LIST_PRICE
