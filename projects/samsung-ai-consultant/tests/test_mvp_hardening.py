@@ -14,8 +14,7 @@ import pytest
 from consultant import agent_tools
 from consultant.agent_payload import COUNT_SCOPE_NOTE, counted_scope, stats_payload
 from consultant.agent_tools import (
-    FEATURE_IDS, SUMMARY_FEATURE_IDS, TOOL_SCHEMAS, ConsultantTools, ToolArgumentError, add_feature_evidence, run_tool,
-    validate_arguments,
+    FEATURE_IDS, TOOL_SCHEMAS, ConsultantTools, ToolArgumentError, add_feature_evidence, run_tool, validate_arguments,
 )
 from consultant.features import FEATURES, evaluate_features
 from consultant.mcp_server import ConversationStore, guard_context
@@ -106,7 +105,8 @@ def test_removed_requirement_is_reported_as_unknown_instead_of_disappearing(serv
     gap = next(g for g in payload["gaps"] if g["attributes"] == ["hdmi_2_1"])
     assert gap["kind"] == "attribute_not_listed_for_product" and gap["products"] == [p["ref"] for p in payload["products"]]
     assert "neither 'yes' nor 'no'" in gap["detail"]
-    assert payload["confidence"] == "partial" and payload["confidence_notes"]
+    assert payload["confidence"] == "strong" and payload["confidence_notes"] == []     # nothing else in the result changes
+    assert set(payload) == set(result(repo, "recommend_tvs"))                         # and no new top-level field
     # nothing else moved: same products, same order, same prices, same states for the plan's features
     for old, new in zip(before, payload["products"]):
         assert {k: new[k] for k in old if k != "features"} == {k: old[k] for k in old if k != "features"}
@@ -120,7 +120,6 @@ def test_a_feature_the_user_names_is_reported_even_when_the_agent_does_not_pass_
                                  MessageEvidence.from_text("А HDMI 2.1 у них точно есть? Без него 120 кадров не будет.")))
     features = payload["products"][0]["features"]
     assert features["hdmi_2_1"] == "not_listed" and features["hz_120"] == {"state": "yes", "value": 120}
-    assert "feature_summary" not in payload                                       # only list results are summarized
 
 
 def test_an_explicit_negative_stays_a_negative(served, repo):
@@ -156,24 +155,18 @@ def test_a_requested_feature_never_becomes_yes_without_catalog_evidence(served, 
     assert listed == unknown                                                          # every unknown is a stated gap
 
 
-def test_list_results_summarize_every_boolean_registry_feature(repo):
-    payload = add_feature_evidence(result(repo, "recommend_tvs", features=GAMING), repo)
-    summary = payload["feature_summary"]
-    assert list(payload).index("feature_summary") + 1 == list(payload).index("products")
-    assert set(summary["counts"]) == set(SUMMARY_FEATURE_IDS) == {f for f, d in FEATURES.items() if d.kind == "bool"}
-    assert summary["products"] == len(TVS) and all(sum(c.values()) == len(TVS) for c in summary["counts"].values())
-    assert summary["counts"]["hdmi_2_1"] == {"not_listed": len(TVS)}              # unknown for all: stated, not omitted
-    assert summary["counts"]["vrr"] == {"yes": len(TVS)}
-    assert "not the catalog" in summary["note"] and "unknown" in summary["note"]
-    # the two lists an introduction is written from: what every shown product has, and what the catalog does not say
-    assert summary["all_yes"] == [f for f in SUMMARY_FEATURE_IDS if summary["counts"][f] == {"yes": len(TVS)}]
-    assert "vrr" in summary["all_yes"] and "hdmi_2_1" not in summary["all_yes"] and "allm" not in summary["all_yes"]
-    assert "hdmi_2_1" in summary["not_listed_for_all"] and not set(summary["all_yes"]) & set(summary["not_listed_for_all"])
-    assert list(summary) == ["note", "products", "all_yes", "not_listed_for_all", "counts"]
-    for code, state in states(payload, "hdmi_2_1").items():
-        assert state is None                                                      # not asked: per-product set unchanged
-    assert "feature_summary" not in add_feature_evidence(result(repo, "compare_tvs"), repo)
-    assert "feature_summary" not in add_feature_evidence(result(repo, "search_tvs", codes=()), repo)
+def test_a_result_is_untouched_when_no_feature_was_asked_about(served, repo):
+    """The step adds nothing by default: an ordinary recommendation or list is exactly what the pipeline returned.
+    (A list-wide feature summary and a pre-written price text were tried and removed in this phase.)"""
+    for tool in ("recommend_tvs", "search_tvs", "compare_tvs", "get_tv"):
+        served.next = result(repo, tool, features=GAMING)
+        untouched = result(repo, tool, features=GAMING)
+        assert served.tools.call(tool, {}, f"t-{tool}", (MessageEvidence.from_text("Посоветуйте телевизор для игр."),)) == untouched
+        assert add_feature_evidence(result(repo, tool, features=GAMING), repo) == untouched
+    assert repo.calls == 0
+    for p in untouched["products"]:
+        assert "price_text" not in p
+    assert "feature_summary" not in untouched
 
 
 def test_nothing_is_added_without_products_or_without_an_asked_feature(repo):
@@ -188,7 +181,6 @@ def test_alternatives_get_the_asked_states_too(repo):
     payload.update(status="no_match", alternatives=result(repo, "recommend_tvs", codes=TVS[:2])["products"])
     out = add_feature_evidence(payload, repo, ("hdmi_2_1",))
     assert [a["features"]["hdmi_2_1"] for a in out["alternatives"]] == ["not_listed", "not_listed"]
-    assert "feature_summary" not in out                                           # there are no matching products
 
 
 def test_feature_evidence_failure_leaves_the_plain_result(served, repo, monkeypatch, caplog):
@@ -196,7 +188,8 @@ def test_feature_evidence_failure_leaves_the_plain_result(served, repo, monkeypa
     plain = result(repo, "recommend_tvs", features=GAMING)
     monkeypatch.setattr(repo, "get_products_by_codes", lambda codes: 1 / 0)
     with caplog.at_level(logging.ERROR):
-        payload = served.tools.call("recommend_tvs", {"use_cases": ["gaming"]}, "t1", (MessageEvidence.from_text(PS5),))
+        payload = served.tools.call("recommend_tvs", {"use_cases": ["gaming"]}, "t1",
+                                    (MessageEvidence.from_text(PS5), MessageEvidence.from_text("А HDMI 2.1 у них есть?")))
     assert payload == plain and "feature evidence unavailable" in caplog.text
 
 
@@ -389,8 +382,7 @@ def test_prompt_v4_adds_the_three_rules_without_scenario_phrasing():
     assert PROMPT_FILE.name == "agent_system_v4.md"
     unknown = next(line for line in p.splitlines() if line.startswith("- Unknown is not yes."))
     for needle in ("only when a tool result of this conversation shows it for that product",
-                   "general knowledge, not a catalog fact", "`feature_summary`", "`request.not_applied` was not checked",
-                   "a sentence about all the shown models names only features from its `all_yes`"):
+                   "general knowledge, not a catalog fact", "`request.not_applied` was not checked"):
         assert needle in unknown, needle
     relative = next(line for line in p.splitlines() if line.startswith("- Relative and vague words"))
     for needle in ("comparisons, not numbers", "never become max_price, min_price or a size",
@@ -410,19 +402,9 @@ def test_prompt_v4_adds_the_three_rules_without_scenario_phrasing():
         assert held_out not in p, held_out
     assert ('stays out of every list of what they support — also with a remark in brackets — and is never described as '
             'something such models usually have') in unknown and '"В каталоге нет данных о … для этих моделей."' in unknown
-    prices = next(line for line in p.splitlines() if line.startswith("- Prices:"))
-    assert "copy the price from the `price_text` of that same model code, never from another product" in prices
+    assert "feature_summary" not in p and "price_text" not in p and "shown" not in unknown     # tried and removed in this phase
     # every v3 rule is kept: verbatim, or as the start of a v4 line that adds to it (only the stats tool line was reworded)
     v3 = (PROMPT_FILE.parent / "agent_system_v3.md").read_text(encoding="utf-8")
     assert [line for line in v3.splitlines() if not any(new.startswith(line) for new in p.splitlines())] == [
         next(line for line in v3.splitlines() if line.startswith("  - get_catalog_stats"))]
 
-
-def test_every_product_carries_its_price_as_text_next_to_its_model_code():
-    """Targeted run 2 and the rate measurement: QE55QN80HAUXPY was given the price of QE65QN80HAUXPY in 2 of 14
-    answers. The price is now one string with the model code it belongs to, already in the answer's format."""
-    from consultant.agent_payload import price_text
-    assert price_text("QE55QN80HAUXPY", 129990) == "QE55QN80HAUXPY: 129 990 ₽"
-    assert price_text("QE65S85HAEXPY", 189990, 229990) == "QE65S85HAEXPY: 189 990 ₽ (без скидки 229 990 ₽)"
-    assert price_text("QE115QN90FUXRU", 1799990, 1999990) == "QE115QN90FUXRU: 1 799 990 ₽ (без скидки 1 999 990 ₽)"
-    assert price_text("X", None) is None

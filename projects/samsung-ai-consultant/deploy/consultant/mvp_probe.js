@@ -50,10 +50,7 @@ const notApplied = (payload) => ((payload.request || {}).not_applied || {}).cons
                          `${RUN}-a`, "Посоветуй телевизор для PS5.");
   out.removed_requirement = { status: ps5.status, confidence: ps5.confidence, products: (ps5.products || []).length,
     not_applied: notApplied(ps5), features_checked: (ps5.request || {}).features_checked || null,
-    hdmi_2_1_states: distinct(ps5, "hdmi_2_1"), summary_hdmi_2_1: ((ps5.feature_summary || {}).counts || {}).hdmi_2_1 || null,
-    summary_features: Object.keys((ps5.feature_summary || {}).counts || {}).length,
-    all_yes: (ps5.feature_summary || {}).all_yes || null, not_listed_for_all: (ps5.feature_summary || {}).not_listed_for_all || null,
-    price_text: ((ps5.products || [])[1] || {}).price_text || null,
+    hdmi_2_1_states: distinct(ps5, "hdmi_2_1"), top_level_fields: Object.keys(ps5).sort().join(","),
     not_listed_gap: (ps5.gaps || []).some((g) => g.kind === "attribute_not_listed_for_product" && (g.attributes || []).includes("hdmi_2_1")) };
   const named = await call(auth, "get_tv", { model: "QE65S95HAUXPY" }, `${RUN}-b`, "А HDMI 2.1 и VRR у него есть?");
   out.named_feature_on_overview = { status: named.status, features: (named.products || [{}])[0].features || null };

@@ -34,8 +34,7 @@ from dataclasses import replace
 from typing import Any, Callable, Optional
 
 from .agent_payload import (
-    AGENT_CONTRACT_VERSION, FEATURE_SUMMARY_NOTE, NOT_LISTED_DETAIL, PARTIAL_NOTE, error_payload, feature_view,
-    stats_payload, to_agent_payload,
+    AGENT_CONTRACT_VERSION, NOT_LISTED_DETAIL, error_payload, feature_view, stats_payload, to_agent_payload,
 )
 from .evidence import build_evidence
 from .features import FEATURES, USE_CASES, evaluate_features, spec_names_for
@@ -74,10 +73,6 @@ EXTREME_STATS = {
 }
 COUNT_GROUPS = {"panel_technology": GroupKey.PANEL_TECHNOLOGY, "category": GroupKey.CATEGORY,
                 "screen_size_inches": GroupKey.SCREEN_SIZE, "refresh_rate_hz": GroupKey.REFRESH_RATE}
-# Phase 4F.3: tools whose result is a list of products. They get `feature_summary` over the boolean registry
-# features, so a statement about "these models" has explicit evidence for every one of them.
-LIST_TOOLS = ("search_tvs", "recommend_tvs")
-SUMMARY_FEATURE_IDS = tuple(f for f, d in FEATURES.items() if d.kind == "bool")
 STATES = ("yes", "no", "not_listed")
 MAX_LISTED_VALUES = 12                 # a feature count lists each distinct value up to this many, else the range
 
@@ -510,21 +505,21 @@ def add_feature_evidence(payload: dict, repo, asked: tuple = ()) -> dict:
 
     ``asked``: registry features the conversation asked about that the Core's plan may not contain -- the
     required features the semantic guard removed, and the features the user named. Each returned product
-    (and alternative) gets its state for them (``yes`` / ``no`` / ``not_listed``), so a feature that was not
-    applied is shown as unknown instead of being absent from the result. List results also get
-    ``feature_summary``: per boolean registry feature, how many of the shown products are in each state.
+    (and alternative) gets its state for them (``yes`` / ``no`` / ``not_listed``), and each feature that is not
+    listed gets one gap entry, so a feature that was not applied is shown as unknown instead of being absent
+    from the result.
 
-    Read-only and additive: products, their order and every existing field are left as they are."""
-    products = payload.get("products") or []
-    views = [v for v in (*products, *(payload.get("alternatives") or [])) if v.get("model_code")]
+    Read-only and additive, and nothing at all is added when no feature was asked about: products, their
+    order and every existing field are left as they are. (A list-wide summary of the whole registry and a
+    pre-written price text were tried in this phase and removed: the measured answers started listing every
+    returned product and mixing up prices. See docs/PHASE_4F_3_MVP_HARDENING.md.)"""
+    views = [v for v in (*(payload.get("products") or []), *(payload.get("alternatives") or [])) if v.get("model_code")]
     asked = [f for f in FEATURE_IDS if f in asked]
-    summarized = SUMMARY_FEATURE_IDS if payload.get("tool") in LIST_TOOLS and products else ()
-    fids = list(dict.fromkeys((*asked, *summarized)))
-    if not views or not fids:
+    if not views or not asked:
         return payload
     rows = {r.model_code: r for r in repo.get_products_by_codes([v["model_code"] for v in views])}
-    specs = repo.get_specs([r.id for r in rows.values()], spec_names_for(fids))
-    results = evaluate_features(list(rows.values()), specs, fids)
+    specs = repo.get_specs([r.id for r in rows.values()], spec_names_for(asked))
+    results = evaluate_features(list(rows.values()), specs, asked)
 
     not_listed: dict = {}
     for view in views:
@@ -538,35 +533,12 @@ def add_feature_evidence(payload: dict, repo, asked: tuple = ()) -> dict:
                 features[f] = feature_view(r.state.value, r.value, r.data_quality)
                 if r.state.value == "not_listed":
                     not_listed.setdefault(f, []).append(view["ref"])
-        if features:
-            view["features"] = features
-    if asked and isinstance(payload.get("request"), dict):
+        view["features"] = features
+    if isinstance(payload.get("request"), dict):
         payload["request"]["features_checked"] = asked
-    if not_listed:
-        payload.setdefault("gaps", []).extend(
-            {"kind": "attribute_not_listed_for_product", "products": refs, "attributes": [f], "detail": NOT_LISTED_DETAIL}
-            for f, refs in not_listed.items())
-        if payload.get("confidence") == "strong":
-            payload["confidence"] = "partial"
-            payload["confidence_notes"] = [*payload.get("confidence_notes", ()), PARTIAL_NOTE]
-    if summarized:
-        counts = {}
-        for f in summarized:
-            states = [results[rows[v["model_code"]].id][f].state.value for v in products if v.get("model_code") in rows]
-            counts[f] = {s: states.count(s) for s in STATES if states.count(s)}
-        # The two readings an introduction needs, spelled out: what every shown product has, and what the catalog
-        # says nothing about for any of them (4F.3 measurement: an unknown feature was still put into the
-        # "с поддержкой ..." list of an introduction in 1 of 12 answers).
-        summary = {"note": FEATURE_SUMMARY_NOTE, "products": len(products),
-                   "all_yes": [f for f in summarized if counts[f] == {"yes": len(products)}],
-                   "not_listed_for_all": [f for f in summarized if counts[f] == {"not_listed": len(products)}],
-                   "counts": counts}
-        ordered = {}
-        for key, value in payload.items():          # placed right before the products it summarizes
-            if key == "products":
-                ordered["feature_summary"] = summary
-            ordered[key] = value
-        payload = ordered
+    payload.setdefault("gaps", []).extend(
+        {"kind": "attribute_not_listed_for_product", "products": refs, "attributes": [f], "detail": NOT_LISTED_DETAIL}
+        for f, refs in not_listed.items())
     return payload
 
 

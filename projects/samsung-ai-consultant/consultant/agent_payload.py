@@ -63,10 +63,6 @@ COUNT_SCOPE_NOTE = ("`counts` are the numbers of products in the `counted` scope
                     "`attributes`), where not_listed = the catalog has no data for that product (unknown, not 'no'). "
                     "yes / no say only whether the feature is present; which values the products have (Hz, W, cm) is "
                     "in `attribute_values` or `groups`, never implied by a 'no'.")
-FEATURE_SUMMARY_NOTE = ("How many of the products in `products` (this list only, not the catalog) are yes / no / "
-                        "not_listed for each feature. `all_yes`: every shown product has it -- the only features a "
-                        "statement about all of them may name. `not_listed_for_all`: the catalog has no data for any of "
-                        "them (unknown): neither 'has it' nor 'does not have it'.")
 NOT_LISTED_DETAIL = "Not listed in the catalog for these products: unknown, neither 'yes' nor 'no'."
 
 
@@ -91,19 +87,6 @@ def feature_view(state: str, value=None, data_quality: Optional[str] = None):
             **({"data_quality": data_quality} if data_quality else {})}
 
 
-def _rub(value) -> str:
-    return (f"{value:,.0f}" if float(value).is_integer() else f"{value:,.2f}").replace(",", " ") + " ₽"
-
-
-def price_text(model_code, current, before=None) -> Optional[str]:
-    """The price as the answer should show it, in one string with the model code it belongs to (Phase 4F.3:
-    the Agent gave a product a neighbouring product's price in 2 of 14 measured answers when it had to assemble
-    the text from separate number fields)."""
-    if current is None:
-        return None
-    return f"{model_code}: {_rub(current)}" + (f" (без скидки {_rub(before)})" if before is not None else "")
-
-
 def product_view(p: ProductEvidence, *, passages: bool = False, all_constraints: bool = False) -> dict:
     cols = _facts(p)
     view: dict = {"ref": p.handle, "model_code": p.model_code, "name": p.name}
@@ -111,7 +94,6 @@ def product_view(p: ProductEvidence, *, passages: bool = False, all_constraints:
         view["current_price_rub"] = _num(cols["effective_price"])
         if "sale_price" in cols and "price" in cols and _num(cols["sale_price"]) != _num(cols["price"]):
             view["price_before_discount_rub"] = _num(cols["price"])
-        view["price_text"] = price_text(p.model_code, view["current_price_rub"], view.get("price_before_discount_rub"))
     else:
         view["current_price_rub"] = None
     view["available"] = cols.get("is_available") == "yes"
