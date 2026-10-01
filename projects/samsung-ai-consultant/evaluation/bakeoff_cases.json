@@ -1,0 +1,83 @@
+{
+  "_meta": {
+    "description": "Model bake-off gate: supplementary Agent cases for the special cases the frozen 42-case set (agent_cases.json, unchanged) does not contain: explicit HDMI 2.1, invented-constraint traps, and multi-turn budget / size / technology / feature retention, budget override and budget release. Same schema and authoring rules as agent_cases.json, scored by the unchanged agent_eval.",
+    "version": "bakeoff-cases-v1",
+    "authoring_rules": [
+      "Written and hashed before the first candidate run; identical for every model; not tuned to any model's output.",
+      "User messages are taken from accepted assets: evaluation/guard_cases.json (4E.2), the 4E.2A inherited-constraint scenarios A-F (tests/test_semantic_guard.py) and the 4E.2A targeted live tests (docs/PHASE_4E_QUERY_SEMANTICS.md). The override case opens with a full request so that every turn is answerable.",
+      "Expectations encode only what the user text states or what earlier turns of the same conversation established. args: the effective state the Agent should send in that turn.",
+      "A first turn that states only a constraint ('До 120 тысяч.') expects no tool call; a tool call that carries exactly that constraint is acceptable.",
+      "Single-turn cases use the recommend family; multi-turn cases use the followup family, which the committed scorer reports separately from the headline."
+    ],
+    "sources": {
+      "bake-ps5-hdmi-explicit": "guard_cases.json B-ps5-hdmi-explicit",
+      "bake-budget-hdmi-explicit": "4E.2A targeted live test 3",
+      "bake-movies-no-budget": "guard_cases.json C-invented-price",
+      "bake-large-no-size": "guard_cases.json X-large-invented-size",
+      "bake-mt-carried-budget": "guard_cases.json X-carried-budget",
+      "bake-mt-budget-retention": "4E.2A scenario A-budget-retention / targeted live test 1 (without the restart)",
+      "bake-mt-budget-override": "4E.2A scenarios B-budget-override and C-budget-removal, after an explicit first request",
+      "bake-mt-size-retention": "4E.2A scenario D-size-retention",
+      "bake-mt-technology-retention": "4E.2A scenario E-technology-retention",
+      "bake-mt-feature-retention": "4E.2A scenario F-feature-retention"
+    }
+  },
+  "cases": [
+    {"id": "bake-ps5-hdmi-explicit", "family": "recommend", "turns": [
+      {"user": "Нужен телевизор для PS5, обязательно HDMI 2.1.", "tool": "recommend_tvs",
+       "args": {"use_cases": ["gaming"], "required_features": ["hdmi_2_1"]},
+       "forbidden_args": ["max_price", "min_price", "screen_size_inches", "panel_technology"], "clarification": "optional",
+       "grounding": {"manual_review": ["the explicit HDMI 2.1 requirement reaches the tool; a no-match outcome is stated honestly and alternatives are labelled"]}}]},
+    {"id": "bake-budget-hdmi-explicit", "family": "recommend", "turns": [
+      {"user": "Нужен телевизор до 150 тысяч, обязательно HDMI 2.1.", "tool": "recommend_tvs",
+       "args": {"max_price": 150000, "required_features": ["hdmi_2_1"]}, "acceptable_tools": ["search_tvs"],
+       "forbidden_args": ["screen_size_inches", "panel_technology"], "clarification": "optional",
+       "grounding": {"manual_review": ["both explicit constraints reach the tool; a no-match outcome is stated honestly"]}}]},
+    {"id": "bake-movies-no-budget", "family": "recommend", "turns": [
+      {"user": "Хочу телевизор для кино с хорошей картинкой.", "tool": "recommend_tvs", "args": {"use_cases": ["movies"]},
+       "forbidden_args": ["max_price", "min_price", "screen_size_inches", "min_screen_size_inches", "max_screen_size_inches",
+                          "required_features", "min_refresh_rate_hz"], "clarification": "optional",
+       "grounding": {"manual_review": ["no invented budget, size or required feature; no 'better picture' claim about a model"]}}]},
+    {"id": "bake-large-no-size", "family": "recommend", "turns": [
+      {"user": "Хочу большой телевизор в гостиную.", "tool": "recommend_tvs", "args": {}, "acceptable_tools": [null],
+       "forbidden_args": ["screen_size_inches", "min_screen_size_inches", "max_screen_size_inches", "max_price", "min_price",
+                          "required_features"], "clarification": "optional",
+       "grounding": {"manual_review": ["no invented size threshold or budget; asks what size / budget is meant or shows clearly labelled examples"]}}]},
+    {"id": "bake-mt-carried-budget", "family": "followup", "turns": [
+      {"user": "Хочу OLED до 200 тысяч.", "tool": "recommend_tvs", "args": {"panel_technology": ["OLED"], "max_price": 200000},
+       "acceptable_tools": ["search_tvs"], "clarification": "optional"},
+      {"user": "А какой из них лучше для игр?", "tool": "recommend_tvs",
+       "args": {"panel_technology": ["OLED"], "max_price": 200000, "use_cases": ["gaming"]}, "acceptable_tools": ["compare_tvs"],
+       "clarification": "optional",
+       "grounding": {"manual_review": ["the answer stays within OLED models up to 200 000 ₽; no invented required feature"]}}]},
+    {"id": "bake-mt-budget-retention", "family": "followup", "turns": [
+      {"user": "До 120 тысяч.", "tool": null, "acceptable_tools": ["recommend_tvs", "search_tvs"], "clarification": "optional"},
+      {"user": "А что лучше для PS5?", "tool": "recommend_tvs", "args": {"max_price": 120000, "use_cases": ["gaming"]},
+       "forbidden_args": ["screen_size_inches", "panel_technology"], "clarification": "optional",
+       "grounding": {"manual_review": ["the budget from turn 1 is applied: every recommended product costs at most 120 000 ₽"]}}]},
+    {"id": "bake-mt-budget-override", "family": "followup", "turns": [
+      {"user": "Посоветуй телевизор до 120 тысяч.", "tool": "recommend_tvs", "args": {"max_price": 120000},
+       "acceptable_tools": ["search_tvs"], "clarification": "optional"},
+      {"user": "Можно до 160 тысяч.", "tool": "recommend_tvs", "args": {"max_price": 160000}, "acceptable_tools": ["search_tvs"],
+       "clarification": "optional",
+       "grounding": {"manual_review": ["the new budget replaces the old one: products up to 160 000 ₽, the 120 000 ₽ limit is not applied"]}},
+      {"user": "Цена уже не важна.", "tool": "recommend_tvs", "args": {}, "acceptable_tools": [null, "search_tvs"],
+       "forbidden_args": ["max_price", "min_price"], "clarification": "optional",
+       "grounding": {"manual_review": ["no budget is applied or assumed after the user released it"]}}]},
+    {"id": "bake-mt-size-retention", "family": "followup", "turns": [
+      {"user": "Только 65 дюймов.", "tool": null, "acceptable_tools": ["search_tvs", "recommend_tvs"], "clarification": "optional"},
+      {"user": "А что лучше для кино?", "tool": "recommend_tvs", "args": {"screen_size_inches": 65, "use_cases": ["movies"]},
+       "forbidden_args": ["max_price", "min_price"], "clarification": "optional",
+       "grounding": {"manual_review": ["only 65-inch models are offered; no 'best for movies' ranking is invented"]}}]},
+    {"id": "bake-mt-technology-retention", "family": "followup", "turns": [
+      {"user": "Только OLED.", "tool": null, "acceptable_tools": ["search_tvs", "recommend_tvs"], "clarification": "optional"},
+      {"user": "А какой лучше для PS5?", "tool": "recommend_tvs", "args": {"panel_technology": ["OLED"], "use_cases": ["gaming"]},
+       "forbidden_args": ["max_price", "min_price", "screen_size_inches"], "clarification": "optional",
+       "grounding": {"manual_review": ["only OLED models are offered; no invented required feature for the console"]}}]},
+    {"id": "bake-mt-feature-retention", "family": "followup", "turns": [
+      {"user": "Обязательно HDMI 2.1.", "tool": null, "acceptable_tools": ["search_tvs", "recommend_tvs"], "clarification": "optional"},
+      {"user": "А что лучше для игр?", "tool": "recommend_tvs", "args": {"required_features": ["hdmi_2_1"], "use_cases": ["gaming"]},
+       "forbidden_args": ["max_price", "min_price", "screen_size_inches"], "clarification": "optional",
+       "grounding": {"manual_review": ["the HDMI 2.1 requirement from turn 1 is still applied; a no-match outcome is stated honestly"]}}]}
+  ]
+}

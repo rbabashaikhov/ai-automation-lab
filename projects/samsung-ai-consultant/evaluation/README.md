@@ -110,3 +110,15 @@ Tests: `python -m pytest tests/test_evaluation_*.py`.
 - `guard_replay.py` — offline replay of the frozen 4D.2E Agent calls and the supplementary cases through
   the guard, with re-validation at the tool boundary and a no-invention check ->
   `results/guard_replay_4e2.json`. No DB, LLM or n8n.
+
+## Model bake-off gate
+
+- `model_bakeoff.py` — fixes the experiment (models, stages, order, elimination and execution-failure rules) and
+  loops the unchanged live tooling over it. The model id is replaced only in the driver's inline copy of the
+  Consultant workflow (`agent_live.with_model`), so the deployed workflow never switches model; each trace records
+  the model, temperature and API mode n8n actually sent. `manifest` prints the frozen configuration with sha256.
+- `bakeoff_cases.json` — 10 supplementary cases / 17 turns (explicit HDMI 2.1, invented-constraint traps, multi-turn
+  budget / size / technology / feature retention, budget override and release), built from conversations accepted
+  in 4E.2 / 4E.2A and written before the first run. `agent_cases.json` is unchanged.
+- Stage 1: 19 of the 42 frozen cases plus the 10 supplementary ones (29 cases / 38 turns, 7 multi-turn), the same
+  for every model. Stage 2: the full 42 cases / 44 turns for the models that remain competitive.

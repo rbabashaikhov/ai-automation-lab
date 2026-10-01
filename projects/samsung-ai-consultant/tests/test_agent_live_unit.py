@@ -47,3 +47,35 @@ def test_arg_taxonomy_separates_missing_and_invented_arguments():
     assert t["invented"]["budget"] == ["min_price=100000 not stated by the user"]
     assert t["invented"]["required_features"] == ["required_features:hdmi_2_1 not named by the user"]
     assert t["invented"]["extra_use_cases"] == ["movies"] and t["invented_total"] == 3
+
+
+def test_bakeoff_driver_changes_only_the_model_id():
+    committed = json.loads(open("workflows/ai-consultant.json", encoding="utf-8").read())
+    for model in ("gpt-4.1-mini", "gpt-4o-mini", "gpt-4.1"):
+        wf = build_driver("followup-oled65-spike", "s", model)
+        inlines = [json.loads(n["parameters"]["workflowJson"]) for n in wf["nodes"] if n["type"] == "n8n-nodes-base.executeWorkflow"]
+        assert len(inlines) == 3
+        for inline in inlines:
+            changed = [a for a, b in zip(inline["nodes"], committed["nodes"]) if a != b]
+            assert [n["name"] for n in changed] == ([] if model == "gpt-4.1-mini" else ["OpenAI Chat Model"])
+            node = next(n for n in inline["nodes"] if n["name"] == "OpenAI Chat Model")
+            assert node["parameters"] == {"model": {"__rl": True, "mode": "list", "value": model, "cachedResultName": model},
+                                          "options": {"temperature": 0}}
+            assert node["credentials"] == next(n for n in committed["nodes"] if n["name"] == "OpenAI Chat Model")["credentials"]
+            assert inline["connections"] == committed["connections"] and inline["settings"] == committed["settings"]
+    assert build_driver("no-tool-greeting", "s") == build_driver("no-tool-greeting", "s", "gpt-4.1-mini")   # default = committed
+
+
+def test_bakeoff_plan_is_fixed_and_the_same_for_every_model():
+    from evaluation import model_bakeoff as mb
+    frozen = [c["id"] for c in load_cases()]
+    supplement = load_cases(mb.SUPPLEMENT_CASES)                         # validated at the real tool boundary
+    stage1 = mb.plan("stage1")
+    assert [c for s, _, c in stage1 if s == "frozen"] == list(mb.STAGE1_FROZEN) and set(mb.STAGE1_FROZEN) <= set(frozen)
+    assert [c for s, _, c in stage1 if s == "supplement"] == [c["id"] for c in supplement]
+    assert [c for _, _, c in mb.plan("full")] == frozen and len(frozen) == 42
+    assert not set(frozen) & {c["id"] for c in supplement}
+    wf = build_driver("bake-mt-budget-override", "s", "gpt-4.1", mb.SUPPLEMENT_CASES)
+    inputs = [json.loads(n["parameters"]["jsonOutput"])["chatInput"] for n in wf["nodes"] if n["name"].endswith("input")]
+    assert inputs == ["Посоветуй телевизор до 120 тысяч.", "Можно до 160 тысяч.", "Цена уже не важна."]
+    assert mb.MODELS[0] == mb.BASELINE == "gpt-4.1-mini" and set(mb.MODELS) == set(mb.MODEL_PRICES)

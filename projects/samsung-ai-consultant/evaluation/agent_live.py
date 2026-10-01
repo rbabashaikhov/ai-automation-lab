@@ -34,17 +34,32 @@ REPO = PROJECT.parents[1]
 CONSULTANT_WF = "4d8mXFWGpS5P4t1L"
 DRIVER_NAME = "Samsung — 4D.2C Agent Evaluation Driver (temporary, safe to delete)"
 PRICE_IN, PRICE_OUT = 0.40 / 1e6, 1.60 / 1e6          # gpt-4.1-mini list price, USD per token
+# Model bake-off gate: list prices, USD per token (input, output). Cached-input discounts are not modelled.
+MODEL_PRICES = {"gpt-4.1-mini": (PRICE_IN, PRICE_OUT), "gpt-4o-mini": (0.15 / 1e6, 0.60 / 1e6),
+                "gpt-4.1": (2.00 / 1e6, 8.00 / 1e6)}
+MODEL_NODE = "OpenAI Chat Model"
+CASES_FILE = PROJECT / "evaluation/agent_cases.json"
 
 
-def cases():
-    return {c["id"]: c for c in json.loads((PROJECT / "evaluation/agent_cases.json").read_text())["cases"]}
+def cases(path=None):
+    return {c["id"]: c for c in json.loads(Path(path or CASES_FILE).read_text())["cases"]}
 
 
-def build_driver(case_id: str, session_id: str) -> dict:
+def with_model(consultant: dict, model: str) -> dict:
+    """Model bake-off gate: the committed workflow with only the chat model id replaced. It is applied to the
+    driver's inline copy, so the deployed Consultant workflow is never switched."""
+    node, = [n for n in consultant["nodes"] if n["name"] == MODEL_NODE]
+    node["parameters"]["model"].update(value=model, cachedResultName=model)
+    return consultant
+
+
+def build_driver(case_id: str, session_id: str, model: str = None, cases_path=None) -> dict:
     """Manual Trigger -> (Set turn k -> Execute Workflow inline) x turns. One process, one sessionId per
     case, so n8n's in-process window memory carries the conversation between turns of this case only."""
-    case = cases()[case_id]
+    case = cases(cases_path)[case_id]
     consultant = json.loads((PROJECT / "workflows/ai-consultant.json").read_text())
+    if model:
+        with_model(consultant, model)
     consultant["id"] = CONSULTANT_WF
     code = json.dumps(consultant, ensure_ascii=False)
     nodes = [{"id": "d2c00000-0000-4000-8000-000000000000", "name": "Manual Trigger",
@@ -95,7 +110,11 @@ def _ts(s):
 def trace_turn(sub: dict) -> dict:
     rd = sub["data"]["resultData"]["runData"]
     llm, tokens = [], {"promptTokens": 0, "completionTokens": 0, "totalTokens": 0}
-    for r in rd.get("OpenAI Chat Model", []):
+    requested = []          # what n8n sent to the provider per model round: the proof of which model answered
+    for r in rd.get(MODEL_NODE, []):
+        for item in ((r.get("inputOverride") or {}).get("ai_languageModel") or [[]])[0]:
+            o = (item.get("json") or {}).get("options") or {}
+            requested.append({k: o.get(k) for k in ("model", "temperature", "max_tokens", "use_responses_api")})
         for item in ((r.get("data") or {}).get("ai_languageModel") or [[]])[0]:
             u = item["json"].get("tokenUsage") or item["json"].get("tokenUsageEstimate") or {}
             for k in tokens:
@@ -117,28 +136,33 @@ def trace_turn(sub: dict) -> dict:
     last = agent_runs[-1] if agent_runs else {}
     main = ((last.get("data") or {}).get("main") or [[]])[0]
     item = main[0]["json"] if main else {}
-    return {"sub_execution": sub.get("id"), "status": sub.get("status"),
+    models = sorted({str(o["model"]) for o in requested if o.get("model")})
+    price_in, price_out = MODEL_PRICES.get(models[0], (PRICE_IN, PRICE_OUT)) if len(models) == 1 else (PRICE_IN, PRICE_OUT)
+    return {"sub_execution": sub.get("id"), "status": sub.get("status"), "models": models,
+            "model_options": [dict(t) for t in sorted({tuple(sorted(o.items(), key=str)) for o in requested}, key=str)],
             "error": str(((sub["data"]["resultData"].get("error")) or {}).get("message", ""))[:300] or None,
             "latency_s": round((_ts(sub["stoppedAt"]) - _ts(sub["startedAt"])).total_seconds(), 2),
             "model_rounds": len(llm), "llm_ms": [x["ms"] for x in llm], "tokens": tokens,
             "tokens_estimated": all(x["estimated"] for x in llm) if llm else None,
-            "cost_usd": round(tokens["promptTokens"] * PRICE_IN + tokens["completionTokens"] * PRICE_OUT, 6),
+            "cost_usd": round(tokens["promptTokens"] * price_in + tokens["completionTokens"] * price_out, 6),
             "tool_ms": [t["ms"] for t in tool_runs], "agent_item": item}
 
 
-def extract(case_id: str, parent_out: Path, out: Path) -> dict:
+def extract(case_id: str, parent_out: Path, out: Path, cases_path=None) -> dict:
     raw = parent_out.read_text()
-    parent = json.loads(raw[raw.index("{\n"):])
+    parent, _ = json.JSONDecoder().raw_decode(raw[raw.index("{\n"):])   # a failed execution prints its error after the JSON
     rd = parent["data"]["resultData"]["runData"]
+    parent_error = parent["data"]["resultData"].get("error") or {}
     turns = []
-    for k, turn in enumerate(cases()[case_id]["turns"], start=1):
+    for k, turn in enumerate(cases(cases_path)[case_id]["turns"], start=1):
         runs = rd.get(f"Turn {k}")
         if not runs:
-            turns.append({"user": turn["user"], "missing": True,
-                          "parent_error": str((parent["data"]["resultData"].get("error") or {}).get("message"))[:300]})
+            turns.append({"user": turn["user"], "missing": True, "parent_error": str(parent_error.get("message"))[:300]})
             continue
         sub_id = (runs[0].get("metadata") or {}).get("subExecution", {}).get("executionId")
-        t = trace_turn(fetch(sub_id)) if sub_id else {"missing": True}
+        # A turn whose sub-execution failed has no metadata: keep the provider's own description (e.g. no credits).
+        t = trace_turn(fetch(sub_id)) if sub_id else {"missing": True, "parent_error": " | ".join(
+            str(parent_error.get(k))[:300] for k in ("message", "description") if parent_error.get(k))}
         turns.append({"user": turn["user"], **t})
     rec = {"case": case_id, "parent_status": parent.get("status"), "turns": turns}
     text = json.dumps(rec, ensure_ascii=False, indent=1)
@@ -234,9 +258,9 @@ def pct(xs, q):
     return xs[min(len(xs) - 1, int(round(q * (len(xs) - 1))))] if xs else None
 
 
-def analyze(out_dir: Path, catalog_codes: frozenset) -> dict:
+def analyze(out_dir: Path, catalog_codes: frozenset, cases_path=None) -> dict:
     OUT, CODES = Path(out_dir), catalog_codes
-    cases = load_cases()
+    cases = load_cases(Path(cases_path)) if cases_path else load_cases()
     transcripts, traces, extra = {}, {}, {}
     for c in cases:
         f = OUT / f"{c['id']}.trace.json"
@@ -293,6 +317,7 @@ def analyze(out_dir: Path, catalog_codes: frozenset) -> dict:
                 "latency_s": tt.get("latency_s"), "model_rounds": tt.get("model_rounds"), "tool_ms": tt.get("tool_ms"),
                 "tokens": tt.get("tokens"), "tokens_estimated": tt.get("tokens_estimated"), "cost_usd": tt.get("cost_usd"),
                 "execution_status": tt.get("status"), "execution_error": tt.get("error"), "sub_execution": tt.get("sub_execution"),
+                "models": tt.get("models"),
                 "answer": turn["answer"],
                 "tool_results": [{"tool": x["tool"], "status": (x.get("result") or {}).get("status"),
                                   "confidence": (x.get("result") or {}).get("confidence"),
@@ -311,6 +336,7 @@ def analyze(out_dir: Path, catalog_codes: frozenset) -> dict:
     tok = [r["tokens"]["totalTokens"] for r in rows if r.get("tokens")]
     summary = {
         "cases_run": len(transcripts), "turns_run": len(rows), "missing": run["missing_cases"],
+        "models": sorted({m for r in rows for m in r["models"] or []}),
         "committed_scorer_headline": run["headline"], "committed_scorer_followup": run["followup_spike"],
         "tool_needed_accuracy": f"{sum(r['tool_needed_ok'] for r in head)}/{len(head)}",
         "invented_args_turns": sorted(f"{r['case_id']}[{r['turn']}]" for r in rows if r["arg_taxonomy"]["invented_total"]),
@@ -327,7 +353,7 @@ def analyze(out_dir: Path, catalog_codes: frozenset) -> dict:
         "leaks": {f"{r['case_id']}[{r['turn']}]": r["leaks"] for r in rows if r["leaks"]},
         "execution_failures": [f"{r['case_id']}[{r['turn']}]: {r['execution_error']}" for r in rows if r["execution_status"] != "success"],
         "auto_failures": [f"{r['case_id']}[{r['turn']}]" for r in rows if not r["auto_pass"]],
-        "latency_s": {"median": statistics.median(lat), "p90": pct(lat, 0.9), "max": max(lat)},
+        "latency_s": {"median": statistics.median(lat), "p90": pct(lat, 0.9), "p95": pct(lat, 0.95), "max": max(lat)},
         "model_rounds": {"max": max(r["model_rounds"] or 0 for r in rows), "distribution": {
             str(k): sum(1 for r in rows if r["model_rounds"] == k) for k in sorted({r["model_rounds"] for r in rows})}},
         "tool_ms": {"median": statistics.median([m for r in rows for m in (r["tool_ms"] or [])] or [0]),
