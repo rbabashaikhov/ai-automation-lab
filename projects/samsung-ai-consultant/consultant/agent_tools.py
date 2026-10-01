@@ -34,7 +34,8 @@ from dataclasses import replace
 from typing import Any, Callable, Optional
 
 from .agent_payload import (
-    AGENT_CONTRACT_VERSION, NOT_LISTED_DETAIL, error_payload, feature_view, stats_payload, to_agent_payload,
+    AGENT_CONTRACT_VERSION, NOT_LISTED_DETAIL, NOT_LISTED_FOR_ALL_NOTE, error_payload, feature_view, stats_payload,
+    to_agent_payload,
 )
 from .evidence import build_evidence
 from .features import FEATURES, USE_CASES, evaluate_features, spec_names_for
@@ -507,7 +508,9 @@ def add_feature_evidence(payload: dict, repo, asked: tuple = ()) -> dict:
     required features the semantic guard removed, and the features the user named. Each returned product
     (and alternative) gets its state for them (``yes`` / ``no`` / ``not_listed``), and each feature that is not
     listed gets one gap entry, so a feature that was not applied is shown as unknown instead of being absent
-    from the result.
+    from the result. A feature that is not listed for *any* returned product is also named in
+    ``confidence_notes`` (and a ``strong`` result becomes ``partial``), the way ``get_tv`` reports a lookup of
+    an attribute the catalog does not list.
 
     Read-only and additive, and nothing at all is added when no feature was asked about: products, their
     order and every existing field are left as they are. (A list-wide summary of the whole registry and a
@@ -539,6 +542,13 @@ def add_feature_evidence(payload: dict, repo, asked: tuple = ()) -> dict:
     payload.setdefault("gaps", []).extend(
         {"kind": "attribute_not_listed_for_product", "products": refs, "attributes": [f], "detail": NOT_LISTED_DETAIL}
         for f, refs in not_listed.items())
+    unknown_for_all = [f for f, refs in not_listed.items() if len(refs) == len(views)]
+    if unknown_for_all:
+        # Said where the result's own caveats are read first, as get_tv does for an attribute that is not listed.
+        if payload.get("confidence") == "strong":
+            payload["confidence"] = "partial"
+        payload["confidence_notes"] = [*payload.get("confidence_notes", ()), NOT_LISTED_FOR_ALL_NOTE.format(
+            features=", ".join(unknown_for_all))]
     return payload
 
 

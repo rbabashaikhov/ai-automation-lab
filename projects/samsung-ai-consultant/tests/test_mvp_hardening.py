@@ -18,6 +18,9 @@ from consultant.agent_tools import (
 )
 from consultant.features import FEATURES, evaluate_features
 from consultant.mcp_server import ConversationStore, guard_context
+import hashlib
+import json
+
 from consultant.n8n_workflow import PROMPT_FILE
 from consultant.query_semantics import parse_query_semantics
 from consultant.semantic_guard import MessageEvidence, guard_tool_arguments, not_applied_note, spelled_numbers
@@ -105,8 +108,11 @@ def test_removed_requirement_is_reported_as_unknown_instead_of_disappearing(serv
     gap = next(g for g in payload["gaps"] if g["attributes"] == ["hdmi_2_1"])
     assert gap["kind"] == "attribute_not_listed_for_product" and gap["products"] == [p["ref"] for p in payload["products"]]
     assert "neither 'yes' nor 'no'" in gap["detail"]
-    assert payload["confidence"] == "strong" and payload["confidence_notes"] == []     # nothing else in the result changes
-    assert set(payload) == set(result(repo, "recommend_tvs"))                         # and no new top-level field
+    # unknown for every returned product: said once more where the result's caveats are, as for a not-listed lookup
+    assert payload["confidence"] == "partial" and len(payload["confidence_notes"]) == 1
+    note = payload["confidence_notes"][0]
+    assert "hdmi_2_1" in note and "hz_120" not in note and "neither 'yes' nor 'no'" in note and "no data" in note
+    assert set(payload) == set(result(repo, "recommend_tvs"))                         # no new top-level field
     # nothing else moved: same products, same order, same prices, same states for the plan's features
     for old, new in zip(before, payload["products"]):
         assert {k: new[k] for k in old if k != "features"} == {k: old[k] for k in old if k != "features"}
@@ -120,6 +126,17 @@ def test_a_feature_the_user_names_is_reported_even_when_the_agent_does_not_pass_
                                  MessageEvidence.from_text("А HDMI 2.1 у них точно есть? Без него 120 кадров не будет.")))
     features = payload["products"][0]["features"]
     assert features["hdmi_2_1"] == "not_listed" and features["hz_120"] == {"state": "yes", "value": 120}
+
+
+def test_the_caveat_note_is_only_for_a_feature_unknown_for_every_returned_product(served, repo):
+    served.next = result(repo, "recommend_tvs", codes=("QE65S95HAUXPY", "MNA114MS1CCXRU"))    # the display lists its HDMI version
+    mixed = served.tools.call("recommend_tvs", {}, "t1", (MessageEvidence.from_text("обязательно HDMI 2.1"),))
+    assert states(mixed, "hdmi_2_1") == {"QE65S95HAUXPY": "not_listed", "MNA114MS1CCXRU": "yes"}
+    assert mixed["confidence"] == "strong" and mixed["confidence_notes"] == []                # per product only
+    assert [g["products"] for g in mixed["gaps"]] == [["P1"]]
+    served.next = {**result(repo, "recommend_tvs"), "confidence": "weak", "confidence_notes": ["a sample, not a ranking"]}
+    weak = served.tools.call("recommend_tvs", {}, "t2", (MessageEvidence.from_text("обязательно HDMI 2.1"),))
+    assert weak["confidence"] == "weak" and len(weak["confidence_notes"]) == 2                # never upgraded; note appended
 
 
 def test_an_explicit_negative_stays_a_negative(served, repo):
@@ -375,36 +392,12 @@ def test_a_count_states_what_was_counted():
     assert "never implied by a 'no'" in COUNT_SCOPE_NOTE and "`attribute_values`" in COUNT_SCOPE_NOTE
 
 
-# ---- prompt v4 ----------------------------------------------------------------------------------------------
+# ---- the prompt is not part of the fix ------------------------------------------------------------------------
 
-def test_prompt_v4_adds_the_three_rules_without_scenario_phrasing():
-    p = PROMPT_FILE.read_text(encoding="utf-8")
-    assert PROMPT_FILE.name == "agent_system_v4.md"
-    unknown = next(line for line in p.splitlines() if line.startswith("- Unknown is not yes."))
-    for needle in ("only when a tool result of this conversation shows it for that product",
-                   "general knowledge, not a catalog fact", "`request.not_applied` was not checked"):
-        assert needle in unknown, needle
-    relative = next(line for line in p.splitlines() if line.startswith("- Relative and vague words"))
-    for needle in ("comparisons, not numbers", "never become max_price, min_price or a size",
-                   "Pass every limit the user already stated exactly as stated, add no new one", "sort price_asc"):
-        assert needle in relative, needle
-    groups = next(line for line in p.splitlines() if line.startswith("- Counts and statements about a whole group"))
-    for needle in ("come only from get_catalog_stats, never from a list", "filtered selection", "`counted` scope",
-                   "`attribute_counts`", "never present a total or an availability count as the number of models with a feature",
-                   "`attribute_values`", "never derive a value from a `no`",
-                   "this catalog, not about all Samsung models"):
-        assert needle in groups, needle
-    assert "call get_tv with `question`" in p and "A general overview is not the whole record" in p
-    # the rules are general: the new lines name no feature, and no acceptance or demo phrasing is an example
-    assert "HDMI" not in unknown + relative + groups and "Atmos" not in unknown + relative + groups
-    for held_out in ("сотк", "не огромный", "что подешевле есть", "в шутеры", "QN70H", "66 ", "40 000", "до 50 тысяч",
-                     "у всех 120", "Wi-Fi", "вайфай"):
-        assert held_out not in p, held_out
-    assert ('stays out of every list of what they support — also with a remark in brackets — and is never described as '
-            'something such models usually have') in unknown and '"В каталоге нет данных о … для этих моделей."' in unknown
-    assert "feature_summary" not in p and "price_text" not in p and "shown" not in unknown     # tried and removed in this phase
-    # every v3 rule is kept: verbatim, or as the start of a v4 line that adds to it (only the stats tool line was reworded)
-    v3 = (PROMPT_FILE.parent / "agent_system_v3.md").read_text(encoding="utf-8")
-    assert [line for line in v3.splitlines() if not any(new.startswith(line) for new in p.splitlines())] == [
-        next(line for line in v3.splitlines() if line.startswith("  - get_catalog_stats"))]
-
+def test_the_system_prompt_is_the_accepted_v3_unchanged():
+    """Phase 4F.3 measured a prompt v4 and did not adopt it (docs/PHASE_4F_3_MVP_HARDENING.md): the fixes are in the
+    evidence, the guard and the tool contract. The deployed prompt is byte-identical to the one Phase 4F.2 ran."""
+    run = json.loads((PROMPT_FILE.parents[2] / "evaluation/results/phase_4f_2/run_manifest.json").read_text(encoding="utf-8"))
+    assert PROMPT_FILE.name == "agent_system_v3.md"
+    assert hashlib.sha256(PROMPT_FILE.read_bytes()).hexdigest() == run["hashes"]["consultant/prompts/agent_system_v3.md"]
+    assert not (PROMPT_FILE.parent / "agent_system_v4.md").exists()

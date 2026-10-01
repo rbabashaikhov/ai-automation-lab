@@ -2,7 +2,7 @@
 
     python -m consultant.n8n_workflow [--check]
 
-Generated rather than hand-edited so the Agent system prompt (``prompts/agent_system_v4.md``) and
+Generated rather than hand-edited so the Agent system prompt (``prompts/agent_system_v3.md``) and
 the tool list (``agent_tools.TOOL_SCHEMAS``) have a single source; ``--check`` fails when the
 committed JSON is stale (also asserted by the unit tests). Deployed with ``tools/n8n-tool``.
 
@@ -31,10 +31,11 @@ PROJECT = Path(__file__).resolve().parents[1]
 OUT = PROJECT / "workflows" / "ai-consultant.json"
 # v2 (Gate 4D.2B-R): catalog claims need a tool result first; use case vs required features; group claims;
 # bright-room gap. v3 (Gate 4D.2D): price display for discounted products, no quality comparatives, overview /
-# comparison without attribute lists, self-correct invalid_arguments. v4 (Phase 4F.3): unknown is not yes (a feature
-# is stated only when a result shows it), relative words are not numbers, counts and group statements only from
-# get_catalog_stats. v1-v3 are kept for the 4D.2B / 4D.2C / 4F.2 records.
-PROMPT_FILE = Path(__file__).parent / "prompts" / "agent_system_v4.md"
+# comparison without attribute lists, self-correct invalid_arguments. v1 and v2 are kept for the 4D.2B / 4D.2C records.
+# Phase 4F.3 measured a v4 with four added rules and did not adopt it: alone it left the unsupported-feature claim at
+# 20 of 20 answers, and together with the evidence change it raised price errors from 0 to 6 of 20
+# (docs/PHASE_4F_3_MVP_HARDENING.md). The prompt stays v3; the fix is in the evidence, the guard and the tool contract.
+PROMPT_FILE = Path(__file__).parent / "prompts" / "agent_system_v3.md"
 
 WORKFLOW_NAME = "Samsung — AI Consultant"
 AGENT_MODEL = "gpt-4.1-mini"          # measured via this credential in Phase 3D; temperature 0

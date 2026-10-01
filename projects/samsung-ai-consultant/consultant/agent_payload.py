@@ -63,6 +63,8 @@ COUNT_SCOPE_NOTE = ("`counts` are the numbers of products in the `counted` scope
                     "`attributes`), where not_listed = the catalog has no data for that product (unknown, not 'no'). "
                     "yes / no say only whether the feature is present; which values the products have (Hz, W, cm) is "
                     "in `attribute_values` or `groups`, never implied by a 'no'.")
+NOT_LISTED_FOR_ALL_NOTE = ("The catalog lists {features} for none of these products: unknown, neither 'yes' nor 'no'. Do not "
+                           "say that they have it or support it; say that the catalog has no data.")
 NOT_LISTED_DETAIL = "Not listed in the catalog for these products: unknown, neither 'yes' nor 'no'."
 
 

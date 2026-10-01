@@ -59,11 +59,18 @@ def test_ps5_recommendation_shows_the_unapplied_requirement_as_unknown(env):
     assert {c["value"] for c in guarded["request"]["not_applied"]["constraints"]} == {"hdmi_2_1", "hz_120"}
     assert guarded["request"]["features_checked"] == ["hz_120", "hdmi_2_1"]
     assert any(g["kind"] == "attribute_not_listed_for_product" and g["attributes"] == ["hdmi_2_1"] for g in guarded["gaps"])
-    # apart from the asked states, the gap and the two request notes, the result is the plain one
+    assert guarded["confidence_notes"][-1].startswith("The catalog lists hdmi_2_1 for none of these products")
+    # apart from the asked states, the gap, the caveat note and the two request notes, the result is the plain one
     strip = lambda r: {**r, "request": {k: v for k, v in r["request"].items() if k not in ("not_applied", "features_checked")},   # noqa: E731
                        "gaps": [g for g in r["gaps"] if g.get("attributes") != ["hdmi_2_1"]],
+                       "confidence_notes": [n for n in r["confidence_notes"] if "hdmi_2_1" not in n],
                        "products": [{**p, "features": {f: s for f, s in p["features"].items() if f != "hdmi_2_1"}} for p in r["products"]]}
-    assert strip(guarded) == strip(plain) and guarded["confidence"] == plain["confidence"]
+    assert strip(guarded) == strip(plain) and guarded["confidence"] == plain["confidence"] == "weak"   # weak stays weak
+    oled65 = {"panel_technology": ["OLED"], "screen_size_inches": 65, "max_price": 200000, "use_cases": ["gaming"]}
+    strong = tools.call("recommend_tvs", oled65)
+    partial = tools.call("recommend_tvs", {**oled65, "required_features": ["hdmi_2_1"]}, "t9",
+                         conversation("OLED 65 дюймов до 200 тысяч для PS5"))
+    assert (strong["confidence"], partial["confidence"]) == ("strong", "partial") and codes(strong) == codes(partial)
 
 
 def test_results_without_an_asked_feature_are_the_baseline_results(env):
