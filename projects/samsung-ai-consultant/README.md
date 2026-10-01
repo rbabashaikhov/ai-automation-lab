@@ -53,7 +53,9 @@ Phase 4E.1 — Query-semantics spike:           EVALUATED (isolated, not integra
 Phase 4E.2 — Semantic guard:                  ACTIVE (live 42-case confirmation 44/44; docs/PHASE_4E_QUERY_SEMANTICS.md)
 Phase 4E.2A — Restart-safe provenance:        FIXED + SMOKE-VERIFIED (not deployed; docs/PHASE_4E_QUERY_SEMANTICS.md)
 Model bake-off gate:                          KEEP gpt-4.1-mini (measurement only; docs/MODEL_BAKEOFF.md)
-Phase 4E–4G — answers, conversation, channel:  PLANNED
+Phase 4F.1 — Final product acceptance design: COMPLETE (15 scenarios, design only; docs/PHASE_4F_PRODUCT_ACCEPTANCE.md)
+Phase 4F.2 / 4F.3 — live acceptance run, release decision: PENDING APPROVAL
+Phase 4G — channel:                            PLANNED
 Phase 5 — Evaluation / Observability:          PLANNED
 ```
 

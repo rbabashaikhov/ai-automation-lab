@@ -127,3 +127,16 @@ Tests: `python -m pytest tests/test_evaluation_*.py`.
   `results/model_bakeoff_conversations.{json,md}` (Conversation Audit Log of every scored dialogue; no model
   reasoning) from `results/model_bakeoff_manual.json` (reviewer rubric and verdicts).
 - Result and recommendation: [../docs/MODEL_BAKEOFF.md](../docs/MODEL_BAKEOFF.md).
+
+## Phase 4F.1 — final product acceptance design (see [../docs/PHASE_4F_PRODUCT_ACCEPTANCE.md](../docs/PHASE_4F_PRODUCT_ACCEPTANCE.md))
+
+- `acceptance_scenarios.json` — 15 human-style conversations / 53 user turns for the final acceptance of the frozen
+  product, written before any live run. `cases` has the shape the unchanged live tooling reads (`agent_live.build_driver`
+  / `extract` / `analyze` with `cases_path`); `scenarios` holds the manual rubric per scenario (constraint state after
+  each turn, expected and forbidden behaviour with failure class and severity, grounding expectation, pass criteria);
+  `_meta` holds the failure classes, global checks and the known failure modes of earlier phases. No user turn is copied
+  from the earlier case files.
+- `acceptance.py` — offline validator and coverage report (`python -m evaluation.acceptance`), generator of the
+  dataset-derived parts of the design document (`render`; `--check` fails when they are stale), and `manifest` (sha256 of
+  the dataset and of the frozen product files for the 4F.2 preflight). No DB, LLM or n8n.
+- The live run (4F.2) and the release decision (4F.3) are not started.
