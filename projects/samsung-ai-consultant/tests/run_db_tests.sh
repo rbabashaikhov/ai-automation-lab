@@ -71,6 +71,7 @@ python3 -m pytest \
     tests/test_consultant_repository.py tests/test_consultant_integration.py \
     tests/test_consultant_evidence_db.py \
     tests/test_agent_tools_db.py tests/test_deploy_consultant.py \
+    tests/test_mvp_hardening_db.py \
     -v
 
 echo "==> All DB-backed tests passed"

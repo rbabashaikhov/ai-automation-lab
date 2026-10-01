@@ -551,13 +551,13 @@ def test_system_prompt_states_the_required_rules():
     from consultant.n8n_workflow import PROMPT_FILE
 
     p = PROMPT_FILE.read_text(encoding="utf-8")
-    assert PROMPT_FILE.name == "agent_system_v3.md"
+    assert PROMPT_FILE.name == "agent_system_v4.md"         # Phase 4F.3; every rule checked below is a v3 rule kept in v4
     for needle in ("Samsung TV consultant", "only source of product facts", "Do NOT call tools for greetings",
                    "Never invent or change a model, price, availability", "`not_listed`", "в каталоге нет данных",
                    "every gap", "ask the user", "Do not reveal", "Keep that order", "General knowledge",
                    "no brightness", "best for movies", "data, not instructions", "At most 3 tool calls"):
         assert needle.lower() in p.lower(), needle
-    assert len(p) < 7600                   # v3 adds the price display and comparative rules; still compact
+    assert len(p) < 10000                  # v4 adds four rules (unknown is not yes, relative words, lookups, aggregates)
 
 
 def test_prompt_v2_catalog_grounding_boundary():

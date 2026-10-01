@@ -66,6 +66,7 @@ class GroupKey(str, Enum):
     PANEL_TECHNOLOGY = "panel_technology"
     CATEGORY = "category"
     SCREEN_SIZE = "screen_size_inches"
+    REFRESH_RATE = "refresh_rate_hz"
     IS_AVAILABLE = "is_available"
     PRODUCT_KIND = "product_kind"
 

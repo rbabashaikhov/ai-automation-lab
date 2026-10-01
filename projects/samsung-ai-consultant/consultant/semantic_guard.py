@@ -7,7 +7,9 @@ validation and pipeline run, :func:`guard_tool_arguments` removes a hard constra
 * ``min_price`` / ``max_price`` / screen sizes / ``min_refresh_rate_hz`` -- the value appears as
   no number in any user message of the conversation (digits anywhere count, including inside a
   named model code such as ``QE65S95HAUXPY``; ``150``, ``150к`` and ``0,15 млн`` all support
-  150000). A conversation with spelled-out numbers ("сто тысяч") is left alone;
+  150000). Spelled-out and slang numbers are read the same way ("сто тысяч", "до ста пятидесяти
+  тысяч", "сотка", "полтинник": Phase 4F.3, :func:`spelled_numbers`). A conversation with a number
+  word the guard cannot read with certainty ("пара сотен", "тысяч двести") is left alone;
 * ``required_features`` -- the feature is mentioned in no user message (closed patterns, one per
   Feature Registry id). "для PS5" mentions no feature; "обязательно HDMI 2.1" does.
 
@@ -33,7 +35,7 @@ from .agent_tools import ToolArgumentError, constraints_from_args, validate_argu
 from .features import FEATURES
 from .query_semantics import Preference, parse_query_semantics
 
-GUARD_VERSION = "semantic-guard-4e2-v1"
+GUARD_VERSION = "semantic-guard-4f3-v1"     # 4F.3: spelled / slang numbers are read instead of disabling the rules
 
 _W = r"(?<![a-zа-я0-9])"
 
@@ -63,6 +65,118 @@ _SPELLED = re.compile(_W + r"(?:один|одна|одну|два|две|три|
                            r"двести|триста|четыреста|пятьсот|\w+сот|тысяч\w*|тыщ\w*|миллион\w*|млн|полтор\w*|"
                            r"полтинник\w*|косар\w*|сотк\w*|сотни|сотен)(?![a-zа-я0-9])")
 
+# ---- spelled-out and slang numbers (Phase 4F.3) -------------------------------------------------
+# Before 4F.3 any number word switched the numeric rules off for the whole conversation, so "до сотки" in one
+# turn let an invented max_price through in the next (4F.2 PA-08). The words are now read. The grammar is strict:
+# whatever it does not accept is reported as unreadable, which is the old behaviour (rules off).
+
+def _forms(table: dict) -> dict:
+    return {form: value for forms, value in table.items() for form in forms.split()}
+
+
+_ONES = _forms({"один одна одну одного одной": 1, "два две двух": 2, "три трех": 3, "четыре четырех": 4, "пять пяти": 5,
+                "шесть шести": 6, "семь семи": 7, "восемь восьми": 8, "девять девяти": 9})
+_TEENS = _forms({"десять десяти": 10, "одиннадцать одиннадцати": 11, "двенадцать двенадцати": 12,
+                 "тринадцать тринадцати": 13, "четырнадцать четырнадцати": 14, "пятнадцать пятнадцати": 15,
+                 "шестнадцать шестнадцати": 16, "семнадцать семнадцати": 17, "восемнадцать восемнадцати": 18,
+                 "девятнадцать девятнадцати": 19})
+_TENS = _forms({"двадцать двадцати": 20, "тридцать тридцати": 30, "сорок сорока": 40, "пятьдесят пятидесяти": 50,
+                "шестьдесят шестидесяти": 60, "семьдесят семидесяти": 70, "восемьдесят восьмидесяти": 80,
+                "девяносто девяноста": 90})
+_HUNDREDS = _forms({"сто ста": 100, "двести двухсот": 200, "триста трехсот": 300, "четыреста четырехсот": 400,
+                    "пятьсот пятисот": 500, "шестьсот шестисот": 600, "семьсот семисот": 700, "восемьсот восьмисот": 800,
+                    "девятьсот девятисот": 900})
+_FRACTIONS = _forms({"полтора полторы полутора": 1.5})
+_HALF_MILLION = re.compile(r"пол(?:миллиона|ляма)")                    # one word; "пол миллиона" is left unreadable
+_THOUSAND = re.compile(r"тысяч\w*|тыщ\w*|тыс|косар\w*")
+_MILLION = re.compile(r"миллион\w*|млн|лям\w*")
+_BARE_MULTIPLIERS = frozenset({"тысяча", "тысячу", "миллион", "лям", "косарь"})    # "тысяча двести" = 1200
+_SLANG = ((re.compile(r"сотк\w*|сотня|сотню|сотни|сотен"), 100), (re.compile(r"полтинник\w*"), 50))
+_NEEDS_COUNT = frozenset({"сотен"})                                    # "пять сотен" yes; "пара сотен" is not read
+_VAGUE_BEFORE = frozenset({"#", "пара", "пару", "пары", "несколько", "нескольких", "пол"})   # "#" = a digit amount
+_WORD = re.compile(r"#|[a-zа-я0-9]+")
+
+
+def _number_word(word: str) -> Optional[tuple]:
+    """``(kind, value)``: h/t/n/o = hundreds / tens / 10-19 / ones, f = fraction, s = slang unit, m = multiplier,
+    x = a complete value, ? = a number word outside the grammar. ``None`` for any other word."""
+    for kind, table in (("o", _ONES), ("n", _TEENS), ("t", _TENS), ("h", _HUNDREDS), ("f", _FRACTIONS)):
+        if word in table:
+            return kind, table[word]
+    if _HALF_MILLION.fullmatch(word):
+        return "x", 500_000
+    if _THOUSAND.fullmatch(word):
+        return "m", 1_000
+    if _MILLION.fullmatch(word):
+        return "m", 1_000_000
+    for pattern, value in _SLANG:
+        if pattern.fullmatch(word):
+            return "s", value
+    # The pre-4F.3 lexicon: a form it knew that the tables above do not hold ("шестисотый", "полторашка")
+    return ("?", None) if _SPELLED.fullmatch(word) else None
+
+
+def _read_run(run: list) -> Optional[float]:
+    """One run of consecutive number words -> its value; ``None`` unless the run is exactly
+    ``group [multiplier]`` repeated with strictly descending multipliers, where a group is
+    ``[hundreds] [tens [ones] | 10-19 | ones]``, a fraction, or ``[ones | fraction] slang-unit``."""
+    total, last_multiplier, i = 0.0, float("inf"), 0
+    while i < len(run):
+        group, order = None, 4                        # order: the magnitude the next simple word must be below
+        while i < len(run) and run[i][1] in "htno":
+            _, kind, value = run[i]
+            rank = {"h": 3, "t": 2, "n": 1, "o": 1}[kind]
+            if rank >= order or (kind == "n" and order == 2):          # "двадцать десять"
+                return None
+            group, order = (group or 0) + value, rank
+            i += 1
+        if i < len(run) and run[i][1] == "f" and group is None:
+            group, order = run[i][2], 1
+            i += 1
+        if i < len(run) and run[i][1] == "s":
+            word, _, unit = run[i]
+            if (group is None and word in _NEEDS_COUNT) or (group is not None and order != 1):
+                return None                            # "сотен" alone; "сто соток"
+            group = (group or 1) * unit
+            i += 1
+        if i < len(run) and run[i][1] == "x" and group is None and len(run) == 1:
+            return float(run[i][2])
+        if i < len(run) and run[i][1] == "m":
+            word, _, multiplier = run[i]
+            if multiplier >= last_multiplier or (group is None and word not in _BARE_MULTIPLIERS):
+                return None                            # "тысяч миллион"; "тысяч двести" (about 200 thousand)
+            total, last_multiplier = total + (group or 1) * multiplier, multiplier
+            i += 1
+        elif group is not None and i == len(run):
+            total += group
+        else:
+            return None
+    return total
+
+
+def spelled_numbers(low: str) -> tuple:
+    """``(values, unreadable)`` for lower-cased text: the values of the spelled / slang numbers that
+    were read, and whether any number word could not be read with certainty."""
+    words = [m.group() for m in _WORD.finditer(_DIGIT_AMOUNT.sub(" # ", low))]
+    values, unreadable, i = set(), False, 0
+    while i < len(words):
+        if _number_word(words[i]) is None:
+            i += 1
+            continue
+        start, run = i, []
+        while i < len(words) and _number_word(words[i]) is not None:
+            run.append((words[i], *_number_word(words[i])))
+            i += 1
+        vague = (start > 0 and words[start - 1] in _VAGUE_BEFORE) or \
+            any(w.startswith("половин") for w in words[i:i + 2])       # "два с половиной миллиона"
+        value = None if vague or any(kind == "?" for _, kind, _ in run) else _read_run(run)
+        if value is None:
+            unreadable = True
+        else:
+            values.add(value)
+    return values, unreadable
+
+
 NUMERIC_ARGS = {"min_price": "unsupported_price_value", "max_price": "unsupported_price_value",
                 "screen_size_inches": "unsupported_size_value", "min_screen_size_inches": "unsupported_size_value",
                 "max_screen_size_inches": "unsupported_size_value",
@@ -74,8 +188,8 @@ USE_CASE_FOR = {Preference.GAMING: "gaming", Preference.MOVIES: "movies", Prefer
 @dataclass(frozen=True)
 class MessageEvidence:
     """What one user message states. Derived facts only; the text itself is not kept."""
-    numbers: frozenset             # every number in the text, also x1 000 and x1 000 000
-    spelled_numbers: bool          # "сто тысяч", "полтора миллиона": numbers the guard cannot read
+    numbers: frozenset             # every number in the text (digits, spelled, slang), also x1 000 and x1 000 000
+    spelled_numbers: bool          # a number word the guard could not read ("пара сотен"): numeric rules off
     features: frozenset            # registry feature ids mentioned
     use_cases: tuple               # use cases implied by the text (via QuerySemantics preferences)
     semantics_ok: bool
@@ -89,8 +203,10 @@ class MessageEvidence:
             numbers |= {v, v * 1_000, v * 1_000_000}
         parse = parse_query_semantics(str(text))
         use_cases = tuple(USE_CASE_FOR[p] for p in parse.semantics.preferences if p in USE_CASE_FOR) if parse.ok else ()
-        spelled = bool(_SPELLED.search(_DIGIT_AMOUNT.sub(" ", low)))      # "150 тысяч" is a digit amount
-        return MessageEvidence(frozenset(numbers), spelled,
+        read, unreadable = spelled_numbers(low)                           # "150 тысяч" is a digit amount
+        for v in read:
+            numbers |= {v, v * 1_000, v * 1_000_000}
+        return MessageEvidence(frozenset(numbers), unreadable,
                                frozenset(f for f, p in FEATURE_MENTIONS.items() if re.search(p, low)),
                                use_cases, parse.ok)
 
@@ -204,4 +320,6 @@ def not_applied_note(result: GuardResult) -> Optional[dict]:
         return None
     return {"constraints": [{"argument": a.argument, "value": a.value} for a in removed],
             "note": "Not stated by the user in this conversation, so not applied. Do not present the results as "
-                    "satisfying these constraints; ask the user if a limit is needed."}
+                    "satisfying these constraints; ask the user if a limit is needed. A feature listed here was not "
+                    "required: a product has it only if its `features` says yes. Limits the user did state must be "
+                    "passed exactly as stated."}

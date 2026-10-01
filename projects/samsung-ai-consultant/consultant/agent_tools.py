@@ -14,6 +14,10 @@ decides *how* it is executed. Every tool:
 
 There is no SQL, WHERE clause, vector or ranking argument anywhere in the tool surface.
 :class:`ConsultantTools` adds the per-turn tool-call cap enforced at the Python boundary.
+
+Phase 4F.3 (MVP hardening), both additive: ``get_catalog_stats`` counts registry features and counts
+inside one model family (exact aggregates from structured rows), and :func:`add_feature_evidence`
+gives every asked-about feature an explicit three-state value on every returned product.
 """
 
 from __future__ import annotations
@@ -29,9 +33,12 @@ from contextlib import nullcontext
 from dataclasses import replace
 from typing import Any, Callable, Optional
 
-from .agent_payload import AGENT_CONTRACT_VERSION, error_payload, stats_payload, to_agent_payload
+from .agent_payload import (
+    AGENT_CONTRACT_VERSION, FEATURE_SUMMARY_NOTE, NOT_LISTED_DETAIL, PARTIAL_NOTE, error_payload, feature_view,
+    stats_payload, to_agent_payload,
+)
 from .evidence import build_evidence
-from .features import FEATURES, USE_CASES
+from .features import FEATURES, USE_CASES, evaluate_features, spec_names_for
 from .planning import resolve_plan
 from .retrieval import execute
 from .router import route
@@ -66,7 +73,12 @@ EXTREME_STATS = {
     "highest_refresh_rate": (SortKey.REFRESH_RATE, SortDir.DESC),
 }
 COUNT_GROUPS = {"panel_technology": GroupKey.PANEL_TECHNOLOGY, "category": GroupKey.CATEGORY,
-                "screen_size_inches": GroupKey.SCREEN_SIZE}
+                "screen_size_inches": GroupKey.SCREEN_SIZE, "refresh_rate_hz": GroupKey.REFRESH_RATE}
+# Phase 4F.3: tools whose result is a list of products. They get `feature_summary` over the boolean registry
+# features, so a statement about "these models" has explicit evidence for every one of them.
+LIST_TOOLS = ("search_tvs", "recommend_tvs")
+SUMMARY_FEATURE_IDS = tuple(f for f, d in FEATURES.items() if d.kind == "bool")
+STATES = ("yes", "no", "not_listed")
 
 # A full catalog-shaped model code (same shape as consultant.extract); anything else is a family token.
 FULL_CODE = re.compile(r"^[A-Z]{2,3}\d{2,3}[A-Z][A-Z0-9]{4,11}$")
@@ -121,7 +133,8 @@ TOOL_SCHEMAS = {
             "List Samsung TVs from the live catalog that satisfy explicit constraints the user stated "
             "(panel, size, price, resolution, refresh rate, availability, storefront line). Use for "
             "'покажи / какие есть / есть ли ...' requests. Not for advice ('посоветуй', 'для игр') -> "
-            "recommend_tvs; not for counts or 'самый ...' -> get_catalog_stats. Default: available "
+            "recommend_tvs; not for counts, 'все ли / у всех ли ...' or 'самый ...' -> get_catalog_stats "
+            "(a list is a filtered selection, not the whole catalog). Default: available "
             "products only, ordered by current price ascending."),
         "inputSchema": _obj({**_FILTERS,
                              "sort": {"type": "string", "enum": list(SEARCH_SORTS),
@@ -179,13 +192,21 @@ TOOL_SCHEMAS = {
     },
     "get_catalog_stats": {
         "description": (
-            "Deterministic catalog aggregates: how many products match (stat='count', optional group_by), "
-            "or the tie-aware extreme: cheapest, most_expensive, largest, smallest, highest_refresh_rate "
-            "(all products sharing the extreme value are returned). Never use for advice."),
+            "Exact catalog aggregates. stat='count': how many products match the filters, in total and "
+            "available (`group_by` lists the values that exist). To count a feature ('сколько моделей с "
+            "Dolby Atmos', 'у всех ли OLED есть VRR') pass `attributes`: the result gives yes / no / "
+            "not_listed per attribute for the counted products. To count inside one series ('все ли S90H в "
+            "наличии') pass `model`. Other stats are the tie-aware extremes: cheapest, most_expensive, "
+            "largest, smallest, highest_refresh_rate (all products sharing the extreme value are "
+            "returned). Never use for advice."),
         "inputSchema": _obj({
             "stat": {"type": "string", "enum": ["count", *EXTREME_STATS]},
             "group_by": {"type": "string", "enum": list(COUNT_GROUPS),
-                         "description": "Only with stat='count'."},
+                         "description": "Only with stat='count': the count per existing value."},
+            "attributes": _arr(FEATURE_IDS, "Only with stat='count': registry features to count among the "
+                                            "counted products (yes / no / not_listed each). Not a filter."),
+            "model": {**_MODEL_REF, "description": "Only with stat='count': count inside this model family "
+                                                   "('QN70H') or for one model code."},
             **_FILTERS,
         }, ("stat",)),
     },
@@ -403,14 +424,42 @@ def recommend_tvs(repo, args: dict) -> dict:
     return _pipeline(delta, repo, "recommend_tvs", args)
 
 
+def _attribute_counts(repo, filters, attributes: list, buckets: tuple) -> dict:
+    """Exact tri-state counts per attribute over the products ``filters`` select, per availability bucket.
+    Evaluated by the Feature Registry on the structured rows: never from a list sample or semantic search."""
+    found = repo.candidates(filters)
+    if found.truncated:
+        raise ToolArgumentError([f"attributes: more than {found.limit} products match; add filters"])
+    specs = repo.get_specs([p.id for p in found.rows], spec_names_for(attributes))
+    results = evaluate_features(found.rows, specs, attributes)
+    out = {}
+    for a in attributes:
+        out[a] = {}
+        for available, name in buckets:
+            states = [results[p.id][a].state.value for p in found.rows if available is None or p.is_available == available]
+            out[a][name] = {s: states.count(s) for s in STATES}
+    return out
+
+
 def get_catalog_stats(repo, args: dict) -> dict:
     stat = args["stat"]
-    if stat != "count" and "group_by" in args:
-        raise ToolArgumentError(["group_by: only valid with stat='count'"])
+    count_only = [k for k in ("group_by", "attributes", "model") if k in args]
+    if stat != "count" and count_only:
+        raise ToolArgumentError([f"{k}: only valid with stat='count'" for k in count_only])
+    if "attributes" in args and "group_by" in args:
+        raise ToolArgumentError(["attributes: cannot be combined with group_by; count the attributes for one set of "
+                                 "filters (or one model) per call"])
     constraints = constraints_from_args(args)
     if stat == "count":
-        plan = resolve_plan(QueryPlanDelta.from_dict({"intent": "lookup", "constraints": constraints}), repo)
+        delta = {"intent": "lookup", "constraints": constraints}
+        if "model" in args:
+            delta["model_refs"] = [model_ref(args["model"])]
+        plan = resolve_plan(QueryPlanDelta.from_dict(delta), repo)
         f = plan.filters                           # validated / canonical filters; lookup = no policy default
+        if plan.resolutions:
+            if any(r.status == "not_found" for r in plan.resolutions):
+                return stats_payload(plan, None, None, [], args)        # nothing is counted for an unknown model
+            f = replace(f, product_ids=tuple(p.id for p in plan.resolved_products))
         buckets = ((None, "total"), (True, "available"), (False, "unavailable"))
         if f.is_available is not None:
             buckets = ((f.is_available, "available" if f.is_available else "unavailable"),)
@@ -424,7 +473,8 @@ def get_catalog_stats(repo, args: dict) -> dict:
                 if f.is_available is None:
                     g["available"] = avail.get(value, 0)
                 groups.append(g)
-        return stats_payload(plan, counts, args.get("group_by"), groups, args)
+        attribute_counts = _attribute_counts(repo, f, list(args["attributes"]), buckets) if "attributes" in args else None
+        return stats_payload(plan, counts, args.get("group_by"), groups, args, attribute_counts)
     key, direction = EXTREME_STATS[stat]
     if key is SortKey.EFFECTIVE_PRICE and args.get("price_basis") == "list":
         key = SortKey.LIST_PRICE
@@ -436,6 +486,65 @@ def get_catalog_stats(repo, args: dict) -> dict:
 TOOL_FUNCTIONS = {"search_tvs": search_tvs, "get_tv": get_tv, "compare_tvs": compare_tvs,
                   "recommend_tvs": recommend_tvs, "get_catalog_stats": get_catalog_stats}
 assert set(TOOL_FUNCTIONS) == set(TOOL_SCHEMAS)
+
+
+def add_feature_evidence(payload: dict, repo, asked: tuple = ()) -> dict:
+    """Phase 4F.3: three-state evidence for every feature that was asked about.
+
+    ``asked``: registry features the conversation asked about that the Core's plan may not contain -- the
+    required features the semantic guard removed, and the features the user named. Each returned product
+    (and alternative) gets its state for them (``yes`` / ``no`` / ``not_listed``), so a feature that was not
+    applied is shown as unknown instead of being absent from the result. List results also get
+    ``feature_summary``: per boolean registry feature, how many of the shown products are in each state.
+
+    Read-only and additive: products, their order and every existing field are left as they are."""
+    products = payload.get("products") or []
+    views = [v for v in (*products, *(payload.get("alternatives") or [])) if v.get("model_code")]
+    asked = [f for f in FEATURE_IDS if f in asked]
+    summarized = SUMMARY_FEATURE_IDS if payload.get("tool") in LIST_TOOLS and products else ()
+    fids = list(dict.fromkeys((*asked, *summarized)))
+    if not views or not fids:
+        return payload
+    rows = {r.model_code: r for r in repo.get_products_by_codes([v["model_code"] for v in views])}
+    specs = repo.get_specs([r.id for r in rows.values()], spec_names_for(fids))
+    results = evaluate_features(list(rows.values()), specs, fids)
+
+    not_listed: dict = {}
+    for view in views:
+        row = rows.get(view["model_code"])
+        if row is None:
+            continue
+        features = dict(view.get("features") or {})
+        for f in asked:
+            if f not in features:
+                r = results[row.id][f]
+                features[f] = feature_view(r.state.value, r.value, r.data_quality)
+                if r.state.value == "not_listed":
+                    not_listed.setdefault(f, []).append(view["ref"])
+        if features:
+            view["features"] = features
+    if asked and isinstance(payload.get("request"), dict):
+        payload["request"]["features_checked"] = asked
+    if not_listed:
+        payload.setdefault("gaps", []).extend(
+            {"kind": "attribute_not_listed_for_product", "products": refs, "attributes": [f], "detail": NOT_LISTED_DETAIL}
+            for f, refs in not_listed.items())
+        if payload.get("confidence") == "strong":
+            payload["confidence"] = "partial"
+            payload["confidence_notes"] = [*payload.get("confidence_notes", ()), PARTIAL_NOTE]
+    if summarized:
+        counts = {}
+        for f in summarized:
+            states = [results[rows[v["model_code"]].id][f].state.value for v in products if v.get("model_code") in rows]
+            counts[f] = {s: states.count(s) for s in STATES if states.count(s)}
+        summary = {"note": FEATURE_SUMMARY_NOTE, "products": len(products), "counts": counts}
+        ordered = {}
+        for key, value in payload.items():          # placed right before the products it summarizes
+            if key == "products":
+                ordered["feature_summary"] = summary
+            ordered[key] = value
+        payload = ordered
+    return payload
 
 
 def run_tool(name: str, arguments: Any, repo) -> dict:
@@ -517,9 +626,14 @@ class ConsultantTools:
             except Exception:                       # additive safety: fall back to the Phase 4D path
                 log.exception("semantic guard failed; original arguments used")
                 guard = None
+        asked = self._asked_features(guard, conversation)
         try:
             with self._repo_provider() as repo:
                 payload = run_tool(name, arguments, repo)
+                try:
+                    payload = add_feature_evidence(payload, repo, asked)
+                except Exception:                   # additive evidence: on any failure the plain result stands
+                    log.exception("feature evidence unavailable for %s", str(name)[:40])
         except Exception:                           # never leak internals (SQL, DSN, traceback) to the Agent
             log.exception("tool %s failed", str(name)[:40])
             payload = error_payload(str(name)[:40], "error", ["The catalog is temporarily unavailable."])
@@ -528,6 +642,15 @@ class ConsultantTools:
             payload["request"]["not_applied"] = not_applied_note(guard)
         self._log(name, payload, started, guard)
         return payload
+
+    @staticmethod
+    def _asked_features(guard, conversation: Optional[tuple]) -> tuple:
+        """Registry features this conversation asked about: required features the guard did not apply, and
+        features the user named (``MessageEvidence.features``; derived ids, never text)."""
+        asked = [a.value for a in guard.removed if a.argument == "required_features"] if guard is not None else []
+        for message in conversation or ():
+            asked.extend(getattr(message, "features", ()))
+        return tuple(dict.fromkeys(asked))
 
     @staticmethod
     def _log(name: str, payload: dict, started: float, guard=None) -> None:

@@ -87,11 +87,15 @@ def test_document_restates_the_dataset_without_drift(data):
         assert f"`{field}`" in text or f"`{field}[]`" in text, field
 
 
-def test_document_records_the_current_frozen_file_hashes():
+def test_document_records_the_frozen_file_hashes_of_the_acceptance_run():
+    """§1.2 describes the product that Phase 4F.2 ran. Phase 4F.3 changed the product afterwards, so the section
+    is compared with the 4F.2 run manifest, not with the working tree."""
     text = acc.DOCUMENT.read_text(encoding="utf-8")
+    run = json.loads((acc.PROJECT / "evaluation/results/phase_4f_2/run_manifest.json").read_text(encoding="utf-8"))["hashes"]
     for name in ("consultant/prompts/agent_system_v3.md", "workflows/ai-consultant.json", "consultant/semantic_guard.py",
                  "consultant/agent_tools.py"):
-        assert f"`{name}`, sha256 `{acc.sha256(acc.PROJECT / name)[:16]}…`" in text, name
+        assert f"`{name}`, sha256 `{run[name][:16]}…`" in text, name
+    assert acc.sha256(acc.PROJECT / "consultant/prompts/agent_system_v3.md") == run["consultant/prompts/agent_system_v3.md"]
 
 
 @pytest.mark.parametrize("mutate,match", [

@@ -57,6 +57,14 @@ CONFIDENCE_NOTES = {
 }
 PARTIAL_NOTE = "Some requested information is not listed in the catalog or could not be verified (see gaps)."
 CLARIFY_DIMENSIONS = ("budget", "screen_size", "main_use")
+# Phase 4F.3: what a count covers, and what a list of products can be used for.
+COUNT_SCOPE_NOTE = ("`counts` are the numbers of products in the `counted` scope and nothing else. They are not counts "
+                    "of products with any feature: a feature count exists only in `attribute_counts` (pass "
+                    "`attributes`), where not_listed = the catalog has no data for that product (unknown, not 'no').")
+FEATURE_SUMMARY_NOTE = ("How many of the products in `products` (this list only, not the catalog) are yes / no / "
+                        "not_listed for each feature. A statement about all of them needs yes for every one; "
+                        "not_listed = the catalog has no data (unknown): neither 'has it' nor 'does not have it'.")
+NOT_LISTED_DETAIL = "Not listed in the catalog for these products: unknown, neither 'yes' nor 'no'."
 
 
 def _num(value: str):
@@ -69,6 +77,15 @@ def _num(value: str):
 
 def _facts(p: ProductEvidence) -> dict:
     return {f.fact_id.split(".", 2)[2]: f.value for f in p.facts if f.origin == "products"}
+
+
+def feature_view(state: str, value=None, data_quality: Optional[str] = None):
+    """One feature state as the Agent sees it: the bare state, or an object when there is a value
+    (numeric features) or a data-quality reason."""
+    if value is None and not data_quality:
+        return state
+    return {"state": state, **({"value": _num(value)} if value is not None else {}),
+            **({"data_quality": data_quality} if data_quality else {})}
 
 
 def product_view(p: ProductEvidence, *, passages: bool = False, all_constraints: bool = False) -> dict:
@@ -84,10 +101,7 @@ def product_view(p: ProductEvidence, *, passages: bool = False, all_constraints:
     view["specs"] = {c: _num(cols[c]) if c in ("screen_size_inches", "refresh_rate_hz", "year") else cols[c]
                      for c in SPEC_COLUMNS if c in cols}
     if p.features:
-        view["features"] = {f.feature_id: (f.state if f.value is None and not f.data_quality else
-                                           {"state": f.state, **({"value": _num(f.value)} if f.value is not None else {}),
-                                            **({"data_quality": f.data_quality} if f.data_quality else {})})
-                            for f in p.features}
+        view["features"] = {f.feature_id: feature_view(f.state, f.value, f.data_quality) for f in p.features}
     specs = [{"name": f.label, "value": f.value} for f in p.facts if f.origin == "product_specs"]
     if specs:
         view["catalog_specs"] = specs
@@ -169,11 +183,7 @@ def _request(plan: ResolvedPlan, bundle: EvidenceBundle, args: dict) -> dict:
     if policies:
         req["policies"] = policies
     if plan.resolutions:
-        req["model_resolution"] = [
-            {"input": r.ref.text, "status": r.status,
-             **({"sizes": [_num(str(x)) for x in r.sizes]} if r.sizes else {}),
-             **({"suggestions": list(r.suggestions)} if r.suggestions else {})}
-            for r in plan.resolutions]
+        req["model_resolution"] = _model_resolution(plan)
     notes = []
     if "screen_size_inches" in args and plan.resolutions and all(r.status == "exact" for r in plan.resolutions):
         notes.append("screen_size_inches is ignored for an exact model code.")
@@ -276,15 +286,47 @@ def to_agent_payload(tool: str, bundle: EvidenceBundle, plan: ResolvedPlan, args
     return payload
 
 
-def stats_payload(plan: ResolvedPlan, counts: dict, group_by: Optional[str], groups: list, args: dict) -> dict:
-    payload = {"contract": AGENT_CONTRACT_VERSION, "tool": "get_catalog_stats", "status": "ok",
-               "confidence": "strong", "stat": "count",
-               "request": {"constraints": [describe(k, plan.filters) for k in plan.user_constraint_keys]},
-               "counts": counts}
+def _model_resolution(plan: ResolvedPlan) -> list:
+    return [{"input": r.ref.text, "status": r.status,
+             **({"sizes": [_num(str(x)) for x in r.sizes]} if r.sizes else {}),
+             **({"suggestions": list(r.suggestions)} if r.suggestions else {})}
+            for r in plan.resolutions]
+
+
+def counted_scope(plan: ResolvedPlan) -> str:
+    """What a count covers, in words: the model / family scope and the user's typed constraints."""
+    constraints = [describe(k, plan.filters) for k in plan.user_constraint_keys]
+    found = [r for r in plan.resolutions if r.status != "not_found"]
+    who = "; ".join(f"the {len(r.products)} catalog product(s) of {'family' if r.status == 'family' else 'model'} "
+                    f"{r.ref.text!r}" for r in found)
+    if not who:
+        return "products matching: " + "; ".join(constraints) if constraints else "all products in the catalog"
+    return who + (" matching: " + "; ".join(constraints) if constraints else "")
+
+
+def stats_payload(plan: ResolvedPlan, counts: Optional[dict], group_by: Optional[str], groups: list, args: dict,
+                  attribute_counts: Optional[dict] = None) -> dict:
+    """``counts`` is ``None`` when the named model is not in the catalog: then nothing was counted.
+    ``attribute_counts`` (Phase 4F.3): ``{feature id: {bucket: {yes, no, not_listed}}}`` over exactly the
+    counted products, with the buckets of ``counts``."""
+    request = {"constraints": [describe(k, plan.filters) for k in plan.user_constraint_keys]}
+    if plan.resolutions:
+        request["model_resolution"] = _model_resolution(plan)
+    payload = {"contract": AGENT_CONTRACT_VERSION, "tool": "get_catalog_stats",
+               "status": "ok" if counts is not None else "not_found",
+               "confidence": "strong" if counts is not None else "weak", "stat": "count", "request": request}
+    if counts is None:
+        payload["gaps"] = [{"kind": g.kind, "detail": g.detail} for g in plan.gaps if g.kind == "model_not_found"]
+        payload["data_notice"] = DATA_NOTICE
+        return payload
+    payload.update(counted=counted_scope(plan), counts=counts)
+    if attribute_counts is not None:
+        payload["attribute_counts"] = attribute_counts
     if group_by:
         payload["group_by"] = group_by
         payload["groups"] = [{**g, "value": _num(str(g["value"])) if group_by == "screen_size_inches" else g["value"]}
                              for g in groups]
+    payload["scope_note"] = COUNT_SCOPE_NOTE
     payload["data_notice"] = DATA_NOTICE
     return payload
 

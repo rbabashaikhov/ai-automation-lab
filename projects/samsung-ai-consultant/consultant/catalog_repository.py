@@ -65,6 +65,7 @@ _GROUP_EXPR = {
     GroupKey.PANEL_TECHNOLOGY: "p.panel_technology",
     GroupKey.CATEGORY: "p.category",
     GroupKey.SCREEN_SIZE: "p.screen_size_inches",
+    GroupKey.REFRESH_RATE: "p.refresh_rate_hz",
     GroupKey.IS_AVAILABLE: "p.is_available",
     GroupKey.PRODUCT_KIND: PRODUCT_KIND_SQL,
 }

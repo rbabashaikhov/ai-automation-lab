@@ -141,10 +141,22 @@ def test_transcripts_hold_the_full_conversations(results):
         assert f"**Scenario verdict: {s['verdict']}**" in text
 
 
+# Phase 4F.3 (MVP hardening) changed the runtime after the 4F.2 run. The record of what was run is therefore checked
+# against the design document, not against the working tree; the files 4F.3 left alone must still be the ones run.
+CHANGED_BY_4F3 = {"workflows/ai-consultant.json", "consultant/semantic_guard.py", "consultant/agent_tools.py"}
+
+
 def test_the_rubric_and_the_runtime_sources_are_the_ones_that_were_run(results, manifest):
     assert results["_meta"]["dataset"]["sha256"] == acc.sha256(acc.DATASET) == manifest["hashes"]["evaluation/acceptance_scenarios.json"]
+    document = acc.DOCUMENT.read_text(encoding="utf-8")
     for name, digest in acc.manifest()["frozen_files"].items():
-        assert manifest["hashes"][name] == digest, name                             # no runtime source change since the run
+        recorded = manifest["hashes"][name]
+        if name in CHANGED_BY_4F3:
+            assert recorded != digest, name                                         # the run was on the earlier product
+        else:
+            assert recorded == digest, name                                         # unchanged since the run
+    for name in ("consultant/prompts/agent_system_v3.md", *sorted(CHANGED_BY_4F3)):
+        assert f"`{name}`, sha256 `{manifest['hashes'][name][:16]}…`" in document, name   # 4F.1 §1.2 = what was run
     runner = manifest["run"]["runner"]["evaluation/acceptance_run.py"]
     assert acc.sha256(acc.PROJECT / "evaluation/acceptance_run.py") == runner
     assert acc.stale_blocks(acc.load()) == []                                       # the design document is still in sync
