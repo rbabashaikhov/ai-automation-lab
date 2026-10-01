@@ -52,6 +52,13 @@ ss -ltnup | grep 8765 || echo "no host listener";  docker port samsung-consultan
 The n8n Header Auth credential (`Authorization: Bearer <token>`) is created through the n8n
 public API. The token is piped from `provision_env.py mcp-token` and never displayed.
 
+**Rollback of Phase 4F.3:** set `image: samsung-consultant:4e2a` (`compose.yml.4e2a.bak` on the VPS) and `up -d`.
+The workflow needs no restore: it carries the same prompt v3 as in 4F.2 and reads the tool list from the service
+(the 4F.2 state is in `tools/n8n-tool/backups/samsung-ai-consultant/20261001T121823Z_4d8mXFWGpS5P4t1L.json`; it
+differs only in the OpenAI credential's display name). `4e2a` has no `attributes` / `model` on `get_catalog_stats`,
+reports no state for an unapplied required feature, and its guard stands down after a slang number («до сотки»).
+The superseded 4F.3 builds `4f3` … `4f3e` are on the VPS and are not rollback targets.
+
 **Rollback of Gate 4E.2A:** set `image: samsung-consultant:4e2` (`compose.yml.4e2.bak`) and `up -d`, and restore
 the workflow backup `tools/n8n-tool/backups/samsung-ai-consultant/20260930T194205Z_4d8mXFWGpS5P4t1L.json`
 (6 nodes, no `h`). Either order is privacy-safe: both images redact `q`. Note that `4e2` ignores `h` and has the

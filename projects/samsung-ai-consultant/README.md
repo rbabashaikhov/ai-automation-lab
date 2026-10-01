@@ -55,7 +55,7 @@ Phase 4E.2A — Restart-safe provenance:        FIXED + SMOKE-VERIFIED (not depl
 Model bake-off gate:                          KEEP gpt-4.1-mini (measurement only; docs/MODEL_BAKEOFF.md)
 Phase 4F.1 — Final product acceptance design: COMPLETE (15 scenarios, design only; docs/PHASE_4F_PRODUCT_ACCEPTANCE.md)
 Phase 4F.2 — Live product acceptance run:     HOLD (4/15 scenarios pass, 3 release blockers; evaluation/results/phase_4f_2/)
-Phase 4F.3 — release decision / remediation:  PENDING APPROVAL
+Phase 4F.3 — MVP demo hardening:              HOLD (3 targeted 4F.2 defects fixed, 7/8 demos pass; an invented limit is still voiced; docs/PHASE_4F_3_MVP_HARDENING.md)
 Phase 4G — channel:                            PLANNED
 Phase 5 — Evaluation / Observability:          PLANNED
 ```

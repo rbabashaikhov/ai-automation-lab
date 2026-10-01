@@ -1,7 +1,9 @@
 # Phase 4F.3 — MVP Demo Hardening
 
-Status: **root-cause analysis complete (§3–§5); fixes, tests and live runs are recorded in §8 onwards as
-they are done.**
+Status: **complete — `4F.3 MVP DEMO HOLD — FURTHER HARDENING REQUIRED`.** MVP-1 and MVP-3 are fixed as measured.
+MVP-2 is fixed where it was deterministic (no invented number reaches the Core) and not in the answer text: the
+model still words its own removed limit («до 50 000 ₽») as if the user had set it. §3–§7 are the analysis and
+plan written before any code change; §8–§14 record what was built, measured and decided.
 
 Phase 4F.2 ended with `4F.2 HOLD — PRODUCT ACCEPTANCE FAILED`. That result stands and is not changed by this
 phase (§2). Phase 4F.3 has a narrower target, set by the project owner: a **demo-ready MVP for portfolio and
@@ -10,7 +12,8 @@ other 4F.2 finding as a known limitation.
 
 | Artifact | Contents |
 |---|---|
-| This document | scope, root causes, fix design, regression risks, test and deployment plan, MVP gate |
+| This document | scope, root causes, fix design, regression risks, test and deployment plan, MVP gate (§1–§7); implementation, iterations, tests, deployment, result, limitations (§8–§14) |
+| [`evaluation/results/phase_4f_3_demo/`](../evaluation/results/phase_4f_3_demo/PHASE_4F_3_MVP_DEMO_REPORT.md) | the 4F.3 report, evidence, review, measurements and transcripts |
 | [PHASE_4F_PRODUCT_ACCEPTANCE.md](PHASE_4F_PRODUCT_ACCEPTANCE.md) | the frozen 4F.1 rubric and the 4F.2 result (unchanged) |
 | [`evaluation/results/phase_4f_2/`](../evaluation/results/phase_4f_2/PHASE_4F_2_PRODUCT_ACCEPTANCE_REPORT.md) | the 4F.2 evidence this analysis is built on (unchanged) |
 
@@ -29,7 +32,7 @@ other 4F.2 finding as a known limitation.
 **Not in scope.** 15/15 acceptance; the MINOR issues; qualitative recommendation language (G7: «отличное
 качество изображения», «лучше для кино»); bright-room and best-for-movies reasoning; ranking, reranking,
 chunks, embeddings, catalog sources, the model, the PostgreSQL schema, the n8n architecture, a new agent
-framework. The 4F.2 classes outside the three targets stay as known limitations (§9).
+framework. The 4F.2 classes outside the three targets stay as known limitations (§13).
 
 **What must not regress** (it held in all 90 turns of 4F.2): no invented model code, price or availability;
 no product that breaks an active hard constraint; multi-turn constraint memory; replaced and released
@@ -41,7 +44,7 @@ constraints; `not_listed` never reported as «нет».
 |---|---|
 | `4F.2 HOLD — PRODUCT ACCEPTANCE FAILED` | stands; the 4F.2 files are not edited |
 | The product is accepted as production-ready under the 4F.1 rule | **no** — not claimed by this phase |
-| The product is demo-ready as a portfolio MVP | decided by the MVP gate of §7, after the live runs |
+| The product is demo-ready as a portfolio MVP | decided by the MVP gate of §7, after the live runs: **not yet** (§12) |
 
 Both statements can be true together. Phase 4F.3 changes the product, so the "frozen product" hashes of the 4F.1
 design (§1.2 there) describe the state that was *run* in 4F.2, not the current tree. Three existing tests compared
@@ -98,6 +101,10 @@ Agent did not pass, has no representation, so the answer generator is free to tu
 | **Response evidence representation** (deterministic) | Every product-returning result carries an explicit state for each *asked* feature: the required features the guard removed, and the registry features the user named in the conversation. They are evaluated by the existing Feature Registry over the returned products and added to each product's `features` (`yes` / `no` / `not_listed`), with one `attribute_not_listed_for_product` gap per feature that is not listed. List results (`search_tvs`, `recommend_tvs`) also get `feature_summary`: for every boolean registry feature, how many of the shown products are `yes` / `no` / `not_listed` — the evidence a statement about "these models" needs. |
 | Guard note | `not_applied` says that the removed features were checked, not applied, and where their states are. |
 | Prompt (v4) | One general rule: a feature or attribute is stated for a product only if a tool result of the conversation shows it for that product; what a device or use case would benefit from is general knowledge, not a catalog fact. One rule for attributes outside the registry: look them up (`get_tv` with `question`) before saying yes, no or «нет данных». |
+
+> **As built (§8.1):** the per-product state for asked features and the gap shipped. `feature_summary` and both
+> prompt-v4 rules were built, measured and removed: they made answers worse (§9). What replaced them is a caveat
+> note in the result when an asked feature is listed for none of the returned products.
 
 - **No HDMI 2.1 special case.** The mechanism is keyed on the closed Feature Registry (14 ids) and on the guard's
   existing one-pattern-per-feature mention table. HDMI 2.1 is one regression fixture among several.
@@ -162,6 +169,8 @@ relative word should become, so the model has no sanctioned way to express "chea
 | **Guard / semantic constraint normalization** (deterministic) | The guard reads spelled and slang numbers instead of standing down: Russian numerals with thousand / million multipliers («сто тысяч», «до ста пятидесяти тысяч», «полтора миллиона») and the common slang («сотка», «полтинник», «косарь», «лям»). Their values join the conversation's numbers exactly like digits do. The escape hatch stays for what cannot be read with certainty (a number word outside the grammar, a digit glued to a number word, «пара сотен»): then the numeric rules are off, as today. |
 | Prompt (v4) | One rule: relative and vague words are comparisons, not numbers; keep every limit the user stated, unchanged, and answer the comparison by order (`sort`), not by a new bound. |
 
+> **As built (§8.2):** the number reader shipped. The prompt rule was part of prompt v4 and was removed with it.
+
 - The existing mechanism for "cheaper than what was shown" is the order: the same constraints with
   `sort: price_asc`. No new tool argument or intent is introduced.
 - Explicit numeric constraints keep working: the guard's rule is unchanged for digits, and a spelled budget is
@@ -223,6 +232,10 @@ asked for, an attempt to ask is not rejected, and a count does not state that no
 | **Response evidence representation** (deterministic) | Every count result states `counted` (what was counted, in words) and a fixed note: the counts cover that scope only and are not feature counts; a feature count exists only in `attribute_counts`. |
 | Prompt (v4) | One rule: counts and group statements come from `get_catalog_stats`, never from a list; a list is a filtered selection; state the scope; speak about this catalog. |
 
+> **As built (§8.3):** the tool contract and the scope fields shipped, plus the listed values of a counted feature
+> and a `same_value_for_all` flag (found necessary in the live runs, §9). The prompt rule was removed with
+> prompt v4; the tool descriptions carry the instruction instead.
+
 - Feature counts are computed by the existing Feature Registry over the products the typed filters select: one
   structured read, no semantic search, three states. "54 of 66 list it, for 12 the catalog has no data" is an
   exact answer; "12 do not have it" is not derivable and is not offered.
@@ -241,6 +254,9 @@ asked for, an attempt to ask is not rejected, and a count does not state that no
 ---
 
 ## 6. Change plan
+
+*The plan as written before the changes. Differences as built: no prompt v4 and no `feature_summary` (§8, §9);
+the third test of §6.3 is back on prompt v3; the final image tag is `4f3f` (§11).*
 
 ### 6.1 Files
 
@@ -264,7 +280,7 @@ unrelated n8n workflows.
   117 skipped (DB tests skip without a database); `DOCKER_HOST=unix:///var/run/docker.sock bash
   tests/run_db_tests.sh` → 123 passed; `python -m consultant.n8n_workflow --check` and
   `python -m evaluation.acceptance --check` clean.
-- **Focused tests** per root cause (§8), including HDMI 2.1 as a fixture for MVP-1, «до 100 тысяч» → «а что
+- **Focused tests** per root cause (§10), including HDMI 2.1 as a fixture for MVP-1, «до 100 тысяч» → «а что
   подешевле?» for MVP-2, and the 66-vs-54 Dolby Atmos count for MVP-3.
 - **Full suites again** after the change, plus the guard replay and the semantic gold set.
 
@@ -314,3 +330,252 @@ suite. Wording issues and non-material qualitative phrasing are noted and do not
 **Escalation.** If a targeted scenario still shows its defect after the fixes above, the next layer is named in
 the section of that target (for MVP-1: answer validation) and is a decision for the project owner, not an
 automatic next step.
+
+---
+
+## 8. Implementation as built
+
+The prompt is **unchanged** (`agent_system_v3.md`, the 4F.2 hash). All three fixes are in what the tools accept and
+return and in the guard's number reader. Planning, routing, retrieval, ranking and `evidence.build_evidence` are
+not touched: the product set and its order are the same as in 4F.2.
+
+### 8.1 MVP-1 — a feature that was asked about is always in the evidence
+
+`agent_tools.add_feature_evidence`, called from `ConsultantTools.call` after the tool has run:
+
+- **Asked features** = required features the guard removed in this call + registry features the user named in the
+  conversation (the guard's existing mention table). Nothing else: when no feature was asked, the result is
+  byte-identical to the 4F.2 one.
+- For every returned product each asked feature gets its Feature Registry state in `features`
+  (`yes` / `no` / `not_listed`, with the value where the feature has one). `request.features_checked` lists them.
+- One `attribute_not_listed_for_product` gap per asked feature that is not listed, naming the products.
+- If an asked feature is listed for **none** of the returned products, the result's confidence drops from `strong`
+  to `partial` and `confidence_notes` gets: *"The catalog lists {features} for none of these products: unknown,
+  neither 'yes' nor 'no'. Do not say that they have it or support it; say that the catalog has no data."*
+- Fail-safe: on any error the unannotated tool result is returned.
+
+There is no HDMI 2.1 branch anywhere: the step runs over the 14 registry ids, and a test runs the same assertion
+for each of them.
+
+### 8.2 MVP-2 — the guard reads spelled and slang numbers
+
+`semantic_guard.spelled_numbers` (guard version `semantic-guard-4f3-v1`): Russian numerals in their case forms with
+thousand / million multipliers («сто тысяч», «ста пятидесяти тысяч», «полтора миллиона») and slang («сотка»,
+«полтинник», «косарь», «лям»). A value that is read joins the conversation's numbers as itself, ×1 000 and
+×1 000 000, exactly as a digit does. A number word that cannot be read with certainty («пара сотен», «несколько
+тысяч») keeps the old behaviour: numeric rules off for that conversation. The guard still only removes; it never
+adds or replaces a value. The `not_applied` note now also says that stated limits must be passed exactly as stated.
+
+### 8.3 MVP-3 — exact counts for features and series
+
+`get_catalog_stats` with `stat: count`:
+
+| Argument | Result |
+|---|---|
+| `attributes: [feature…]` | `attribute_counts[feature][bucket] = {yes, no, not_listed}` over the counted products, per availability bucket, summing to the count. For a feature that carries a value (refresh rate, sound power, depth) the same entry has `values` (`{value: products}`, or min / max above 12 distinct values) and `same_value_for_all` |
+| `model: "QN70H"` | the count inside one family or for one code; an unknown model returns `not_found`, never a count |
+| `group_by: "refresh_rate_hz"` | new group key |
+| every count | `counted` (the scope in words) and `scope_note`: the counts cover that scope only; a feature count exists only in `attribute_counts` |
+
+`attributes` together with `group_by`, or with a `stat` other than `count`, is rejected with a message. The
+`search_tvs` description says that a list is a filtered selection and points to `get_catalog_stats` for counts and
+«все ли …» questions. Tool-schema hash: `f215b7d33c1495f2` (4F.2: `4645dac666b7ce5e`).
+
+### 8.4 Files
+
+| File | Change |
+|---|---|
+| `consultant/agent_tools.py` | `add_feature_evidence`, `_asked_features`; `get_catalog_stats`: `attributes`, `model`, `refresh_rate_hz`, `_attribute_counts`, `_value_distribution` |
+| `consultant/agent_payload.py` | `feature_view`, `stats_payload` (`counted`, `attribute_counts`, `scope_note`), the two notes |
+| `consultant/semantic_guard.py` | the number reader; `MessageEvidence` uses it; the `not_applied` note |
+| `consultant/schemas.py`, `consultant/catalog_repository.py` | `GroupKey.REFRESH_RATE` and its closed SQL mapping |
+| `consultant/n8n_workflow.py`, `workflows/ai-consultant.json` | the OpenAI credential's display name as n8n now reports it (same credential id); nothing else |
+| `deploy/consultant/` | image tag, `mvp_probe.js`, runbook lines |
+| `tests/test_mvp_hardening.py`, `tests/test_mvp_hardening_db.py`, `tests/test_mvp_demo.py` | new |
+| `tests/test_acceptance_results.py`, `tests/test_acceptance_scenarios.py`, `tests/test_agent_tools_unit.py` | re-anchored (§6.3) |
+| `evaluation/mvp_demo.py`, `evaluation/mvp_demo_scenarios.json`, `evaluation/results/phase_4f_3_demo/` | the 4F.3 harness, scenarios and results |
+| `evaluation/results/guard_replay_4e2.json` | regenerated: the guard version string; all 35 + 22 rows identical |
+
+---
+
+## 9. Iterations and measurements
+
+One recorded conversation is weak evidence: at temperature 0 gpt-4.1-mini answers the same first turn differently
+from session to session. From the second build on, every change was measured as a rate over 10–20 fresh sessions,
+and the two variables (prompt, evidence) were separated. All answers are in
+[measurements.json](../evaluation/results/phase_4f_3_demo/measurements.json).
+
+**PS5 question («Посоветуйте телевизор под PS5…»), 12–20 sessions each:**
+
+| Build | Prompt | Evidence | HDMI 2.1 attributed | Price error | Lists all 8 |
+|---|---|---|---|---|---|
+| 4F.2 (`4e2a`) | v3 | 4F.2 | **20/20** | 0/20 | 2/20 |
+| `4e2a` | v4 | 4F.2 | 20/20 | 1/20 | 1/20 |
+| `4f3a` | v4 | per-product state + `feature_summary` | 5/12 | 1/12 | 4/12 |
+| `4f3b` | v4 + phrasing rule | + `price_text` | 1/12 | 0/12 | 8/12 |
+| `4f3c` | v4 | + `all_yes` / `not_listed_for_all` lists | 0/20 | 2/20 | **13/20** |
+| `4f3d` | v4 | asked features only | 1/20 | **6/20** | 9/20 |
+| `4f3d` | v3 | asked features only | 1/20 | 0/20 | 3/20 |
+| `4f3e` candidate | v3 | asked features only + caveat note | 0/20 | 0/20 | 3/20 |
+| `4f3e` deployed | v3 | the same | **0/20** | 0/20 | 3/20 |
+
+What the table says:
+
+1. **The prompt was not the lever.** Prompt v4 alone left the claim at 20/20. The rule existed in v3 already; the
+   model did not lack an instruction, it lacked evidence.
+2. **More evidence was not better.** A summary over all registry features gave the model a list to recite: it began
+   listing every shown product, and a price drifted between neighbouring products (a real price of another model).
+   Each addition that fixed one thing moved another.
+3. **Prompt v4 itself caused the price errors**: the same evidence gives 6/20 with v4 and 0/20 with v3.
+4. The smallest design is the one that held: say what is unknown only for what was asked, and say it once in the
+   result's caveats, where the model already looks for reasons to hedge.
+
+**Other measurements on the final design:**
+
+| Question | Result |
+|---|---|
+| OLED 65″ for PS5 under 300 000 ₽ (PA-04 turn 1), 10 sessions | HDMI 2.1 attributed 0/10 |
+| «А телевизоры до 50 тысяч — они все на 60 Гц?» | values beside the counts: false «все на 60 Гц» 3/10; nested in the count entry: 3/20; with `same_value_for_all`: **0/20** |
+| «…все модели с Dolby Atmos? Сколько таких в каталоге?», 10 sessions | exact counts 10/10 (62 of 75; 54 of 66 available) |
+| Vague opener «…не огромный…» (PA-08 turn 1), 20 sessions | the guard removes the invented `max 55″` 20/20; the answer still says «до 55 дюймов»: 11/20 on 4F.2, 15/20 final |
+| the same with a caveat note for removed numeric limits (experiment) | 14/20 — no effect, not adopted |
+| «55 дюймов до 100 тысяч…» → «А есть что-то подешевле?», 12 sessions | the guard removes the invented `max_price 50000` 12/12; the answer still says «до 50 000 ₽»: **12/12** |
+
+The last two rows are the open defect (§12).
+
+---
+
+## 10. Tests
+
+| Command | Baseline (HEAD `d05da1f`) | Final |
+|---|---|---|
+| `python3 -m pytest -q -p no:cacheprovider` | 765 passed, 117 skipped | **893 passed, 142 skipped** |
+| `DOCKER_HOST=unix:///var/run/docker.sock bash tests/run_db_tests.sh` | 123 passed | **148 passed** |
+| `python3 -m consultant.n8n_workflow --check` | clean | clean |
+| `python3 -m evaluation.acceptance --check` | clean | clean |
+| `python3 -m evaluation.acceptance_report --check` (4F.2 results untouched) | clean | clean |
+| `python3 -m evaluation.mvp_demo --check` | — | clean |
+| `python3 -m evaluation.guard_replay` | 35/35, 22/22 | 35/35, 22/22; nothing invented by the guard |
+| `python3 -m evaluation.semantic_eval` | 30/30 | 30/30 |
+
+Skipped unit tests are the DB-backed ones, which run in the second command.
+
+Focused regressions (`tests/test_mvp_hardening.py`, `tests/test_mvp_hardening_db.py`):
+
+- **MVP-1.** A removed required feature is reported `not_listed` per product, with the gap and the caveat note —
+  HDMI 2.1 as one fixture and the same assertion generically over all 14 registry features; the note appears only
+  when the feature is unknown for *all* returned products; a result is untouched when nothing was asked; a failure
+  inside the step returns the plain result; a feature the user named is reported on an overview lookup.
+- **MVP-2.** «до 100 тысяч» → «а что подешевле?» with an invented `max_price`: removed; the recorded PA-08 call
+  after «до сотки»: `max_price 40000` and `min 40` removed, the stated 43–50 / 100 000 kept; explicit numbers
+  («до 100 тысяч», «65 дюймов», «не дороже 80 000») kept; the numeral tables in their case forms; unreadable number
+  words keep the numeric rules off; no relative word (подешевле, не огромный, небольшой, подороже, побольше, чуть
+  дешевле, бюджетный, не самый дорогой) yields a number.
+- **MVP-3.** Feature counts sum to the count and differ from the availability count on a fixture built for it;
+  series scope; unknown series → `not_found`; `values` and `same_value_for_all`; rejected combinations; `counted`
+  and `scope_note` on every count.
+- **Harness** (`tests/test_mvp_demo.py`): each supporting check is validated on recorded evidence (it flags exactly
+  the 4F.2 HDMI claims, the 40 000 ₽ ceiling, the 66 Dolby Atmos count, the run-1 «все на 60 Гц», the run-2 price
+  of another product, and the two voiced limits of the final runs); the gate decision on synthetic runs; the
+  committed results follow from their inputs.
+
+---
+
+## 11. Deployment
+
+Only the `samsung-consultant` service, by the existing procedure
+([runbook](../deploy/consultant/README.md)): build from the committed tree, compare the files in the image with the
+repository, `docker save` / `load`, a smoke container on the internal network with the three probes, compose `up`
+for the one service, the same probes on production.
+
+| Image | Revision | Deployed (UTC) | Prompt in the workflow | Status |
+|---|---|---|---|---|
+| `4f3` | `9ca118b` | 2026-10-01 12:16 | v4 | superseded |
+| `4f3a` | `2a3784b` | 12:34 | v4 | superseded |
+| `4f3b` | `0856ba4` | 12:54 | v4 | superseded |
+| `4f3c` | `98e663c` | 13:01 | v4 | superseded |
+| `4f3d` | `b4a55cb` | 13:14 | v4, then v3 restored at 13:57 | superseded |
+| `4f3e` | `751473f` | 14:21 | v3 | superseded |
+| **`4f3f`** | **`afc8678`** | **14:56** | **v3** | **in production** |
+
+- Final image id `sha256:f9e26b657efd58f7f8b436462ea57edccc340559d74602bac3763e72e57528d0`; 23 runtime files in the
+  container identical to the repository; healthy, no published port, read-only root FS.
+- The Consultant workflow `4d8mXFWGpS5P4t1L` was updated six times with `n8n-tool` (a backup before each, kept under
+  `tools/n8n-tool/backups/samsung-ai-consultant/`); it is inactive and diff-identical to `workflows/ai-consultant.json`,
+  which carries prompt v3.
+- **The first update reported a failed read-back check.** The only difference was the display name of the OpenAI
+  credential: n8n returned `OpenAI account samsung-ai` where the file said `OpenAI account`, for the same credential
+  id. The credential had been renamed in n8n outside this work; nothing about it was changed here. The generator's
+  label was aligned and later updates verify cleanly.
+- Seven builds in one afternoon is more deployment activity than the plan foresaw (one). Each went through the
+  full procedure; production served a superseded build between them. The workflow stays inactive, so no end user
+  was exposed to an intermediate build.
+- n8n, PostgreSQL, Redis and Traefik were not restarted. Side containers used for baseline and candidate
+  measurements ran next to production on the internal network and were removed. The superseded images and the
+  `compose.yml.<tag>.bak` files remain on the VPS.
+
+---
+
+## 12. Result
+
+Final runs on `4f3f`, fresh sessions, gpt-4.1-mini: targeted regression `20261001T1457Z`, demo suite
+`20261001T1459Z`. Report: [PHASE_4F_3_MVP_DEMO_REPORT.md](../evaluation/results/phase_4f_3_demo/PHASE_4F_3_MVP_DEMO_REPORT.md).
+
+| Scenario | 4F.2 defect | Gone | Conversation |
+|---|---|---|---|
+| PA-02 | «с поддержкой HDMI 2.1» | yes — «в каталоге нет данных о поддержке HDMI 2.1» | PASS |
+| PA-04 | the same | yes | PASS |
+| PA-08 | «подешевле» → `max_price 40000` in the Core and in the answer | yes — no number invented, nothing reached the Core | **FAIL** on turn 1: «до 55 дюймов» for «не огромный» |
+| PA-15 | 66 available presented as 66 with Dolby Atmos; universal claims from lists | yes — 62 of 75; 15/15 OLED from attribute counts; «50 или 60 Гц» | PASS |
+
+Demo suite: **7 of 8 pass** (DEMO-01, 02, 03, 05, 06, 07, 08). DEMO-04 fails on turn 2: «подешевле» → «нет
+телевизоров … до 50 000 ₽».
+
+| MVP gate criterion | Met |
+|---|---|
+| the targeted 4F.2 defects are gone | yes |
+| 0 invented model codes, prices, availability | yes |
+| 0 unsupported factual claims that affect a recommendation | yes |
+| **0 invented numeric user constraints** | **no** — two answers state a limit the user never gave |
+| 0 incorrect exact aggregates | yes |
+| no hard-constraint violations; multi-turn changes work | yes |
+| at least 6 successful demo conversations | yes (7) |
+| no infrastructure or runtime errors | yes |
+
+**`4F.3 MVP DEMO HOLD — FURTHER HARDENING REQUIRED`**
+
+The hold has one cause. The guard does its part: in 32 of 32 measured sessions the invented number was removed and
+the Core never filtered by it, so the *products* are right. But the model wrote the number into its tool call
+because it had already decided on it, and it then describes the result in those terms. In the «подешевле»
+conversation this happens every time (12/12) — it is what a client would see in a demo of exactly the feature this
+phase was meant to fix. Calling that ready would be wrong.
+
+---
+
+## 13. Known limitations
+
+- **Phase 4F.2 stands:** `4F.2 HOLD — PRODUCT ACCEPTANCE FAILED`. The 4F.1 release gate was not re-run and is not
+  met. Qualitative language, bright-room and best-for-movies reasoning, ranking and the MINOR issues are untouched.
+- **Invented numeric limits are voiced** (above).
+- **Rates, not guarantees:** 0/20 is not a proof of zero.
+- **No answer-level check:** a claim about a feature nobody asked about is governed by the prompt only.
+- **Three tool calls per turn:** a question about four models loses one lookup (DEMO-02).
+- **«Подешевле» answered from memory** respects the stated limits but is not necessarily cheapest-first (PA-08 turn 3).
+- **Wording:** lists longer than three; a feature id once; «не у всех» where the exact statement is «listed for N,
+  no data for M».
+- **Counts** exist for the 14 registry features and structured columns only.
+- **Spelled numbers:** a closed grammar; anything outside it switches the numeric rules to report-only, as before.
+
+---
+
+## 14. Next step (for the project owner; not started)
+
+The remaining defect is in the answer text, so the remaining options are the two layers this phase did not touch:
+
+| Option | What it is | Cost / risk |
+|---|---|---|
+| **Reject instead of remove** | When the guard finds an invented numeric limit, the tool returns an error that names it and asks for the call without it, instead of silently running without it. The model then has to re-plan without the number | Small, inside the Consultant. Uses one of the three tool calls of the turn. Changes the guard's "never blocks" property from 4E.2, so the 35 + 22 replay rows and the live rates must be re-measured |
+| **Answer check** | A deterministic check after the Agent: a price or size limit in the answer that no user message states and no product has → strip the clause or regenerate once | Guarantees the text. Needs a node in the n8n workflow and a repair strategy; the design choice §3.4 deferred |
+
+Either should be measured the way §9 was: a rate over fresh sessions on the two conversations that fail now, plus
+the four targeted scenarios, before any claim of readiness.

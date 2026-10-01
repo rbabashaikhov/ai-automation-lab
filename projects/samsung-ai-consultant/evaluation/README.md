@@ -150,4 +150,24 @@ Tests: `python -m pytest tests/test_evaluation_*.py`.
   document §4 mechanically, and writes `results.json`, one transcript per scenario and the report; `--check` fails when
   one of them is stale.
 - `results/phase_4f_2/` — the run of 2026-10-01: `4F.2 HOLD — PRODUCT ACCEPTANCE FAILED` (4 of 15 scenarios pass;
-  3 release blockers). The release decision and any remediation (4F.3) are not started.
+  3 release blockers). Not changed by Phase 4F.3.
+
+## Phase 4F.3 — MVP demo hardening (see [../docs/PHASE_4F_3_MVP_HARDENING.md](../docs/PHASE_4F_3_MVP_HARDENING.md))
+
+A narrower gate than 4F.1: three defects that would undermine a live demo, re-tested on four 4F.2 scenarios and shown
+on eight demo conversations. It does not replace the 4F.2 result.
+
+- `mvp_demo_scenarios.json` — the two suites: `targeted` (PA-02, PA-04, PA-08, PA-15, turns taken unchanged from
+  `acceptance_scenarios.json`, each with the defect that must be gone) and `demo` (DEMO-01 … DEMO-08, 22 turns, none
+  copied from the acceptance set), with the constraint state and machine-readable limits per turn.
+- `mvp_demo.py` — `run <suite> …` (the unchanged live tooling: temporary inactive driver, committed workflow inline,
+  one fresh session per conversation); `collect` (traces + the Consultant's guard log → `evidence_<suite>.json`, with
+  supporting automated checks: unsupported feature claims, invented numeric arguments, a removed limit still stated in
+  the answer, count claims, one value stated for a group, products outside the limits, per-product prices); `render`
+  (offline: evidence + `manual_review.json` + `measurements.json` + `run_manifest.json` → `results.json`, transcripts,
+  the report, the mechanical gate decision); `--check` fails when a generated file is stale.
+- `results/phase_4f_3_demo/` — the runs of 2026-10-01 on image `4f3f`: **`4F.3 MVP DEMO HOLD — FURTHER HARDENING
+  REQUIRED`**. The three targeted defects are gone and 7 of 8 demo conversations pass; the hold is one criterion:
+  a numeric limit the user never stated is removed before the Core but still worded in the answer.
+  `measurements.json` holds 306 repeated sessions (rates per build and question), `evidence_targeted_run1–3.json` the
+  targeted runs on superseded builds.
