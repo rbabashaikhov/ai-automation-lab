@@ -554,7 +554,13 @@ def add_feature_evidence(payload: dict, repo, asked: tuple = ()) -> dict:
         for f in summarized:
             states = [results[rows[v["model_code"]].id][f].state.value for v in products if v.get("model_code") in rows]
             counts[f] = {s: states.count(s) for s in STATES if states.count(s)}
-        summary = {"note": FEATURE_SUMMARY_NOTE, "products": len(products), "counts": counts}
+        # The two readings an introduction needs, spelled out: what every shown product has, and what the catalog
+        # says nothing about for any of them (4F.3 measurement: an unknown feature was still put into the
+        # "с поддержкой ..." list of an introduction in 1 of 12 answers).
+        summary = {"note": FEATURE_SUMMARY_NOTE, "products": len(products),
+                   "all_yes": [f for f in summarized if counts[f] == {"yes": len(products)}],
+                   "not_listed_for_all": [f for f in summarized if counts[f] == {"not_listed": len(products)}],
+                   "counts": counts}
         ordered = {}
         for key, value in payload.items():          # placed right before the products it summarizes
             if key == "products":

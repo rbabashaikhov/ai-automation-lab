@@ -165,6 +165,11 @@ def test_list_results_summarize_every_boolean_registry_feature(repo):
     assert summary["counts"]["hdmi_2_1"] == {"not_listed": len(TVS)}              # unknown for all: stated, not omitted
     assert summary["counts"]["vrr"] == {"yes": len(TVS)}
     assert "not the catalog" in summary["note"] and "unknown" in summary["note"]
+    # the two lists an introduction is written from: what every shown product has, and what the catalog does not say
+    assert summary["all_yes"] == [f for f in SUMMARY_FEATURE_IDS if summary["counts"][f] == {"yes": len(TVS)}]
+    assert "vrr" in summary["all_yes"] and "hdmi_2_1" not in summary["all_yes"] and "allm" not in summary["all_yes"]
+    assert "hdmi_2_1" in summary["not_listed_for_all"] and not set(summary["all_yes"]) & set(summary["not_listed_for_all"])
+    assert list(summary) == ["note", "products", "all_yes", "not_listed_for_all", "counts"]
     for code, state in states(payload, "hdmi_2_1").items():
         assert state is None                                                      # not asked: per-product set unchanged
     assert "feature_summary" not in add_feature_evidence(result(repo, "compare_tvs"), repo)
@@ -384,7 +389,8 @@ def test_prompt_v4_adds_the_three_rules_without_scenario_phrasing():
     assert PROMPT_FILE.name == "agent_system_v4.md"
     unknown = next(line for line in p.splitlines() if line.startswith("- Unknown is not yes."))
     for needle in ("only when a tool result of this conversation shows it for that product",
-                   "general knowledge, not a catalog fact", "`feature_summary`", "`request.not_applied` was not checked"):
+                   "general knowledge, not a catalog fact", "`feature_summary`", "`request.not_applied` was not checked",
+                   "a sentence about all the shown models names only features from its `all_yes`"):
         assert needle in unknown, needle
     relative = next(line for line in p.splitlines() if line.startswith("- Relative and vague words"))
     for needle in ("comparisons, not numbers", "never become max_price, min_price or a size",
