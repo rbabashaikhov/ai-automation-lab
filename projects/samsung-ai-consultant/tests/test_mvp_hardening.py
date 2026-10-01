@@ -402,6 +402,21 @@ def test_prompt_v4_adds_the_three_rules_without_scenario_phrasing():
     for held_out in ("сотк", "не огромный", "что подешевле есть", "в шутеры", "QN70H", "66 ", "40 000", "до 50 тысяч",
                      "у всех 120", "Wi-Fi", "вайфай"):
         assert held_out not in p, held_out
+    assert ('stays out of every list of what they support — also with a remark in brackets — and is never described as '
+            'something such models usually have') in unknown and '"В каталоге нет данных о … для этих моделей."' in unknown
+    prices = next(line for line in p.splitlines() if line.startswith("- Prices:"))
+    assert "copy the price from the `price_text` of that same model code, never from another product" in prices
+    # every v3 rule is kept: verbatim, or as the start of a v4 line that adds to it (only the stats tool line was reworded)
     v3 = (PROMPT_FILE.parent / "agent_system_v3.md").read_text(encoding="utf-8")
-    assert [line for line in v3.splitlines() if line not in p.splitlines()] == [
-        next(line for line in v3.splitlines() if line.startswith("  - get_catalog_stats"))]          # v3 rules kept verbatim
+    assert [line for line in v3.splitlines() if not any(new.startswith(line) for new in p.splitlines())] == [
+        next(line for line in v3.splitlines() if line.startswith("  - get_catalog_stats"))]
+
+
+def test_every_product_carries_its_price_as_text_next_to_its_model_code():
+    """Targeted run 2 and the rate measurement: QE55QN80HAUXPY was given the price of QE65QN80HAUXPY in 2 of 14
+    answers. The price is now one string with the model code it belongs to, already in the answer's format."""
+    from consultant.agent_payload import price_text
+    assert price_text("QE55QN80HAUXPY", 129990) == "QE55QN80HAUXPY: 129 990 ₽"
+    assert price_text("QE65S85HAEXPY", 189990, 229990) == "QE65S85HAEXPY: 189 990 ₽ (без скидки 229 990 ₽)"
+    assert price_text("QE115QN90FUXRU", 1799990, 1999990) == "QE115QN90FUXRU: 1 799 990 ₽ (без скидки 1 999 990 ₽)"
+    assert price_text("X", None) is None

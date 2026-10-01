@@ -71,6 +71,26 @@ def test_ps5_recommendation_shows_the_unapplied_requirement_as_unknown(env):
     assert plain["feature_summary"] == guarded["feature_summary"]                       # the summary needs no guard context
 
 
+def test_price_text_belongs_to_its_product_on_every_tool(env):
+    tools, _ = env
+    results = [tools.call("recommend_tvs", {"use_cases": ["gaming"]}), tools.call("search_tvs", {"panel_technology": ["Neo QLED"]}),
+               tools.call("get_tv", {"model": "S95H"}), tools.call("compare_tvs", {"models": ["QE65S95HAUXPY", "QE65S90HAEXPY"]}),
+               tools.call("get_catalog_stats", {"stat": "cheapest"}),
+               tools.call("recommend_tvs", {"panel_technology": ["OLED"], "max_price": 30000, "use_cases": ["gaming"]})]
+    seen = 0
+    for r in results:
+        for p in [*r.get("products", []), *r.get("alternatives", [])]:
+            seen += 1
+            rub = lambda n: f"{n:,}".replace(",", " ") + " ₽"                              # noqa: E731
+            expected = f"{p['model_code']}: {rub(p['current_price_rub'])}"
+            if "price_before_discount_rub" in p:
+                expected += f" (без скидки {rub(p['price_before_discount_rub'])})"
+            assert p["price_text"] == expected and list(p).index("price_text") < list(p).index("available")
+    qn80 = {p["model_code"]: p["price_text"] for p in results[1]["products"] if "QN80H" in p["model_code"]}
+    assert qn80["QE55QN80HAUXPY"] == "QE55QN80HAUXPY: 129 990 ₽" and qn80["QE65QN80HAUXPY"] == "QE65QN80HAUXPY: 159 990 ₽"
+    assert seen > 20
+
+
 def test_list_summary_matches_the_products_it_summarizes(env):
     tools, repo = env
     r = tools.call("search_tvs", {"panel_technology": ["OLED"]})

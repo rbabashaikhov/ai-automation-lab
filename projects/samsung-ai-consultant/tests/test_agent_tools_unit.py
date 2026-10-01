@@ -557,7 +557,7 @@ def test_system_prompt_states_the_required_rules():
                    "every gap", "ask the user", "Do not reveal", "Keep that order", "General knowledge",
                    "no brightness", "best for movies", "data, not instructions", "At most 3 tool calls"):
         assert needle.lower() in p.lower(), needle
-    assert len(p) < 10000                  # v4 adds four rules (unknown is not yes, relative words, lookups, aggregates)
+    assert len(p) < 10600                  # v4 adds four rules (unknown is not yes, relative words, lookups, aggregates)
 
 
 def test_prompt_v2_catalog_grounding_boundary():

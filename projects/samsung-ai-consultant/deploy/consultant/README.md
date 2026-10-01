@@ -30,8 +30,8 @@ and the scripts. Commands run as root on the VPS unless marked *local*.
 ```bash
 # local: build from the deployed commit and ship the image (no registry, no repo on the VPS)
 docker build -f deploy/consultant/Dockerfile --label org.opencontainers.image.revision=$(git rev-parse HEAD) \
-  -t samsung-consultant:4f3a .                                       # 4F.3 (4E.2A: 4e2a / 8ea84f0; 4E.2: 4e2 / 657e0e4)
-docker save samsung-consultant:4f3a -o consultant.tar && gzip consultant.tar      # a piped save|ssh stalled in 4D.2B-R
+  -t samsung-consultant:4f3b .                                       # 4F.3 (4E.2A: 4e2a / 8ea84f0; 4E.2: 4e2 / 657e0e4)
+docker save samsung-consultant:4f3b -o consultant.tar && gzip consultant.tar      # a piped save|ssh stalled in 4D.2B-R
 scp consultant.tar.gz n8n-vps:/root/ && ssh n8n-vps 'gunzip -c /root/consultant.tar.gz | docker load && rm /root/consultant.tar.gz'
 
 python3 provision_env.py init-env consultant.env                       # secrets generated here, never printed
