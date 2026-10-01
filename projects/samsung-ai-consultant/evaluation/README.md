@@ -122,3 +122,8 @@ Tests: `python -m pytest tests/test_evaluation_*.py`.
   in 4E.2 / 4E.2A and written before the first run. `agent_cases.json` is unchanged.
 - Stage 1: 19 of the 42 frozen cases plus the 10 supplementary ones (29 cases / 38 turns, 7 multi-turn), the same
   for every model. Stage 2: the full 42 cases / 44 turns for the models that remain competitive.
+- `bakeoff_report.py` — post-processing only: scores the traces with the unchanged `agent_live` / `agent_eval`, joins
+  the guard's logged decision per tool call, and writes `results/model_bakeoff.json` (metrics, per-turn verdicts),
+  `results/model_bakeoff_conversations.{json,md}` (Conversation Audit Log of every scored dialogue; no model
+  reasoning) from `results/model_bakeoff_manual.json` (reviewer rubric and verdicts).
+- Result and recommendation: [../docs/MODEL_BAKEOFF.md](../docs/MODEL_BAKEOFF.md).

@@ -53,9 +53,12 @@ def with_model(consultant: dict, model: str) -> dict:
     return consultant
 
 
-def build_driver(case_id: str, session_id: str, model: str = None, cases_path=None) -> dict:
+def build_driver(case_id: str, session_id: str, model: str = None, cases_path=None, turn_gap_s: int = 0) -> dict:
     """Manual Trigger -> (Set turn k -> Execute Workflow inline) x turns. One process, one sessionId per
-    case, so n8n's in-process window memory carries the conversation between turns of this case only."""
+    case, so n8n's in-process window memory carries the conversation between turns of this case only.
+    ``turn_gap_s`` (model bake-off, provider tokens-per-minute limits): an in-process Wait before each later turn;
+    it changes when a turn starts, not what the Agent receives. Must stay below n8n's 65 s in-memory limit."""
+    assert 0 <= turn_gap_s < 65
     case = cases(cases_path)[case_id]
     consultant = json.loads((PROJECT / "workflows/ai-consultant.json").read_text())
     if model:
@@ -76,6 +79,13 @@ def build_driver(case_id: str, session_id: str, model: str = None, cases_path=No
                       "type": "n8n-nodes-base.executeWorkflow", "typeVersion": 1.2, "position": [220 * 2 * k, 0],
                       "parameters": {"source": "parameter", "workflowJson": code, "mode": "once",
                                      "options": {"waitForSubWorkflow": True}}})
+        if turn_gap_s and k > 1:
+            gap = f"Gap before turn {k}"
+            nodes.append({"id": f"d2c00000-0000-4000-8000-{k:06d}0003", "name": gap, "type": "n8n-nodes-base.wait",
+                          "typeVersion": 1.1, "position": [220 * (2 * k - 1), 180], "webhookId": f"d2c00000-0000-4000-8000-{k:06d}0004",
+                          "parameters": {"amount": turn_gap_s, "unit": "seconds"}})
+            connections[prev] = {"main": [[{"node": gap, "type": "main", "index": 0}]]}
+            prev = gap
         connections[prev] = {"main": [[{"node": set_name, "type": "main", "index": 0}]]}
         connections[set_name] = {"main": [[{"node": run_name, "type": "main", "index": 0}]]}
         prev = run_name

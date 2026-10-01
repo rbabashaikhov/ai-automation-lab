@@ -22,6 +22,7 @@ Stages (fixed before the first run; identical for every model):
 """
 import hashlib
 import json
+import os
 import subprocess
 import sys
 import time
@@ -160,16 +161,24 @@ def _retry(what: str, fn, log: list, attempts: int = 4):
             time.sleep(5 * attempt)
 
 
+def _gaps() -> tuple:
+    """``(seconds between cases, seconds between turns)`` from BAKEOFF_CASE_GAP_S / BAKEOFF_TURN_GAP_S (default 0, 0).
+    Pacing for a provider tokens-per-minute limit: it changes when a turn starts, never what the model receives."""
+    return int(os.environ.get("BAKEOFF_CASE_GAP_S", "0")), int(os.environ.get("BAKEOFF_TURN_GAP_S", "0"))
+
+
 def run_case(model: str, set_name: str, cases_path: Path, case_id: str, session: str, driver_id: str, out: Path,
              log: list) -> dict:
     d = out / set_name
     d.mkdir(parents=True, exist_ok=True)
     driver_file, parent_out, trace = d / f"{case_id}.driver.json", d / f"{case_id}.parent.out", d / f"{case_id}.trace.json"
-    driver_file.write_text(json.dumps(build_driver(case_id, session, model, cases_path), ensure_ascii=False, indent=1))
+    driver_file.write_text(json.dumps(build_driver(case_id, session, model, cases_path, _gaps()[1]), ensure_ascii=False,
+                                      indent=1))
     _retry(f"{case_id}: driver update", lambda: _n8n_tool("update", driver_id, str(driver_file), "--yes"), log)
     # The case is executed exactly once: a failed execution is recorded, not repeated.
     started = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    r = subprocess.run(["ssh", "-o", "BatchMode=yes", SSH_HOST, "docker", "exec", "-e", "N8N_RUNNERS_BROKER_PORT=5699",
+    r = subprocess.run(["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20", "-o", "ServerAliveInterval=15", "-o",
+                        "ServerAliveCountMax=4", SSH_HOST, "docker", "exec", "-e", "N8N_RUNNERS_BROKER_PORT=5699",
                         N8N_CONTAINER, "n8n", "execute", "--id", driver_id, "--rawOutput"],
                        capture_output=True, text=True, timeout=600)
     parent_out.write_text(r.stdout)
@@ -204,6 +213,8 @@ def run(model: str, stage: str, out_root: Path, driver_id: str, run_tag: str = "
         if (out / set_name / f"{case_id}.trace.json").exists():      # resume after an interruption: never re-run a case
             done.append(case_id)
             continue
+        if _gaps()[0] and done:
+            time.sleep(_gaps()[0])
         again = len(list((out / set_name).glob(f"{case_id}.failed-*.json")))     # infrastructure re-execution: new session
         session = f"bake-{model.replace('.', '')}-{name}-{case_id}" + (f"-x{again}" if again else "")
         try:
@@ -220,7 +231,7 @@ def run(model: str, stage: str, out_root: Path, driver_id: str, run_tag: str = "
               flush=True)
         done.append(case_id)
     record = {"model": model, "stage": name, "started": t0, "finished": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-              "cases": done, "infrastructure_events": log}
+              "cases": done, "infrastructure_events": log, "case_gap_s": _gaps()[0], "turn_gap_s": _gaps()[1]}
     (out / "run.json").write_text(json.dumps(record, ensure_ascii=False, indent=1))
     return record
 
