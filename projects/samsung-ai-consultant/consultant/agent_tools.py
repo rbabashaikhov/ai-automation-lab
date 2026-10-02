@@ -18,9 +18,6 @@ There is no SQL, WHERE clause, vector or ranking argument anywhere in the tool s
 Phase 4F.3 (MVP hardening), both additive: ``get_catalog_stats`` counts registry features and counts
 inside one model family (exact aggregates from structured rows), and :func:`add_feature_evidence`
 gives every asked-about feature an explicit three-state value on every returned product.
-
-Phase 4F.3A: a call with a numeric constraint the user never stated is rejected with ``invalid_arguments``
-(``ConsultantTools.call``) instead of being run without it, so the Agent corrects the call itself.
 """
 
 from __future__ import annotations
@@ -632,15 +629,8 @@ class ConsultantTools:
         guard = None
         if conversation:
             try:
-                from . import semantic_guard                       # lazy: semantic_guard imports this module
-                guard = semantic_guard.guard_tool_arguments(name, arguments, conversation, act)
-                rejection = semantic_guard.reject_unsupported_numeric(guard)
-                if rejection is not None:           # 4F.3A: not run without the number -- the Agent retries
-                    payload = error_payload(str(name)[:40], "invalid_arguments", semantic_guard.rejection_errors(rejection))
-                    payload[semantic_guard.UNSUPPORTED_NUMERIC + "s"] = [{"argument": a.argument, "value": a.value}
-                                                                         for a in rejection.actions]
-                    self._log(name, payload, started, rejection)
-                    return payload
+                from .semantic_guard import guard_tool_arguments   # lazy: semantic_guard imports this module
+                guard = guard_tool_arguments(name, arguments, conversation, act)
                 arguments = guard.arguments
             except Exception:                       # additive safety: fall back to the Phase 4D path
                 log.exception("semantic guard failed; original arguments used")

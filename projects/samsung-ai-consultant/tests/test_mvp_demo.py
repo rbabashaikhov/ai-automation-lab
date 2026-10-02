@@ -158,11 +158,6 @@ def test_unapplied_limit_check_flags_a_removed_limit_that_the_answer_still_state
     assert stated("Samsung 55\" OLED за 150 000 ₽.", call("max_screen_size_inches", 55)) == []       # a product's own size
     assert stated("Модели до 50 000 ₽.", call("required_features", "hdmi_2_1")) == []               # only numeric limits
     assert stated("Модели до 50 000 ₽.", [{"result": {"request": {"constraints": ["price <= 50000"]}}}]) == []   # applied, stated by the user
-    # Phase 4F.3A: the same check for a number that was rejected instead of removed
-    rejected = lambda arg, v: [{"result": {"status": "invalid_arguments", "unsupported_numeric_constraints": [{"argument": arg, "value": v}]}}]  # noqa: E731
-    assert stated("Нет телевизоров с ценой до 50 000 ₽.", rejected("max_price", 50000))[0]["stated_as"] == "до 50 000"
-    assert stated("Варианты до 55 дюймов:", rejected("max_screen_size_inches", 55))[0]["argument"] == "max_screen_size_inches"
-    assert stated("Самый доступный — за 52 490 ₽.", rejected("max_price", 50000)) == []
 
 
 def test_limit_check_uses_the_evidence_facts():

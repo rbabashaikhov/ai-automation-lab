@@ -101,24 +101,6 @@ def test_overview_lookup_reports_a_feature_the_user_asked_about(env):
     assert listed["products"][0]["features"] == {"hdmi_2_1": "yes"}                     # evidenced yes stays yes
 
 
-# ---- MVP-2 (Phase 4F.3A) ------------------------------------------------------------------------------------
-
-def test_an_invented_budget_is_rejected_and_the_corrected_call_is_the_plain_result(env):
-    """«А есть что-то подешевле?» on the real pipeline: the call with an invented ceiling is not run; the same call
-    with the user's own limits returns exactly what it returns without the guard, cheapest first."""
-    tools, _ = env
-    talk = conversation("Нужен телевизор 55 дюймов до 150 тысяч.", "А есть что-то подешевле?")
-    stated = {"screen_size_inches": 55, "max_price": 150000, "sort": "price_asc"}
-    rejected = tools.call("search_tvs", {**stated, "max_price": 120000}, "t2", talk)
-    assert rejected["status"] == "invalid_arguments" and "products" not in rejected and "request" not in rejected
-    assert rejected["unsupported_numeric_constraints"] == [{"argument": "max_price", "value": 120000}]
-    retried = tools.call("search_tvs", stated, "t2", talk)
-    assert retried["status"] == "ok" and retried == tools.call("search_tvs", stated)
-    prices = [p["current_price_rub"] for p in retried["products"]]
-    assert len(prices) == 4 and prices == sorted(prices) and max(prices) <= 150000    # the fixture's four available 55″
-    assert "120000" not in str(retried["request"])
-
-
 # ---- MVP-3 ------------------------------------------------------------------------------------------------
 
 def test_feature_count_is_exact_and_is_not_the_availability_count(env):

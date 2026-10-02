@@ -2,7 +2,7 @@
 //   <token on stdin> | node -e "$(cat mvp_probe.js)" http://samsung-consultant:8765
 // Checks the three hardening contracts over the real MCP boundary and the real catalog:
 //   MVP-1  a feature that was asked about is reported per product as yes / no / not_listed;
-//   MVP-2  a call with an invented number after a slang budget is rejected (Phase 4F.3A), a stated one is kept;
+//   MVP-2  an invented number after a slang budget is removed, a stated one is kept;
 //   MVP-3  feature counts, series counts and the counted scope of get_catalog_stats.
 // The token is read from stdin only and never printed. Prints statuses, states and catalog counts, not payloads.
 const BASE = process.argv.find((a) => a && a.startsWith("http"));
@@ -63,8 +63,7 @@ const notApplied = (payload) => ((payload.request || {}).not_applied || {}).cons
   out.slang_budget = { status: t1.status, constraints: (t1.request || {}).constraints, not_applied: notApplied(t1) };
   const t2 = await call(auth, "search_tvs", { max_price: 40000, min_screen_size_inches: 40, max_screen_size_inches: 50,
                                               sort: "price_asc", limit: 3 }, `${RUN}-c`, "а что подешевле есть?", 1);
-  out.invented_after_slang = { status: t2.status, unsupported: t2.unsupported_numeric_constraints || null,
-    errors: (t2.errors || []).length, products: (t2.products || []).length };
+  out.invented_after_slang = { status: t2.status, constraints: (t2.request || {}).constraints, not_applied: notApplied(t2) };
   const t3 = await call(auth, "search_tvs", { ...stated, sort: "price_asc" }, `${RUN}-c`, "а ещё дешевле?", 2);
   out.stated_limits_with_order = { status: t3.status, constraints: (t3.request || {}).constraints, not_applied: notApplied(t3),
     first: (t3.products || []).slice(0, 2).map((p) => `${p.model_code} ${p.current_price_rub}`) };

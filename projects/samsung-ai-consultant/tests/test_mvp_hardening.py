@@ -2,7 +2,6 @@
 
 MVP-1  a feature that was asked about always has an explicit three-state value in the evidence;
 MVP-2  a relative or vague request never leaves an invented number in the arguments the Core receives;
-       Phase 4F.3A: such a call is rejected with ``invalid_arguments`` instead of being run without the number;
 MVP-3  the aggregate tool contract: feature counts and series counts exist, and a count states its scope.
 
 No DB, no network: the catalog is the 31-product fixture. The same contracts run end to end on a disposable
@@ -18,15 +17,13 @@ from consultant.agent_tools import (
     FEATURE_IDS, TOOL_SCHEMAS, ConsultantTools, ToolArgumentError, add_feature_evidence, run_tool, validate_arguments,
 )
 from consultant.features import FEATURES, evaluate_features
-from consultant.mcp_server import ConversationStore, guard_context, handle_message
+from consultant.mcp_server import ConversationStore, guard_context
 import hashlib
 import json
 
 from consultant.n8n_workflow import PROMPT_FILE
 from consultant.query_semantics import parse_query_semantics
-from consultant.semantic_guard import (
-    NUMERIC_ARGS, MessageEvidence, guard_tool_arguments, not_applied_note, reject_unsupported_numeric, spelled_numbers,
-)
+from consultant.semantic_guard import MessageEvidence, guard_tool_arguments, not_applied_note, spelled_numbers
 
 from .consultant_fixtures import product_rows
 
@@ -252,12 +249,11 @@ def test_4f2_pa08_stated_limits_are_kept_with_the_relative_request():
 
 
 def _turn(seen, store, conv, n, message, tool, args):
-    """One user turn through the real path: guard_context -> ConversationStore -> ConsultantTools.call -> guard.
-    Returns the arguments the Core received; ``None`` when the call was rejected (Phase 4F.3A)."""
+    """One user turn through the real path: guard_context -> ConversationStore -> ConsultantTools.call -> guard."""
     seen.clear()
     conversation, act = guard_context(store, f"{conv}-t{n}", conv, message, n - 1)
     ConsultantTools.for_repository(object()).call(tool, args, f"{conv}-t{n}", conversation, act)
-    return seen[0][1] if seen else None
+    return seen[0][1]
 
 
 def test_explicit_budget_stays_and_a_cheaper_follow_up_adds_no_threshold(served):
@@ -268,165 +264,9 @@ def test_explicit_budget_stays_and_a_cheaper_follow_up_adds_no_threshold(served)
     carried = {"max_price": 100000, "sort": "price_asc"}
     assert _turn(served.seen, store, "c", 2, "а что подешевле?", "search_tvs", carried) == carried       # budget active
     invented = {"max_price": 60000, "sort": "price_asc"}
-    assert _turn(served.seen, store, "c", 2, "а что подешевле?", "search_tvs", invented) is None         # rejected, not run
+    assert _turn(served.seen, store, "c", 2, "а что подешевле?", "search_tvs", invented) == {"sort": "price_asc"}
     assert _turn(served.seen, store, "c", 3, "а ещё дешевле?", "recommend_tvs",
-                 {"max_price": 100000, "min_price": 20000}) is None                                  # the invented minimum
-    assert _turn(served.seen, store, "c", 3, "а ещё дешевле?", "recommend_tvs",
-                 {"max_price": 100000}) == {"max_price": 100000}                                     # the stated budget runs
-
-
-# ---- Phase 4F.3A: an unsupported number rejects the call; the Agent retries ----------------------------------
-# 4F.3 final runs: the guard removed the invented number and the Core ran without it, but the model had seen its
-# own call succeed and worded the result by that number («до 50 000 ₽», «до 55 дюймов»).
-
-OK_RESULT = {"contract": "agent-result-v2", "tool": "search_tvs", "status": "ok", "request": {}, "products": []}
-CHEAPER = ("Нужен телевизор 55 дюймов до 100 тысяч, в основном для кино и сериалов.", "А есть что-то подешевле?")
-
-
-def call(served, messages, tool, args, turn="t1", act=True):
-    """``(result the Agent gets, arguments the Core received or None)`` for one tool call of a turn."""
-    served.seen.clear()
-    served.next = dict(OK_RESULT, request={})
-    payload = served.tools.call(tool, args, turn, tuple(MessageEvidence.from_text(m) for m in messages), act)
-    return payload, (served.seen[0][1] if served.seen else None)
-
-
-def rejected(payload: dict) -> list:
-    assert payload["status"] == "invalid_arguments" and "products" not in payload
-    return [(c["argument"], c["value"]) for c in payload["unsupported_numeric_constraints"]]
-
-
-def test_4f3a_an_explicit_budget_is_accepted(served):
-    args = {"max_price": 100000}
-    payload, core = call(served, ["до 100 тысяч"], "search_tvs", args)
-    assert payload["status"] == "ok" and core == args and "unsupported_numeric_constraints" not in payload
-
-
-def test_4f3a_a_relative_price_request_rejects_an_invented_budget(served):
-    """DEMO-04 turn 2, the recorded proposal."""
-    payload, core = call(served, CHEAPER, "search_tvs", {"screen_size_inches": 55, "max_price": 50000, "sort": "price_asc"})
-    assert core is None                                                            # nothing was run without it
-    assert rejected(payload) == [("max_price", 50000)]
-    assert payload["errors"][0] == "unsupported_numeric_constraint: max_price=50000 was not stated by the user in this conversation."
-    retry = payload["errors"][-1]
-    assert "was not run" in retry and "Call the tool again without" in retry and "Do not substitute another number" in retry
-    assert "the answer must not state one" in retry
-
-
-def test_4f3a_a_vague_size_rejects_an_invented_size(served):
-    """PA-08 turn 1, the recorded proposal."""
-    opener = "здрасте, хочу норм телек в спальню, не огромный, и чтоб картинка была вау"
-    payload, core = call(served, [opener], "recommend_tvs", {"max_screen_size_inches": 55, "use_cases": ["movies"]})
-    assert core is None and rejected(payload) == [("max_screen_size_inches", 55)]
-    assert "max_screen_size_inches=55 was not stated by the user" in payload["errors"][0]
-
-
-def test_4f3a_an_explicit_size_is_accepted(served):
-    args = {"max_screen_size_inches": 55}
-    payload, core = call(served, ["не больше 55 дюймов"], "recommend_tvs", args)
-    assert payload["status"] == "ok" and core == args
-
-
-def test_4f3a_a_rejected_call_can_be_followed_by_a_corrected_one(served):
-    """The retry flow inside one user message: reject, then the same call without the invention runs."""
-    invented = {"screen_size_inches": 55, "max_price": 50000, "sort": "price_asc"}
-    corrected = {"screen_size_inches": 55, "max_price": 100000, "sort": "price_asc"}
-    first, core = call(served, CHEAPER, "search_tvs", invented, turn="t2")
-    assert rejected(first) == [("max_price", 50000)] and core is None
-    second, core = call(served, CHEAPER, "search_tvs", corrected, turn="t2")
-    assert second["status"] == "ok" and core == corrected and "not_applied" not in second["request"]
-    # a second invention is rejected the same way; the rejections count towards the cap of three calls per message
-    third, core = call(served, CHEAPER, "search_tvs", {"screen_size_inches": 55, "max_price": 45000}, turn="t2")
-    assert rejected(third) == [("max_price", 45000)] and core is None
-    assert call(served, CHEAPER, "search_tvs", corrected, turn="t2")[0]["status"] == "tool_call_limit_reached"
-
-
-VALUES = {"min_price": 20000, "max_price": 50000, "screen_size_inches": 55, "min_screen_size_inches": 50,
-          "max_screen_size_inches": 55, "min_refresh_rate_hz": 100}
-
-
-def test_4f3a_every_numeric_hard_constraint_of_the_tools_is_covered():
-    numeric = {k for k, v in TOOL_SCHEMAS["recommend_tvs"]["inputSchema"]["properties"].items()
-               if v["type"] in ("number", "integer")}
-    assert numeric == set(NUMERIC_ARGS) == set(VALUES)
-
-
-@pytest.mark.parametrize("argument", sorted(VALUES))
-@pytest.mark.parametrize("tool", ["search_tvs", "recommend_tvs", "get_catalog_stats"])
-def test_4f3a_the_rule_is_generic_over_numeric_constraints(served, tool, argument):
-    args = {argument: VALUES[argument], **({"stat": "count"} if tool == "get_catalog_stats" else {})}
-    payload, core = call(served, ["Посоветуй телевизор.", "а что-нибудь получше?"], tool, args)
-    assert core is None and rejected(payload) == [(argument, VALUES[argument])]
-    payload, core = call(served, ["Посоветуй телевизор.", f"пусть будет {VALUES[argument]}"], tool, args, turn="t2")
-    assert payload["status"] == "ok" and core == args                              # stated by the user: accepted
-
-
-def test_4f3a_only_the_unsupported_numbers_are_named(served):
-    """Stated limits and other arguments are not part of the rejection; an unmentioned required feature is still
-    removed (and reported) on the call that runs."""
-    args = {"min_screen_size_inches": 40, "max_screen_size_inches": 50, "max_price": 40000, "sort": "price_asc", "limit": 3}
-    payload, core = call(served, BEDROOM, "search_tvs", args)
-    assert core is None and rejected(payload) == [("max_price", 40000), ("min_screen_size_inches", 40)]
-    assert len(payload["errors"]) == 3 and all(len(e) < 300 for e in payload["errors"])       # nothing is cut off
-    assert "max_screen_size_inches" not in " ".join(payload["errors"])
-    mixed = {"use_cases": ["gaming"], "required_features": ["hdmi_2_1"], "max_price": 150000}
-    payload, core = call(served, [PS5], "recommend_tvs", mixed, turn="t2")
-    assert core is None and rejected(payload) == [("max_price", 150000)] and "hdmi_2_1" not in str(payload)
-    payload, core = call(served, [PS5], "recommend_tvs", {k: v for k, v in mixed.items() if k != "max_price"}, turn="t2")
-    assert core == {"use_cases": ["gaming"]}
-    assert payload["request"]["not_applied"]["constraints"] == [{"argument": "required_features", "value": "hdmi_2_1"}]
-
-
-def test_4f3a_the_guards_own_decision_is_unchanged():
-    """Rejection is derived from the same decision the replay records: ``modified`` with the number removed."""
-    g = guard_tool_arguments("search_tvs", {"max_price": 50000, "sort": "price_asc"}, list(CHEAPER))
-    assert g.status == "modified" and g.arguments == {"sort": "price_asc"}
-    r = reject_unsupported_numeric(g)
-    assert r.status == "rejected" and r.arguments is None and r.detail == "unsupported_numeric_constraint"
-    assert [(a.action, a.argument, a.value, a.reason) for a in r.actions] == [("rejected", "max_price", 50000, "unsupported_price_value")]
-    features_only = guard_tool_arguments("recommend_tvs", {"required_features": ["hdmi_2_1"]}, [PS5])
-    assert features_only.status == "modified" and reject_unsupported_numeric(features_only) is None
-    unchanged = guard_tool_arguments("search_tvs", {"max_price": 100000}, list(CHEAPER))
-    assert unchanged.status == "unchanged" and reject_unsupported_numeric(unchanged) is None
-
-
-def test_4f3a_no_rejection_when_the_guard_may_not_act(served):
-    """Earlier messages unknown (report-only), or a number word the guard cannot read: the call runs as before."""
-    args = {"max_price": 50000}
-    payload, core = call(served, CHEAPER[1:], "search_tvs", args, act=False)
-    assert payload["status"] == "ok" and core == args
-    payload, core = call(served, ["бюджет пара сотен", "а что подешевле?"], "search_tvs", args, turn="t2")
-    assert payload["status"] == "ok" and core == args
-    served.seen.clear()
-    assert served.tools.call("search_tvs", args, "t3")["status"] == "ok" and served.seen == [("search_tvs", args)]   # no context
-
-
-def test_4f3a_a_failure_while_rejecting_falls_back_to_the_plain_call(served, monkeypatch, caplog):
-    from consultant import semantic_guard
-    monkeypatch.setattr(semantic_guard, "rejection_errors", lambda r: 1 / 0)
-    with caplog.at_level(logging.ERROR):
-        payload, core = call(served, CHEAPER, "search_tvs", {"max_price": 50000})
-    assert payload["status"] == "ok" and core == {"max_price": 50000} and "semantic guard failed" in caplog.text
-
-
-def test_4f3a_the_rejection_is_logged_and_returned_without_user_text(served, caplog):
-    with caplog.at_level(logging.INFO, logger="consultant.agent_tools"):
-        payload, _ = call(served, ["секретная фраза", "а что подешевле?"], "search_tvs", {"max_price": 50000})
-    assert "'status': 'invalid_arguments'" in caplog.text and "'guard': 'rejected'" in caplog.text
-    assert "['rejected', 'max_price', 50000, 'unsupported_price_value']" in caplog.text
-    assert "секретная" not in caplog.text and "секретная" not in json.dumps(payload, ensure_ascii=False)
-
-
-def test_4f3a_the_rejection_is_a_domain_result_over_mcp(served):
-    """``isError`` stays false, as for every ``invalid_arguments``: the Agent reads the result and corrects the call."""
-    served.next = dict(OK_RESULT, request={})
-    message = {"jsonrpc": "2.0", "id": 7, "method": "tools/call",
-               "params": {"name": "search_tvs", "arguments": {"screen_size_inches": 55, "max_price": 50000}}}
-    store = ConversationStore()
-    guard_context(store, "1", "c", CHEAPER[0], 0)
-    response = handle_message(served.tools, message, "s1", "2", True, lambda: guard_context(store, "2", "c", CHEAPER[1], 1))
-    payload = json.loads(response["result"]["content"][0]["text"])
-    assert response["result"]["isError"] is False and rejected(payload) == [("max_price", 50000)] and served.seen == []
+                 {"max_price": 100000, "min_price": 20000}) == {"max_price": 100000}                 # only the invention goes
 
 
 @pytest.mark.parametrize("tool, phrase, args, kept", [
