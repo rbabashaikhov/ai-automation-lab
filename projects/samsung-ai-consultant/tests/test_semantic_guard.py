@@ -372,13 +372,14 @@ def test_pipeline_modules_do_not_use_the_guard(module):
 def _turn(recorded, store, conv, n, message, tool, args, observed=True):
     """One user turn through the real path: guard_context (h = earlier turns in n8n memory) ->
     ConversationStore -> ConsultantTools.call -> guard. ``observed=False``: the Agent made no tool
-    call, so the Consultant never received this message (n8n memory still counts it)."""
+    call, so the Consultant never received this message (n8n memory still counts it).
+    Returns the arguments the Core received; ``None`` when the call was rejected (Phase 4F.3A)."""
     if not observed:
         return None
     recorded.clear()
     conversation, act = guard_context(store, f"{conv}-t{n}", conv, message, n - 1)
     ConsultantTools.for_repository(object()).call(tool, args, f"{conv}-t{n}", conversation, act)
-    return recorded[0][1]
+    return recorded[0][1] if recorded else None
 
 
 def test_parse_prior_turns():
@@ -430,16 +431,20 @@ def test_expired_store_with_live_n8n_memory_is_report_only(recorded):
      {"panel_technology": ["OLED"], "screen_size_inches": 65, "use_cases": ["gaming"]}),
 ])
 def test_direct_protection_kept_when_provenance_is_complete(recorded, t1, t2, t3, args3, expected):
+    """Phase 4F.3A: the invention is rejected (nothing runs); the same call without it runs with the carried constraints."""
     store = ConversationStore()
     _turn(recorded, store, "f", 1, t1, "search_tvs", {"panel_technology": ["OLED"], "screen_size_inches": 65})
     _turn(recorded, store, "f", 2, t2, "recommend_tvs", {"panel_technology": ["OLED"], "screen_size_inches": 65, "use_cases": ["gaming"]})
-    assert _turn(recorded, store, "f", 3, t3, "recommend_tvs", args3) == expected
+    assert guard("recommend_tvs", args3, t1, t2, t3).arguments == expected       # the guard's decision is the 4E.2 one
+    assert _turn(recorded, store, "f", 3, t3, "recommend_tvs", args3) is None
+    assert _turn(recorded, store, "f", 3, t3, "recommend_tvs", expected) == expected
 
 
 @pytest.mark.parametrize("text, args, expected", [
     ("Посоветуй телевизор для PS5.", {"use_cases": ["gaming"], "required_features": ["hdmi_2_1"]}, {"use_cases": ["gaming"]}),
-    ("Посоветуй телевизор.", {"max_price": 150000}, {}),
-    ("Телевизор для игр.", {"min_refresh_rate_hz": 120}, {"use_cases": ["gaming"]}),
+    ("Посоветуй телевизор.", {"max_price": 150000}, None),                    # 4F.3A: a number rejects the call
+    ("Телевизор для игр.", {"min_refresh_rate_hz": 120}, None),
 ])
 def test_first_turn_protections_are_unchanged(recorded, text, args, expected):
+    """No invention reaches the Core on a first turn: a feature is removed, a number rejects the call."""
     assert _turn(recorded, ConversationStore(), "first", 1, text, "recommend_tvs", args) == expected

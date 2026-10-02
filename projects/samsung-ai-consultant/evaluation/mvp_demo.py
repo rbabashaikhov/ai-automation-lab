@@ -274,11 +274,13 @@ BOUND_WORD = (r"(?:до|от|свыше|максимум|минимум|деше
 
 
 def unapplied_limits_stated(answer: str, calls: list) -> list:
-    """A price or size limit the guard removed (no user message states it) that the answer still words as a limit:
-    «до 50 000 ₽», «до 55 дюймов». The value did not reach the Core, but the user is shown a threshold they never gave."""
+    """A price or size limit the guard removed or (Phase 4F.3A) rejected, because no user message states it, that the
+    answer still words as a limit: «до 50 000 ₽», «до 55 дюймов». The value did not reach the Core, but the user is
+    shown a threshold they never gave."""
     issues = []
     for call in calls:
-        for c in ((call["result"].get("request") or {}).get("not_applied") or {}).get("constraints", []):
+        for c in [*((call["result"].get("request") or {}).get("not_applied") or {}).get("constraints", []),
+                  *(call["result"].get("unsupported_numeric_constraints") or [])]:
             arg, v = c["argument"], c["value"]
             if arg not in ("min_price", "max_price", "screen_size_inches", "min_screen_size_inches", "max_screen_size_inches"):
                 continue
@@ -394,7 +396,7 @@ def collect(suite: str, run_dir: Path, log_file: Path, codes_file: Path, label: 
                     guards.remove(g)
                 calls.append({"tool": call["tool"], "proposed_args": proposed,
                               "guard": {k: g[k] for k in ("status", "detail", "actions")} if g else {"status": "not_found_in_log"},
-                              "final_args": final_arguments(proposed, g),
+                              "final_args": None if g and g["status"] == "rejected" else final_arguments(proposed, g),
                               "result": {k: v for k, v in result.items() if k not in ("data_notice", "scope_note")}})
             users.append(tt["user"])
             session_results.extend(c["result"] for c in calls)
@@ -543,6 +545,7 @@ def _tool_lines(call: dict, n: int) -> list:
     out = [f"- Tool call {n}: `{call['tool']}`",
            f"  - arguments proposed by the model: `{_j(call['proposed_args'])}`",
            f"  - guard: **{g['status']}**" + (f" — {acts}" if acts else ""),
+           "  - arguments the Core received: none — the call was rejected and not run" if g["status"] == "rejected" else
            f"  - arguments the Core received: `{_j(call['final_args'])}`",
            f"  - result: status `{r.get('status')}`, confidence `{r.get('confidence')}`, totals `{_j(r.get('totals'))}`"]
     for key in ("constraints", "use_cases", "required_features", "preferred_features", "attributes_asked", "question",
@@ -550,7 +553,7 @@ def _tool_lines(call: dict, n: int) -> list:
         if req.get(key):
             out.append(f"  - request.{key}: `{_j(req[key])}`")
     for key in ("counted", "counts", "attribute_counts", "attribute_values", "groups", "confidence_notes", "comparison",
-                "clarification", "errors"):
+                "clarification", "errors", "unsupported_numeric_constraints"):
         if r.get(key):
             out.append(f"  - {key}: `{_j(r[key])}`")
     if r.get("feature_summary"):

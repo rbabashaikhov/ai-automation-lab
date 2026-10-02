@@ -23,6 +23,12 @@ survives. It never adds a filter, size, price, refresh rate, feature, technology
 Fail-safe: the guard never raises. No conversation context, original arguments the tool boundary
 rejects anyway, guarded arguments that fail validation, or any internal error return the original
 arguments unchanged (Phase 4D behaviour) with a status saying why.
+
+Phase 4F.3A: a call with an unsupported *numeric* constraint is no longer run without it. The decision
+above is unchanged, but the tool boundary turns it into a rejection (:func:`reject_unsupported_numeric`):
+the Agent gets ``invalid_arguments`` naming the number and issues a corrected call. Run silently without
+it, the Agent went on describing the result by the number it had proposed («до 50 000 ₽»). An unmentioned
+required feature is still removed and reported in ``not_applied``.
 """
 
 from __future__ import annotations
@@ -35,7 +41,7 @@ from .agent_tools import ToolArgumentError, constraints_from_args, validate_argu
 from .features import FEATURES
 from .query_semantics import Preference, parse_query_semantics
 
-GUARD_VERSION = "semantic-guard-4f3-v1"     # 4F.3: spelled / slang numbers are read instead of disabling the rules
+GUARD_VERSION = "semantic-guard-4f3a-v1"    # 4F.3A: an unsupported numeric constraint rejects the call (4F.3: spelled numbers read)
 
 _W = r"(?<![a-zа-я0-9])"
 
@@ -214,16 +220,16 @@ class MessageEvidence:
 @dataclass(frozen=True)
 class GuardAction:
     argument: str
-    action: str                     # "removed" | "added" | "would_remove"
+    action: str                     # "removed" | "added" | "would_remove" | "rejected"
     value: Any
     reason: str
 
 
 @dataclass(frozen=True)
 class GuardResult:
-    """``status``: ``unchanged`` | ``modified`` | ``report_only`` | ``skipped`` | ``fallback``.
+    """``status``: ``unchanged`` | ``modified`` | ``report_only`` | ``skipped`` | ``fallback`` | ``rejected``.
     ``arguments`` is always safe to pass on: the guarded arguments for ``modified``, otherwise the
-    original arguments object."""
+    original arguments object. ``rejected`` (:func:`reject_unsupported_numeric`) has none: the call is not run."""
     status: str
     arguments: Any
     actions: tuple = ()
@@ -323,3 +329,26 @@ def not_applied_note(result: GuardResult) -> Optional[dict]:
                     "satisfying these constraints; ask the user if a limit is needed. A feature listed here was not "
                     "required: a product has it only if its `features` says yes. Limits the user did state must be "
                     "passed exactly as stated."}
+
+
+UNSUPPORTED_NUMERIC = "unsupported_numeric_constraint"
+
+
+def reject_unsupported_numeric(result: GuardResult) -> Optional[GuardResult]:
+    """Phase 4F.3A: the rejection of a call whose numeric hard constraints (price, size, refresh rate) include a
+    value the user never stated, or ``None`` when it has none. Only for a decision the guard may act on
+    (``modified``): report-only, skipped and fallback calls run as before."""
+    numeric = tuple(a for a in result.removed if a.argument in NUMERIC_ARGS) if result.status == "modified" else ()
+    if not numeric:
+        return None
+    return GuardResult("rejected", None, tuple(GuardAction(a.argument, "rejected", a.value, a.reason) for a in numeric),
+                       detail=UNSUPPORTED_NUMERIC)
+
+
+def rejection_errors(rejection: GuardResult) -> list:
+    """Agent-facing: which numeric constraints were unsupported, and how to retry. Names and values only."""
+    return [*(f"{UNSUPPORTED_NUMERIC}: {a.argument}={a.value:g} was not stated by the user in this conversation."
+              for a in rejection.actions),
+            "This call was not run. Call the tool again without each constraint named above, or with the exact value "
+            "the user stated for it, if any. Do not substitute another number. The user set no such limit, so the "
+            "answer must not state one. Keep the other arguments."]
