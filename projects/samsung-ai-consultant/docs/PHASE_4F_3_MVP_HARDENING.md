@@ -3,7 +3,9 @@
 Status: **complete — `4F.3 MVP DEMO HOLD — FURTHER HARDENING REQUIRED`.** MVP-1 and MVP-3 are fixed as measured.
 MVP-2 is fixed where it was deterministic (no invented number reaches the Core) and not in the answer text: the
 model still words its own removed limit («до 50 000 ₽») as if the user had set it. §3–§7 are the analysis and
-plan written before any code change; §8–§14 record what was built, measured and decided.
+plan written before any code change; §8–§14 record what was built, measured and decided. §15 records the
+follow-up hotfix 4F.3A (reject instead of remove): built, verified live, failed, reverted —
+`4F.3A MVP DEMO HOLD — NUMERIC CONSTRAINT BUG REMAINS`.
 
 Phase 4F.2 ended with `4F.2 HOLD — PRODUCT ACCEPTANCE FAILED`. That result stands and is not changed by this
 phase (§2). Phase 4F.3 has a narrower target, set by the project owner: a **demo-ready MVP for portfolio and
@@ -12,7 +14,7 @@ other 4F.2 finding as a known limitation.
 
 | Artifact | Contents |
 |---|---|
-| This document | scope, root causes, fix design, regression risks, test and deployment plan, MVP gate (§1–§7); implementation, iterations, tests, deployment, result, limitations (§8–§14) |
+| This document | scope, root causes, fix design, regression risks, test and deployment plan, MVP gate (§1–§7); implementation, iterations, tests, deployment, result, limitations (§8–§14); the 4F.3A hotfix and its result (§15) |
 | [`evaluation/results/phase_4f_3_demo/`](../evaluation/results/phase_4f_3_demo/PHASE_4F_3_MVP_DEMO_REPORT.md) | the 4F.3 report, evidence, review, measurements and transcripts |
 | [PHASE_4F_PRODUCT_ACCEPTANCE.md](PHASE_4F_PRODUCT_ACCEPTANCE.md) | the frozen 4F.1 rubric and the 4F.2 result (unchanged) |
 | [`evaluation/results/phase_4f_2/`](../evaluation/results/phase_4f_2/PHASE_4F_2_PRODUCT_ACCEPTANCE_REPORT.md) | the 4F.2 evidence this analysis is built on (unchanged) |
@@ -579,3 +581,105 @@ The remaining defect is in the answer text, so the remaining options are the two
 
 Either should be measured the way §9 was: a rate over fresh sessions on the two conversations that fail now, plus
 the four targeted scenarios, before any claim of readiness.
+
+> **Update, 2026-10-02:** the first option was built and verified live as hotfix 4F.3A. It did not remove the
+> defect and was reverted (§15).
+
+---
+
+## 15. Phase 4F.3A — «reject instead of remove»: built, measured, reverted
+
+Status: **`4F.3A MVP DEMO HOLD — NUMERIC CONSTRAINT BUG REMAINS`** (2026-10-02). The first option of §14 was built as
+a hotfix, deployed and verified live. The rejection works; the defect does not go away. By the hotfix's own stop
+rule nothing was retuned, the demo suite was not run on that build, and both the code and production are back at
+the Phase 4F.3 state. §12 stands unchanged: 7 of 8 demo conversations, image `4f3f`.
+
+### 15.1 What was built (commit `07d935b`, reverted by `c6993aa`)
+
+The guard's decision was not changed. At the tool boundary (`ConsultantTools.call`) a decision that removes a
+numeric hard constraint became a rejection: the call is not run, and the Agent gets
+
+```json
+{"status": "invalid_arguments",
+ "errors": ["unsupported_numeric_constraint: max_price=50000 was not stated by the user in this conversation.",
+            "This call was not run. Call the tool again without each constraint named above, or with the exact value the user stated for it, if any. Do not substitute another number. The user set no such limit, so the answer must not state one. Keep the other arguments."],
+ "unsupported_numeric_constraints": [{"argument": "max_price", "value": 50000}]}
+```
+
+Generic over the six numeric arguments of the tools (`min_price`, `max_price`, `screen_size_inches`,
+`min_screen_size_inches`, `max_screen_size_inches`, `min_refresh_rate_hz`); no value or phrase special-cased. An
+unmentioned required feature was still removed and reported; report-only, skipped and fallback decisions ran as
+before; a rejection counted towards the cap of three calls per message. Prompt v3, the model, the workflow,
+retrieval and ranking were not touched. Prompt v3 already says what to do with the result: «If a result is
+`invalid_arguments`, correct the arguments yourself and call the tool again once».
+
+Tests at `07d935b`: `pytest` 923 passed, 143 skipped (baseline 893 / 142); DB suite 149 passed (148); guard replay
+35/35 and 22/22 with identical rows (only the guard version string changed); semantic gold set 30/30;
+`n8n_workflow --check`, `mvp_demo --check`, `acceptance --check`, `acceptance_report --check` clean.
+
+### 15.2 Deployment
+
+| Step (UTC, 2026-10-02) | State |
+|---|---|
+| before | `samsung-consultant:4f3f`, revision `afc8678`, started 2026-10-01T14:56:31Z, healthy |
+| 09:57:22 deploy | `samsung-consultant:4f3g`, revision `07d935b`, built from the committed tree; 23 runtime files identical in the image, in the container and in the repository; smoke container and production gave the same probe output (`mvp_probe.js`: the invented `max_price 40000` / `min 40` → `invalid_arguments`, stated limits kept) |
+| 09:59–10:01 | live verification, run `20261002T0959Z` |
+| 10:07:08 rollback | `samsung-consultant:4f3f`, image id `sha256:f9e26b65…` (the one of §11), revision `afc8678`, healthy; 23 runtime files identical to the repository at `c6993aa`; probe output as in Phase 4F.3 |
+
+Only the `samsung-consultant` service was recreated, twice. n8n, PostgreSQL, Redis and Traefik were not restarted
+(same `StartedAt`). The Consultant workflow was not updated. One temporary inactive driver workflow was created for
+the run and deleted after it. No port, role, schema or data change. Image `4f3g` and `compose.yml.4f3g.bak` remain
+on the VPS, unused; `4f3g` is not a rollback target.
+
+### 15.3 Live verification (fresh sessions, gpt-4.1-mini, temperature 0)
+
+| Turn | User | Agent's proposal | Guard | Corrected call | Answer |
+|---|---|---|---|---|---|
+| PA-08 turn 1 | «…хочу норм телек в спальню, не огромный…» | `recommend_tvs {max_screen_size_inches 55, use_cases [movies]}` | rejected | **none** | «…я бы порекомендовал телевизор с диагональю **до 55 дюймов**… скажите, пожалуйста, какой у вас бюджет…» — no products |
+| PA-08 turn 2 | «ну дюймов 43-50, до сотки где-то» | `{min 43, max 50, max_price 100000, use_cases [movies]}` | unchanged | — | three models within the stated limits |
+| PA-08 turn 3 | «а что подешевле есть?» | `{min 43, max 50, max_price 45000, …}` | rejected | **none** | «Вы хотите телевизор… бюджетом **до 45 тысяч рублей**? Подтвердите, пожалуйста…» — no products |
+| PA-08 turn 4 | «…этот второй — он в наличии? ссылку дайте» | no tool call | — | — | correct, from the turn-2 result |
+| DEMO-04 turn 1 | «Нужен телевизор 55 дюймов до 100 тысяч…» | `{screen_size_inches 55, max_price 100000, use_cases [movies]}` | unchanged | — | four models within the limits |
+| DEMO-04 turn 2 | «А есть что-то подешевле?» | `search_tvs {screen_size_inches 55, max_price 50000, availability available}` | rejected | **none** | «Вы не указывали в запросе бюджет **до 50 тысяч**, поэтому я не могу искать телевизоры с таким ограничением. Пожалуйста, уточните, до какой суммы…» |
+| DEMO-04 turn 3 | «…самый дешёвый из них сейчас в наличии?…» | no tool call | — | — | correct, from the turn-1 result |
+
+| Criterion | PA-08 | DEMO-04 |
+|---|---|---|
+| no invented number reaches the Core | yes (2 of 2 rejected) | yes (1 of 1 rejected) |
+| no invented number in the tool arguments the model proposes | no | no |
+| the rejected call is followed by a corrected one | no (0 of 2) | no (0 of 1) |
+| no invented number in the final text | no: «до 55 дюймов», «до 45 тысяч рублей» | no: «бюджет до 50 тысяч» |
+| «подешевле» works as a relative request | no: a question instead of an answer | no: a question instead of an answer |
+| **Result** | **FAIL** | **FAIL** |
+
+Evidence: [`evidence_4f3a_PA-08.json`](../evaluation/results/phase_4f_3_demo/evidence_4f3a_PA-08.json),
+[`evidence_4f3a_DEMO-04.json`](../evaluation/results/phase_4f_3_demo/evidence_4f3a_DEMO-04.json) — per turn: user
+turn, answer, proposed arguments, the guard's logged decision, the result, memory evidence, automated checks. They
+were written by `mvp_demo collect` as it was at `07d935b` (it read a rejected number like a removed one; the check
+`unapplied_limits_stated` flags all three answers). Every execution succeeded; no tool returned `error`.
+Transport events, none of them a re-run of a conversation: one TLS timeout while extracting the PA-08 trace
+(retried by the tooling); the first launch of DEMO-04 ended in the SSH transport (rc 255) before anything executed —
+the Consultant log has no request of that session — and it was then launched once; two TLS timeouts of the n8n API
+during `collect`.
+
+### 15.4 What the result says
+
+- **The deterministic half is solved and was before:** an invented number does not reach the Core, removed or rejected.
+- **The rejection does not make the model re-plan.** In 3 of 3 rejected turns it made one tool call and no second
+  one. It read the validation error as something to put to the user, which the prompt forbids («never ask the user to
+  fix tool arguments»), and repeated the number while doing so. The number moved from a claim («нет телевизоров до
+  50 000 ₽», §12) to a question («бюджетом до 45 тысяч рублей?»); it is still in the answer, and the answer now has
+  no products.
+- Three turns in two conversations of one run are not a rate (§9). They are enough for the stop rule, which asked
+  for a pass in both scenarios on the first attempt, not for a measurement.
+- Not tried, by the stop rule: another wording of the rejection, a prompt rule, any second pass.
+
+### 15.5 Decision
+
+**`4F.3A MVP DEMO HOLD — NUMERIC CONSTRAINT BUG REMAINS`**
+
+The demo suite was not run on `4f3g`. Leaving `4f3g` in production would have kept a build with a failed
+verification whose behaviour in the other seven demo conversations is unmeasured (a rejected number turns an answer
+into a question), so production and the repository were returned to the state §12 describes. Of the two options of
+§14, «reject instead of remove» is now measured and closed in this form; the answer check remains, as a decision
+for the project owner.

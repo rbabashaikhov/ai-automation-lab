@@ -57,7 +57,8 @@ The workflow needs no restore: it carries the same prompt v3 as in 4F.2 and read
 (the 4F.2 state is in `tools/n8n-tool/backups/samsung-ai-consultant/20261001T121823Z_4d8mXFWGpS5P4t1L.json`; it
 differs only in the OpenAI credential's display name). `4e2a` has no `attributes` / `model` on `get_catalog_stats`,
 reports no state for an unapplied required feature, and its guard stands down after a slang number («до сотки»).
-The superseded 4F.3 builds `4f3` … `4f3e` are on the VPS and are not rollback targets.
+The superseded 4F.3 builds `4f3` … `4f3e` are on the VPS and are not rollback targets. Neither is `4f3g` (hotfix
+4F.3A, in production for ten minutes on 2026-10-02 and rolled back: docs/PHASE_4F_3_MVP_HARDENING.md §15).
 
 **Rollback of Gate 4E.2A:** set `image: samsung-consultant:4e2` (`compose.yml.4e2.bak`) and `up -d`, and restore
 the workflow backup `tools/n8n-tool/backups/samsung-ai-consultant/20260930T194205Z_4d8mXFWGpS5P4t1L.json`

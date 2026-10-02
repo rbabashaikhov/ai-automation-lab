@@ -170,4 +170,6 @@ on eight demo conversations. It does not replace the 4F.2 result.
   REQUIRED`**. The three targeted defects are gone and 7 of 8 demo conversations pass; the hold is one criterion:
   a numeric limit the user never stated is removed before the Core but still worded in the answer.
   `measurements.json` holds 306 repeated sessions (rates per build and question), `evidence_targeted_run1–3.json` the
-  targeted runs on superseded builds.
+  targeted runs on superseded builds. `evidence_4f3a_PA-08.json` and `evidence_4f3a_DEMO-04.json` are the live
+  verification of hotfix 4F.3A (2026-10-02, image `4f3g`, reverted): **`4F.3A MVP DEMO HOLD — NUMERIC CONSTRAINT BUG
+  REMAINS`** (docs/PHASE_4F_3_MVP_HARDENING.md §15).
