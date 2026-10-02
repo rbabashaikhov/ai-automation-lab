@@ -514,7 +514,8 @@ for the one service, the same probes on production.
   was exposed to an intermediate build.
 - n8n, PostgreSQL, Redis and Traefik were not restarted. Side containers used for baseline and candidate
   measurements ran next to production on the internal network and were removed. The superseded images and the
-  `compose.yml.<tag>.bak` files remain on the VPS.
+  `compose.yml.<tag>.bak` files remain on the VPS. *(Removed at project closure, 2026-10-02:
+  [PROJECT_CLOSURE.md](PROJECT_CLOSURE.md).)*
 
 ---
 
@@ -629,7 +630,8 @@ Tests at `07d935b`: `pytest` 923 passed, 143 skipped (baseline 893 / 142); DB su
 Only the `samsung-consultant` service was recreated, twice. n8n, PostgreSQL, Redis and Traefik were not restarted
 (same `StartedAt`). The Consultant workflow was not updated. One temporary inactive driver workflow was created for
 the run and deleted after it. No port, role, schema or data change. Image `4f3g` and `compose.yml.4f3g.bak` remain
-on the VPS, unused; `4f3g` is not a rollback target.
+on the VPS, unused; `4f3g` is not a rollback target. *(Removed at project closure, 2026-10-02:
+[PROJECT_CLOSURE.md](PROJECT_CLOSURE.md).)*
 
 ### 15.3 Live verification (fresh sessions, gpt-4.1-mini, temperature 0)
 

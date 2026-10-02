@@ -20,6 +20,7 @@ n8n ──MCP + Bearer token──> samsung-consultant:8765 ──read-only role
 | `verify_readonly.py` | Write-denial check run inside the container with its own role |
 | `guard_probe.js` | Gate 4E.2 semantic-guard probe run with Node inside the n8n container: guard decisions over the real MCP boundary (PS5 without/with message, explicit HDMI 2.1, report-only without `conv`, explicit vs invented budget) and the two halves of the in-memory restart check |
 | `mvp_probe.js` | Phase 4F.3 probe run with Node inside the n8n container: an unapplied required feature is reported as `not_listed` per product (and nothing else is added to the result), an invented number after a slang budget is removed and a stated one kept, feature / series counts with their scope and listed values |
+| `catalog_fingerprint.py` | Read-only catalog fingerprint run inside the container with its own role (`docker exec -i samsung-consultant python - < catalog_fingerprint.py`): counts, newest `updated_at`, embedding model and dimension, server versions, md5 digests. Two runs with the same output saw the same catalog; run it before and after a deployment or cleanup |
 | `mcp_probe.js` | Boundary probe run with Node inside the n8n container: health, 401 without or with a wrong token, authenticated `tools/list` + closed-schema check, one deterministic call; since 4D.2B-R also the per-turn cap across four fresh sessions (`ok ok ok tool_call_limit_reached`) and refusal of a call without `?turn=`; since 4D.2D also the result contract and the `attributes` limit |
 
 ## Runbook (as executed in Gate 4D.2A)
@@ -57,8 +58,11 @@ The workflow needs no restore: it carries the same prompt v3 as in 4F.2 and read
 (the 4F.2 state is in `tools/n8n-tool/backups/samsung-ai-consultant/20261001T121823Z_4d8mXFWGpS5P4t1L.json`; it
 differs only in the OpenAI credential's display name). `4e2a` has no `attributes` / `model` on `get_catalog_stats`,
 reports no state for an unapplied required feature, and its guard stands down after a slang number («до сотки»).
-The superseded 4F.3 builds `4f3` … `4f3e` are on the VPS and are not rollback targets. Neither is `4f3g` (hotfix
-4F.3A, in production for ten minutes on 2026-10-02 and rolled back: docs/PHASE_4F_3_MVP_HARDENING.md §15).
+The superseded 4F.3 builds `4f3` … `4f3e` and `4f3g` (hotfix 4F.3A, in production for ten minutes on 2026-10-02
+and rolled back: docs/PHASE_4F_3_MVP_HARDENING.md §15) were never rollback targets; their images and compose
+backups were removed from the VPS at project closure (docs/PROJECT_CLOSURE.md). On the VPS now: images `4f3f`
+(current), `4e2a` (rollback, verified healthy at closure), `4e2`, `4d2d`, `4d2b`, `4d2a` (earlier gates, below);
+`compose.yml` and `compose.yml.{4e2a,4e2,4d2d,4d2b}.bak`.
 
 **Rollback of Gate 4E.2A:** set `image: samsung-consultant:4e2` (`compose.yml.4e2.bak`) and `up -d`, and restore
 the workflow backup `tools/n8n-tool/backups/samsung-ai-consultant/20260930T194205Z_4d8mXFWGpS5P4t1L.json`
