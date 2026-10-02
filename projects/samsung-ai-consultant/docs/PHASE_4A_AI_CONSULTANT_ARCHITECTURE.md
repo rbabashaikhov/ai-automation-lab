@@ -1,5 +1,8 @@
 # Phase 4A — AI Consultant Architecture
 
+> This is the design written before implementation, kept as written. The architecture as built and deployed is
+> described in [ARCHITECTURE.md](ARCHITECTURE.md); the main amendment is [ADR 004](adr/004-agent-runtime-and-tool-boundary.md).
+
 Status: **proposal for architecture review**. Design only. This phase added no Consultant code. It made
 no changes to the schema, production data, chunks, embeddings or n8n, and made no OpenAI calls.
 

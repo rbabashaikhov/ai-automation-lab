@@ -32,10 +32,16 @@ full command reference.
 
 ### [Samsung AI Consultant](projects/samsung-ai-consultant/)
 
-Production-like AI product consultant combining a structured Samsung TV
-catalog, PostgreSQL, pgvector, RAG, and agentic retrieval.
+Production-like AI product consultant for Samsung TVs on a real catalog:
+deterministic ingestion, PostgreSQL + pgvector, a tool-using LLM agent
+orchestrated in n8n, and a formal evaluation trail.
 
-Status: database architecture complete (Phase 1). Product ingestion is
-the next phase. See
+Status: backend MVP complete and frozen. Ready for a portfolio or
+controlled client demo with one documented limitation; strict production
+acceptance is on hold. See
 [projects/samsung-ai-consultant/README.md](projects/samsung-ai-consultant/README.md)
-for architecture, current status, and legacy prototype references.
+for the case study,
+[docs/ARCHITECTURE.md](projects/samsung-ai-consultant/docs/ARCHITECTURE.md)
+for the architecture and
+[docs/PROJECT_CLOSURE.md](projects/samsung-ai-consultant/docs/PROJECT_CLOSURE.md)
+for the closure record.
