@@ -1,7 +1,7 @@
 [project]
-name = "samsung-product-ingestion"
+name = "ai-catalog-consultant"
 version = "0.1.0"
-description = "Samsung TV catalog ingestion pipeline (GalaxyStore -> PostgreSQL samsung_rag)"
+description = "AI Catalog Consultant: catalog ingestion, RAG indexing, Consultant Core, evaluation (reference dataset: GalaxyStore TV catalog)"
 requires-python = ">=3.10"
 dependencies = [
     "requests>=2.31",
