@@ -14,7 +14,7 @@ ai-automation-lab/
 ├── tools/
 │   └── n8n-tool/              # reusable n8n workflow-as-code CLI
 └── projects/
-    └── samsung-ai-consultant/ # Samsung TV AI Consultant (RAG + agent)
+    └── ai-catalog-consultant/ # AI Catalog Consultant (RAG + agent)
 ```
 
 ## Tools
@@ -30,18 +30,17 @@ full command reference.
 
 ## Projects
 
-### [Samsung AI Consultant](projects/samsung-ai-consultant/)
+### [AI Catalog Consultant](projects/ai-catalog-consultant/)
 
-Production-like AI product consultant for Samsung TVs on a real catalog:
-deterministic ingestion, PostgreSQL + pgvector, a tool-using LLM agent
-orchestrated in n8n, and a formal evaluation trail.
+Production-like AI catalog consultant with deterministic ingestion,
+PostgreSQL/pgvector, structured retrieval, semantic evidence, MCP tools,
+n8n orchestration and formal evaluation. The reference dataset is a real
+retailer's TV catalog; the consultant runs live behind a Telegram bot.
 
-Status: backend MVP complete and frozen. Ready for a portfolio or
-controlled client demo with one documented limitation; strict production
-acceptance is on hold. See
-[projects/samsung-ai-consultant/README.md](projects/samsung-ai-consultant/README.md)
+Status: completed portfolio MVP and reference implementation. See
+[projects/ai-catalog-consultant/README.md](projects/ai-catalog-consultant/README.md)
 for the case study,
-[docs/ARCHITECTURE.md](projects/samsung-ai-consultant/docs/ARCHITECTURE.md)
+[docs/ARCHITECTURE.md](projects/ai-catalog-consultant/docs/ARCHITECTURE.md)
 for the architecture and
-[docs/PROJECT_CLOSURE.md](projects/samsung-ai-consultant/docs/PROJECT_CLOSURE.md)
+[docs/PROJECT_CLOSURE.md](projects/ai-catalog-consultant/docs/PROJECT_CLOSURE.md)
 for the closure record.

@@ -2,7 +2,7 @@
 
 CLI tooling for treating n8n workflows as code: discover and export them
 read-only (Phase 1), then validate, diff, and safely deploy them (Phase 2).
-Built for the Samsung AI Consultant project (`projects/samsung-ai-consultant/`),
+Built for the AI Catalog Consultant project (`projects/ai-catalog-consultant/`),
 but not specific to it — reusable across any project in this repository.
 
 ```text

@@ -143,7 +143,7 @@ def test_no_telegram_token_or_transport_workflow_id_in_the_repository():
                 hits.append(f)
     assert hits == []
     # The trigger's webhook secret is derived from the workflow id and the (committed) node id: the id stays local.
-    for local in ("projects/samsung-ai-consultant/workflows/telegram-transport.meta.json",
+    for local in ("projects/ai-catalog-consultant/workflows/telegram-transport.meta.json",
                   "tools/n8n-tool/backups/tv-consultant-telegram/x.json",
                   "tools/n8n-tool/exports/tv-consultant-telegram/sanitized.json"):
         assert subprocess.run(["git", "check-ignore", "-q", local], cwd=REPO).returncode == 0, local

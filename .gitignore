@@ -24,23 +24,23 @@ tools/n8n-tool/exports/**/raw.json
 # OS
 .DS_Store
 
-# Samsung AI Consultant: derived query-embedding cache for retrieval evaluation (regenerable)
-projects/samsung-ai-consultant/evaluation/results/query_embeddings.json
+# AI Catalog Consultant: derived query-embedding cache for retrieval evaluation (regenerable)
+projects/ai-catalog-consultant/evaluation/results/query_embeddings.json
 
 # n8n backups/exports of the temporary evaluation-only workflows (Phase 3D): redundant with the committed
-# evaluation workflow definition, generators and results under projects/samsung-ai-consultant/
+# evaluation workflow definition, generators and results under projects/ai-catalog-consultant/
 tools/n8n-tool/backups/samsung-rag-evaluation-*/
 tools/n8n-tool/exports/samsung-rag-evaluation-*/
 
 # Generated, evaluation-only n8n workflows (Phase 3D): regenerate with `python -m evaluation.make_llm_workflow [fullcatalog]`
-projects/samsung-ai-consultant/workflows/evaluation-consultant-spike.json
-projects/samsung-ai-consultant/workflows/evaluation-fullcatalog-spike.json
+projects/ai-catalog-consultant/workflows/evaluation-consultant-spike.json
+projects/ai-catalog-consultant/workflows/evaluation-fullcatalog-spike.json
 
-# Samsung Consultant runtime secrets (Phase 4D.2A): only consultant.env.example is tracked
-projects/samsung-ai-consultant/deploy/consultant/consultant.env
+# Consultant runtime secrets (Phase 4D.2A): only consultant.env.example is tracked
+projects/ai-catalog-consultant/deploy/consultant/consultant.env
 
 # Telegram transport (Phase 5A): n8n derives the Telegram webhook secret from the workflow id and the trigger node id,
 # and the node id is committed, so the transport workflow's id stays local (deploy sidecar, n8n-tool backups/exports)
-projects/samsung-ai-consultant/workflows/telegram-transport.meta.json
+projects/ai-catalog-consultant/workflows/telegram-transport.meta.json
 tools/n8n-tool/backups/tv-consultant-telegram/
 tools/n8n-tool/exports/tv-consultant-telegram/
