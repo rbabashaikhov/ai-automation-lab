@@ -1,0 +1,344 @@
+{
+  "name": "TV Consultant — Telegram",
+  "nodes": [
+    {
+      "id": "5ea6d0b2-c1d2-56a1-b832-acea259f7af5",
+      "name": "Telegram Trigger",
+      "webhookId": "b664c6c3-c50e-59e7-ad9f-97ebcbe17310",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -700,
+        0
+      ],
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "fPvuGxP0T6npNj0W",
+          "name": "Telegram account Personal RAG Assistent"
+        }
+      }
+    },
+    {
+      "id": "ab4cd7e7-4b61-58f1-bdd2-95f3d18b574b",
+      "name": "Route update",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -480,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Telegram transport of the TV consultant (Phase 5A): pure functions, no I/O.\n//\n// channels/telegram_workflow.py embeds this file into the Code nodes of workflows/telegram-transport.json, and\n// tests/test_telegram_transport.py runs it with Node. The transport only routes a Telegram update to the existing\n// Consultant workflow and renders its answer for Telegram; every catalog fact comes from the Consultant.\n\n// User-facing copy. Neutral on purpose: the product is a TV consultant on a limited catalog, not a brand assistant.\nconst TEXT = {\n  start:\n    'Здравствуйте! Я AI-консультант по телевизорам.\\n\\n' +\n    'Работаю с ограниченным ассортиментом — реальным каталогом телевизоров; цены и наличие беру из каталога. Могу:\\n' +\n    '• подобрать телевизор под задачи — кино, игры, звук, светлая комната;\\n' +\n    '• отфильтровать модели по бюджету, диагонали и характеристикам;\\n' +\n    '• сравнить 2–4 модели;\\n' +\n    '• ответить на вопросы о характеристиках моделей из каталога.\\n\\n' +\n    'Напишите обычным текстом, что вы ищете, например: «Нужен телевизор 55 дюймов для игр». ' +\n    'Я учитываю предыдущие сообщения этого чата.',\n  unsupported: 'Пока я понимаю только текстовые сообщения. Напишите, пожалуйста, вопрос текстом.',\n  tooLong: 'Сообщение слишком длинное. Сформулируйте, пожалуйста, вопрос короче — до 2000 символов.',\n  unavailable: 'Не получилось подготовить ответ: сервис временно недоступен. Попробуйте, пожалуйста, ещё раз через минуту.',\n};\n\nconst MAX_INPUT_CHARS = 2000;     // the message also travels in the Consultant's request URL (q=, guard context)\nconst MAX_CHUNK_CHARS = 3900;     // Telegram accepts up to 4096 characters per message\n\n// One private chat = one conversation. A private chat id is the user's Telegram id: stable across messages and\n// distinct per user. Only that number is used, never the message text.\nfunction sessionIdFor(chatId) {\n  return 'tg:' + chatId;\n}\n\n// -> null (ignored: not a private chat, not a message) or {kind, chatId, ...}.\n//    kind 'text': {chatInput, sessionId} for the Consultant; any other kind: {reply} sent as is.\nfunction routeUpdate(update) {\n  const m = update && update.message;\n  if (!m || !m.chat || m.chat.type !== 'private' || !Number.isSafeInteger(m.chat.id) || m.chat.id <= 0) return null;\n  if (m.from && m.from.is_bot) return null;\n  const chatId = m.chat.id;\n  if (typeof m.text !== 'string' || !m.text.trim()) return { kind: 'unsupported', chatId, reply: TEXT.unsupported };\n  const text = m.text.trim();\n  // /start, /help and any other command: the bot has no commands besides its description.\n  if (text.startsWith('/')) return { kind: 'start', chatId, reply: TEXT.start };\n  if (text.length > MAX_INPUT_CHARS) return { kind: 'too_long', chatId, reply: TEXT.tooLong };\n  return { kind: 'text', chatId, chatInput: text, sessionId: sessionIdFor(chatId) };\n}\n\nfunction escapeHtml(s) {\n  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');\n}\n\n// The Agent writes light Markdown (numbered lists, bare links, occasional **bold**, headings, `code`, [text](url)).\n// Telegram's HTML mode accepts a few tags only; everything else is escaped. Each pattern opens and closes its tag\n// within one line, so the tags are balanced.\nfunction toTelegramHtml(md) {\n  return md.split('\\n').map((line) => {\n    const heading = /^\\s{0,3}#{1,6}\\s+(.*)$/.exec(line);\n    let s = escapeHtml(heading ? heading[1].replace(/\\*\\*/g, '') : line);\n    s = s.replace(/^(\\s*)[-*]\\s+/, '$1• ');\n    s = s.replace(/`([^`\\n]+)`/g, '<code>$1</code>');\n    s = s.replace(/\\[([^\\]\\n]+)\\]\\((https?:\\/\\/[^\\s)]+)\\)/g, '<a href=\"$2\">$1</a>');\n    s = s.replace(/\\*\\*(?=\\S)(.+?)(?<=\\S)\\*\\*/g, '<b>$1</b>');\n    return heading ? '<b>' + s + '</b>' : s;\n  }).join('\\n');\n}\n\n// Fallback when Telegram rejects the HTML: the same text without Markdown markup.\nfunction toPlainText(md) {\n  return md.split('\\n').map((line) => line\n    .replace(/^\\s{0,3}#{1,6}\\s+/, '')\n    .replace(/^(\\s*)[-*]\\s+/, '$1• ')\n    .replace(/\\[([^\\]\\n]+)\\]\\((https?:\\/\\/[^\\s)]+)\\)/g, '$1 ($2)')\n    .replace(/\\*\\*(?=\\S)(.+?)(?<=\\S)\\*\\*/g, '$1')\n    .replace(/`([^`\\n]+)`/g, '$1')).join('\\n');\n}\n\n// Splits at paragraph, then line, then character boundaries; each part has at most `limit` characters.\nfunction splitMessage(text, limit) {\n  const parts = [];\n  let current = '';\n  const push = (piece, sep) => {\n    if (!current) current = piece;\n    else if (current.length + sep.length + piece.length <= limit) current += sep + piece;\n    else { parts.push(current); current = piece; }\n  };\n  for (const para of text.split(/\\n{2,}/)) {\n    if (para.length <= limit) { push(para, '\\n\\n'); continue; }\n    para.split('\\n').forEach((line, index) => {\n      const sep = index === 0 ? '\\n\\n' : '\\n';\n      if (line.length <= limit) { push(line, sep); return; }\n      let piece = '';\n      let first = true;\n      for (const ch of line) {                 // by code point: never cut a surrogate pair\n        if (piece.length + ch.length > limit) { push(piece, first ? sep : ''); piece = ''; first = false; }\n        piece += ch;\n      }\n      push(piece, first ? sep : '');\n    });\n  }\n  if (current) parts.push(current);\n  return parts;\n}\n\n// The Consultant's result item ({output} from the Agent, or {error} from the failed call) -> Telegram messages.\nfunction formatReply(result) {\n  const output = result && typeof result.output === 'string' ? result.output.trim() : '';\n  if (!output) return [{ html: escapeHtml(TEXT.unavailable), text: TEXT.unavailable }];\n  return splitMessage(output, MAX_CHUNK_CHARS).map((part) => ({ html: toTelegramHtml(part), text: toPlainText(part) }));\n}\n\nif (typeof module !== 'undefined' && module.exports) {\n  module.exports = { TEXT, MAX_INPUT_CHARS, MAX_CHUNK_CHARS, sessionIdFor, routeUpdate, escapeHtml, toTelegramHtml,\n    toPlainText, splitMessage, formatReply };\n}\n\nconst routed = routeUpdate($input.first().json);\nreturn routed ? [{ json: routed }] : [];\n"
+      }
+    },
+    {
+      "id": "2eb6dc5b-c3bb-5db4-9c07-d4c8b53b98ba",
+      "name": "Is text?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -260,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b506cd67-9bd9-50ac-82e7-16cc597b317a",
+              "leftValue": "={{ $json.kind }}",
+              "rightValue": "text",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "aacd1e51-cc96-5f37-a3c5-057c8f3e1dac",
+      "name": "Show typing",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        -200
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "resource": "message",
+        "operation": "sendChatAction",
+        "chatId": "={{ $json.chatId }}",
+        "action": "typing"
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "fPvuGxP0T6npNj0W",
+          "name": "Telegram account Personal RAG Assistent"
+        }
+      }
+    },
+    {
+      "id": "4225fbea-faaa-5cfb-bbd9-354c84ecc7b5",
+      "name": "Ask Consultant",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "value": "4d8mXFWGpS5P4t1L",
+          "mode": "list",
+          "cachedResultName": "Samsung — AI Consultant"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chatInput": "={{ $json.chatInput }}",
+            "sessionId": "={{ $json.sessionId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chatInput",
+              "displayName": "chatInput",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "74f55606-c5df-588f-a315-69b7435b1312",
+      "name": "Format reply",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Telegram transport of the TV consultant (Phase 5A): pure functions, no I/O.\n//\n// channels/telegram_workflow.py embeds this file into the Code nodes of workflows/telegram-transport.json, and\n// tests/test_telegram_transport.py runs it with Node. The transport only routes a Telegram update to the existing\n// Consultant workflow and renders its answer for Telegram; every catalog fact comes from the Consultant.\n\n// User-facing copy. Neutral on purpose: the product is a TV consultant on a limited catalog, not a brand assistant.\nconst TEXT = {\n  start:\n    'Здравствуйте! Я AI-консультант по телевизорам.\\n\\n' +\n    'Работаю с ограниченным ассортиментом — реальным каталогом телевизоров; цены и наличие беру из каталога. Могу:\\n' +\n    '• подобрать телевизор под задачи — кино, игры, звук, светлая комната;\\n' +\n    '• отфильтровать модели по бюджету, диагонали и характеристикам;\\n' +\n    '• сравнить 2–4 модели;\\n' +\n    '• ответить на вопросы о характеристиках моделей из каталога.\\n\\n' +\n    'Напишите обычным текстом, что вы ищете, например: «Нужен телевизор 55 дюймов для игр». ' +\n    'Я учитываю предыдущие сообщения этого чата.',\n  unsupported: 'Пока я понимаю только текстовые сообщения. Напишите, пожалуйста, вопрос текстом.',\n  tooLong: 'Сообщение слишком длинное. Сформулируйте, пожалуйста, вопрос короче — до 2000 символов.',\n  unavailable: 'Не получилось подготовить ответ: сервис временно недоступен. Попробуйте, пожалуйста, ещё раз через минуту.',\n};\n\nconst MAX_INPUT_CHARS = 2000;     // the message also travels in the Consultant's request URL (q=, guard context)\nconst MAX_CHUNK_CHARS = 3900;     // Telegram accepts up to 4096 characters per message\n\n// One private chat = one conversation. A private chat id is the user's Telegram id: stable across messages and\n// distinct per user. Only that number is used, never the message text.\nfunction sessionIdFor(chatId) {\n  return 'tg:' + chatId;\n}\n\n// -> null (ignored: not a private chat, not a message) or {kind, chatId, ...}.\n//    kind 'text': {chatInput, sessionId} for the Consultant; any other kind: {reply} sent as is.\nfunction routeUpdate(update) {\n  const m = update && update.message;\n  if (!m || !m.chat || m.chat.type !== 'private' || !Number.isSafeInteger(m.chat.id) || m.chat.id <= 0) return null;\n  if (m.from && m.from.is_bot) return null;\n  const chatId = m.chat.id;\n  if (typeof m.text !== 'string' || !m.text.trim()) return { kind: 'unsupported', chatId, reply: TEXT.unsupported };\n  const text = m.text.trim();\n  // /start, /help and any other command: the bot has no commands besides its description.\n  if (text.startsWith('/')) return { kind: 'start', chatId, reply: TEXT.start };\n  if (text.length > MAX_INPUT_CHARS) return { kind: 'too_long', chatId, reply: TEXT.tooLong };\n  return { kind: 'text', chatId, chatInput: text, sessionId: sessionIdFor(chatId) };\n}\n\nfunction escapeHtml(s) {\n  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');\n}\n\n// The Agent writes light Markdown (numbered lists, bare links, occasional **bold**, headings, `code`, [text](url)).\n// Telegram's HTML mode accepts a few tags only; everything else is escaped. Each pattern opens and closes its tag\n// within one line, so the tags are balanced.\nfunction toTelegramHtml(md) {\n  return md.split('\\n').map((line) => {\n    const heading = /^\\s{0,3}#{1,6}\\s+(.*)$/.exec(line);\n    let s = escapeHtml(heading ? heading[1].replace(/\\*\\*/g, '') : line);\n    s = s.replace(/^(\\s*)[-*]\\s+/, '$1• ');\n    s = s.replace(/`([^`\\n]+)`/g, '<code>$1</code>');\n    s = s.replace(/\\[([^\\]\\n]+)\\]\\((https?:\\/\\/[^\\s)]+)\\)/g, '<a href=\"$2\">$1</a>');\n    s = s.replace(/\\*\\*(?=\\S)(.+?)(?<=\\S)\\*\\*/g, '<b>$1</b>');\n    return heading ? '<b>' + s + '</b>' : s;\n  }).join('\\n');\n}\n\n// Fallback when Telegram rejects the HTML: the same text without Markdown markup.\nfunction toPlainText(md) {\n  return md.split('\\n').map((line) => line\n    .replace(/^\\s{0,3}#{1,6}\\s+/, '')\n    .replace(/^(\\s*)[-*]\\s+/, '$1• ')\n    .replace(/\\[([^\\]\\n]+)\\]\\((https?:\\/\\/[^\\s)]+)\\)/g, '$1 ($2)')\n    .replace(/\\*\\*(?=\\S)(.+?)(?<=\\S)\\*\\*/g, '$1')\n    .replace(/`([^`\\n]+)`/g, '$1')).join('\\n');\n}\n\n// Splits at paragraph, then line, then character boundaries; each part has at most `limit` characters.\nfunction splitMessage(text, limit) {\n  const parts = [];\n  let current = '';\n  const push = (piece, sep) => {\n    if (!current) current = piece;\n    else if (current.length + sep.length + piece.length <= limit) current += sep + piece;\n    else { parts.push(current); current = piece; }\n  };\n  for (const para of text.split(/\\n{2,}/)) {\n    if (para.length <= limit) { push(para, '\\n\\n'); continue; }\n    para.split('\\n').forEach((line, index) => {\n      const sep = index === 0 ? '\\n\\n' : '\\n';\n      if (line.length <= limit) { push(line, sep); return; }\n      let piece = '';\n      let first = true;\n      for (const ch of line) {                 // by code point: never cut a surrogate pair\n        if (piece.length + ch.length > limit) { push(piece, first ? sep : ''); piece = ''; first = false; }\n        piece += ch;\n      }\n      push(piece, first ? sep : '');\n    });\n  }\n  if (current) parts.push(current);\n  return parts;\n}\n\n// The Consultant's result item ({output} from the Agent, or {error} from the failed call) -> Telegram messages.\nfunction formatReply(result) {\n  const output = result && typeof result.output === 'string' ? result.output.trim() : '';\n  if (!output) return [{ html: escapeHtml(TEXT.unavailable), text: TEXT.unavailable }];\n  return splitMessage(output, MAX_CHUNK_CHARS).map((part) => ({ html: toTelegramHtml(part), text: toPlainText(part) }));\n}\n\nif (typeof module !== 'undefined' && module.exports) {\n  module.exports = { TEXT, MAX_INPUT_CHARS, MAX_CHUNK_CHARS, sessionIdFor, routeUpdate, escapeHtml, toTelegramHtml,\n    toPlainText, splitMessage, formatReply };\n}\n\nconst chatId = $('Route update').first().json.chatId;\nreturn formatReply($input.first().json).map((m) => ({ json: { chatId, html: m.html, text: m.text } }));\n"
+      }
+    },
+    {
+      "id": "2903afad-f1fb-596a-bd3c-64ded8ed57ac",
+      "name": "Send reply",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $json.chatId }}",
+        "text": "={{ $json.html }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_web_page_preview": true,
+          "parse_mode": "HTML"
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "fPvuGxP0T6npNj0W",
+          "name": "Telegram account Personal RAG Assistent"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "a5a06802-9a74-5ff3-b2d6-811ba8c9669b",
+      "name": "Send reply (plain text)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        120
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $('Format reply').item.json.chatId }}",
+        "text": "={{ $('Format reply').item.json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "fPvuGxP0T6npNj0W",
+          "name": "Telegram account Personal RAG Assistent"
+        }
+      }
+    },
+    {
+      "id": "d3f5fc04-3ddb-5bca-b3c1-447894917561",
+      "name": "Send notice",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        240
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $json.chatId }}",
+        "text": "={{ $json.reply }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "fPvuGxP0T6npNj0W",
+          "name": "Telegram account Personal RAG Assistent"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Route update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route update": {
+      "main": [
+        [
+          {
+            "node": "Is text?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is text?": {
+      "main": [
+        [
+          {
+            "node": "Show typing",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Ask Consultant",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send notice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask Consultant": {
+      "main": [
+        [
+          {
+            "node": "Format reply",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format reply": {
+      "main": [
+        [
+          {
+            "node": "Send reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send reply": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send reply (plain text)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "saveDataSuccessExecution": "all",
+    "saveDataErrorExecution": "all"
+  }
+}

@@ -38,3 +38,9 @@ projects/samsung-ai-consultant/workflows/evaluation-fullcatalog-spike.json
 
 # Samsung Consultant runtime secrets (Phase 4D.2A): only consultant.env.example is tracked
 projects/samsung-ai-consultant/deploy/consultant/consultant.env
+
+# Telegram transport (Phase 5A): n8n derives the Telegram webhook secret from the workflow id and the trigger node id,
+# and the node id is committed, so the transport workflow's id stays local (deploy sidecar, n8n-tool backups/exports)
+projects/samsung-ai-consultant/workflows/telegram-transport.meta.json
+tools/n8n-tool/backups/tv-consultant-telegram/
+tools/n8n-tool/exports/tv-consultant-telegram/
