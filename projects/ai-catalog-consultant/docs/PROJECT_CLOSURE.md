@@ -172,3 +172,23 @@ schema, catalog data, embeddings.
 | Exposure | no published port, no host listener on 8765, `traefik.enable=false`, one internal network |
 | Deployed workflow vs repository | no meaningful differences |
 | Catalog fingerprint before and after cleanup | identical |
+
+## Final release (Phase 4G, 2026-10-03)
+
+A repository-only release from `main` at `9458270`: the project directory moved to `projects/ai-catalog-consultant/`,
+current-facing documents present the project as AI Catalog Consultant, and the catalog refresh procedure is
+documented in the README. Production was not touched: no database connection, no deployment, no workflow update,
+no credential change.
+
+| Check | Result |
+|---|---|
+| Files in the Consultant image (`consultant/`, `indexing/{__init__,metadata,models}.py`), `compose.yml`, probes, role SQL | byte-identical to `9458270` |
+| Workflow JSON, `channels/`, `evaluation/` (datasets, harnesses, results), test fixtures, phase documents, n8n-tool backups | byte-identical to `9458270` |
+| Other code edits | comments and docstrings only (path and ADR file name), checked by AST comparison; one test path string |
+| `python3 -m pytest -q -p no:cacheprovider` | 938 passed, 142 skipped |
+| `DOCKER_HOST=unix:///var/run/docker.sock bash tests/run_db_tests.sh` | 148 passed |
+| `tools/n8n-tool`: `python3 -m pytest -q` | 120 passed |
+| `consultant.n8n_workflow`, `channels.telegram_workflow`, `evaluation.acceptance`, `acceptance_report`, `mvp_demo` with `--check` | clean |
+| `python3 -m evaluation.guard_replay` / `semantic_eval` | 35 of 35 (33 unchanged, 2 expected removals) and 22 of 22 / 30 of 30 |
+| Live workflows vs repository (read-only `n8n_tool workflows diff`) | `ai-consultant`, `telegram-transport`, `rag-retrieval-smoke-test`: no differences. `rag-indexing`: nodes and connections identical; n8n holds an extra `settings.binaryMode` that the 2026-09-29 export does not have (pre-existing, unchanged) |
+| Markdown links and anchors in the repository | none broken |
