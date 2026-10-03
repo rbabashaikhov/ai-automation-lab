@@ -15,7 +15,8 @@ Consultant's Execute Workflow Trigger contract ``{chatInput, sessionId}`` and se
                                                 └─ start / unsupported / too long -> Send notice
 
 Routing and rendering live in ``telegram_transport.js`` (embedded into the Code nodes, tested with Node).
-Credentials are referenced by ``{id, name}`` only. The Telegram Trigger verifies Telegram's secret token, which n8n
+Credentials are referenced by ``{id, name}`` only. n8n gives every Telegram node a ``webhookId`` (its send-and-wait
+feature, unused here); they are fixed here so the read-back after a deploy matches. The Telegram Trigger verifies Telegram's secret token, which n8n
 derives from the workflow id and the trigger node id; the node id is in this public repository, so the transport
 workflow's id is kept out of it (git-ignored ``.meta.json`` and n8n-tool backups).
 """
@@ -71,8 +72,8 @@ def _send(name: str, key: str, chat_id: str, text: str, position: list, html: bo
     fields = {"appendAttribution": False, "disable_web_page_preview": True}
     if html:
         fields["parse_mode"] = "HTML"
-    node = {"id": _id(key), "name": name, "type": "n8n-nodes-base.telegram", "typeVersion": 1.2, "position": position,
-            "parameters": {"resource": "message", "operation": "sendMessage", "chatId": chat_id, "text": text,
+    node = {"id": _id(key), "name": name, "webhookId": _id(f"{key}-webhook"), "type": "n8n-nodes-base.telegram",
+            "typeVersion": 1.2, "position": position, "parameters": {"resource": "message", "operation": "sendMessage", "chatId": chat_id, "text": text,
                            "additionalFields": fields},
             "credentials": {"telegramApi": TELEGRAM_CREDENTIAL}}
     if on_error:
@@ -100,7 +101,8 @@ def build(library: str, consultant_id: str) -> dict:
                         "options": {}}},
         # Placed above "Ask Consultant": execution order v1 runs it first, so the user sees "typing…" while the Agent
         # works. Its failure never stops the turn.
-        {"id": _id("typing"), "name": "Show typing", "type": "n8n-nodes-base.telegram", "typeVersion": 1.2,
+        {"id": _id("typing"), "name": "Show typing", "webhookId": _id("typing-webhook"),
+         "type": "n8n-nodes-base.telegram", "typeVersion": 1.2,
          "position": [0, -200], "onError": "continueRegularOutput",
          "parameters": {"resource": "message", "operation": "sendChatAction", "chatId": "={{ $json.chatId }}",
                         "action": "typing"},

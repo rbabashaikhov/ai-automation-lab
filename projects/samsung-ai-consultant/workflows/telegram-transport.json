@@ -75,6 +75,7 @@
     {
       "id": "aacd1e51-cc96-5f37-a3c5-057c8f3e1dac",
       "name": "Show typing",
+      "webhookId": "66766afa-0261-5eb8-acf5-665964949d84",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
@@ -169,6 +170,7 @@
     {
       "id": "2903afad-f1fb-596a-bd3c-64ded8ed57ac",
       "name": "Send reply",
+      "webhookId": "eeddaff7-7990-5cf9-958f-f4f3074643ec",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
@@ -197,6 +199,7 @@
     {
       "id": "a5a06802-9a74-5ff3-b2d6-811ba8c9669b",
       "name": "Send reply (plain text)",
+      "webhookId": "53f87066-6b8b-59b9-b77e-7c4f79d0dead",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
@@ -223,6 +226,7 @@
     {
       "id": "d3f5fc04-3ddb-5bca-b3c1-447894917561",
       "name": "Send notice",
+      "webhookId": "4e0776c9-0c7a-5e19-9097-9f88a22ffa7d",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
