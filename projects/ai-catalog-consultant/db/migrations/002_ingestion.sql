@@ -2,7 +2,7 @@
 --
 -- Ingestion run history and error log. These tables are ingestion-process
 -- metadata, deliberately separate from the canonical `products` table (see
--- docs/adr/001-samsung-rag-storage.md, "Where does ingestion state live?").
+-- docs/adr/001-catalog-rag-storage.md, "Where does ingestion state live?").
 --
 -- Idempotent: safe to re-run.
 

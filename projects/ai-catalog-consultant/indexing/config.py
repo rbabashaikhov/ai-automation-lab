@@ -5,7 +5,7 @@ Deliberately separate from `ingestion/config.py`: indexing reads
 least-privilege Postgres role (`samsung_indexing`) scoped to
 `documents`/`chunks` (+ read-only `products`/`product_specs`) -- never the
 `samsung_ingestion` role's own credential. See
-projects/samsung-ai-consultant/README.md "Database access" for how both
+projects/ai-catalog-consultant/README.md "Database access" for how both
 roles were created.
 """
 

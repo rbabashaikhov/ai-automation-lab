@@ -1,7 +1,7 @@
 -- 003_products.sql
 --
 -- Canonical Samsung TV catalog. Domain-oriented, typed model (see
--- docs/adr/001-samsung-rag-storage.md) rather than the legacy SuperRAG
+-- docs/adr/001-catalog-rag-storage.md) rather than the legacy SuperRAG
 -- universal `document_rows(row_data jsonb)` pattern: fields the AI
 -- Consultant actually needs to filter/compare on (year, screen size,
 -- panel technology, price, availability, ...) are typed columns; anything

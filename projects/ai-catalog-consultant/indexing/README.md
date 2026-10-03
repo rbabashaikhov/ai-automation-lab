@@ -1,4 +1,4 @@
-# Samsung RAG document/chunk indexing (Phase 3A)
+# Catalog RAG document/chunk indexing (Phase 3A)
 
 Deterministic construction of `documents`/`chunks` rows from `products`/
 `product_specs` — **no embeddings API calls, no `embedding` column

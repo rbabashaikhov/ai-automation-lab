@@ -1,4 +1,7 @@
-# ADR 001: Samsung RAG storage architecture
+# ADR 001: Catalog RAG storage architecture
+
+> Renamed in Phase 4G (was `001-samsung-rag-storage.md`) with the project's move to AI Catalog Consultant. The
+> decision text below is unchanged; `samsung_rag` remains the deployed database name.
 
 ## Status
 

@@ -1,8 +1,14 @@
-# Samsung AI Consultant — Architecture
+# AI Catalog Consultant — Architecture
 
-The accepted architecture of the finished backend, as built and deployed (`samsung-consultant:4f3f`). This is the
-canonical description. The phase documents next to it are the engineering record of how it got here, kept as
-written; where they differ from this document, this document describes the current system.
+The accepted architecture of the finished system, as built and deployed (Consultant image `samsung-consultant:4f3f`,
+Telegram transport since Phase 5A). This is the canonical description. The phase documents next to it are the
+engineering record of how it got here, kept as written; where they differ from this document, this document
+describes the current system.
+
+The reference dataset is a real retailer catalog, the GalaxyStore Samsung TV listing. The architecture is
+catalog-agnostic; the implementation (extractors, sections, feature registry, tools, ranking) is TV-specific. The
+project began as a TV-catalog consultant and is presented as AI Catalog Consultant. Names of deployed resources
+(`samsung_rag`, `samsung-consultant`, `Samsung — …` workflows) are the original identifiers and are kept as they are.
 
 > **Design principle.** The LLM is not the source of catalog truth. Structured tools and retrieved evidence are.
 
@@ -11,13 +17,14 @@ The frozen values of the deployed system (counts, versions, image, model) are in
 
 ```mermaid
 flowchart TD
-    GS["GalaxyStore catalog"] --> ING["Python ingestion<br/>extraction cascade"]
+    GS["Catalog source<br/>(GalaxyStore TV catalog)"] --> ING["Python ingestion<br/>extraction cascade"]
     ING --> PG[("PostgreSQL 16<br/>products · product_specs")]
     PG --> IDX["Python indexing<br/>documents · chunks"]
     IDX --> CH[("chunks + pgvector<br/>1536-dim embeddings")]
     EMB["n8n embedding job<br/>OpenAI text-embedding-3-small"] -.->|"embeds pending chunks"| CH
 
-    U["User"] --> AG["n8n AI Agent<br/>gpt-4.1-mini · window memory"]
+    U["Telegram user"] --> TT["n8n Telegram transport<br/>private chat → session tg:&lt;chat id&gt;"]
+    TT -->|"Execute Workflow {chatInput, sessionId}"| AG["n8n AI Agent<br/>gpt-4.1-mini · window memory"]
     AG -->|"MCP · 5 closed tools"| T["Consultant service (Python)<br/>schema validation · semantic guard · call cap"]
     T --> CORE["Structured core<br/>plan → route → SQL → feature registry → ranking"]
     CORE -->|"exact and aggregate facts"| PG
@@ -25,6 +32,7 @@ flowchart TD
     CORE --> EV["Structured evidence<br/>yes / no / not_listed · gaps · confidence"]
     EV --> AG
     AG --> ANS["Grounded answer"]
+    ANS --> TT
 ```
 
 | Layer | Runs as | Owns |
@@ -34,12 +42,20 @@ flowchart TD
 | Embedding job (`workflows/rag-indexing.json`) | n8n workflow | vectors of pending chunks |
 | Consultant service (`consultant/`) | internal Docker service | every catalog fact an answer may contain |
 | Agent (`workflows/ai-consultant.json`) | n8n workflow | conversation, tool choice, wording |
+| Telegram transport (`channels/`, `workflows/telegram-transport.json`) | n8n workflow | the chat channel: routing, session id, reply formatting |
+
+Responsibilities in one line each: **Python** owns the domain and core logic; **PostgreSQL** owns the catalog
+truth; **MCP** is the controlled tool boundary; **n8n** orchestrates and integrates (channel, agent, memory,
+embedding job) and is neither a document builder nor a source of truth; the **LLM** interprets and converses and
+never writes SQL. The operator's catalog refresh procedure is in the
+[README](../README.md#updating-the-catalog).
 
 ---
 
 ## 1. Ingestion
 
-`ingestion/` crawls the GalaxyStore Samsung TV catalog and writes it into PostgreSQL. No LLM is involved.
+`ingestion/` crawls the reference source, the GalaxyStore Samsung TV catalog, and writes it into PostgreSQL. The
+extractors are specific to that source. No LLM is involved.
 
 - **Extraction cascade.** Each page offers four structured sources, read in a fixed order: `JSON-LD`
   (manufacturer SKU, name, price, availability) → `window.digitalData` (the shop's product id, category, stock) →
@@ -56,8 +72,9 @@ Details: [ingestion/README.md](../ingestion/README.md).
 
 ## 2. Storage
 
-One PostgreSQL 16 database (`samsung_rag`) with the pgvector extension, separate from every other database on the
-host. Decision record: [ADR 001](adr/001-samsung-rag-storage.md); schema: [db/README.md](../db/README.md).
+One PostgreSQL 16 database (deployed name `samsung_rag`) with the pgvector extension, separate from every other
+database on the host. Decision record: [ADR 001](adr/001-catalog-rag-storage.md); schema:
+[db/README.md](../db/README.md).
 
 | Table | Contents |
 |---|---|
@@ -171,7 +188,8 @@ The Consultant service exposes five tools and nothing else. Decision record:
 
 ## 7. Agent flow
 
-1. The user message arrives in the n8n workflow `Samsung — AI Consultant`.
+1. The user message arrives in the n8n workflow `Samsung — AI Consultant`: from Telegram through the transport
+   workflow (§9), from the n8n editor chat, or from an evaluation driver.
 2. The AI Agent (`gpt-4.1-mini`, temperature 0) reads the system prompt and the session's window memory (six turns)
    and decides whether catalog access is needed and which domain operation fits.
 3. It calls a tool over MCP. The service validates the arguments, applies the guard and the cap, runs the pipeline
@@ -192,24 +210,52 @@ answer after generation.
 
 n8n is the orchestrator, not a data builder and not a source of truth.
 
-| Workflow | Role |
-|---|---|
-| `Samsung — RAG Indexing` | embeds pending chunks and stores the vectors |
-| `Samsung — RAG Retrieval Smoke Test` | a one-off query → embedding → `match_product_chunks()` check |
-| `Samsung — AI Consultant` | chat trigger, AI Agent, OpenAI chat model, per-session window memory, MCP client tool |
+| Group | Workflow (n8n name) | Repository file | Role |
+|---|---|---|---|
+| Runtime | `Samsung — AI Consultant` | `ai-consultant.json` | chat trigger and Execute Workflow Trigger, AI Agent, OpenAI chat model, per-session window memory, MCP client tool |
+| Runtime | `TV Consultant — Telegram` | `telegram-transport.json` | Telegram trigger, routing, call of the Consultant workflow, reply |
+| Runtime | `Samsung — RAG Indexing` | `rag-indexing.json` | embeds pending chunks and stores the vectors |
+| Evaluation | `Samsung — RAG Retrieval Smoke Test` | `rag-retrieval-smoke-test.json` | a one-off query → embedding → `match_product_chunks()` check |
+| Evaluation | `Samsung — RAG Evaluation Query Embeddings` | `evaluation-query-embeddings.json` | query embeddings for the Phase 3D retrieval evaluation |
+| Legacy | — | `legacy/*.sanitized.json` | the two earlier prototypes this project replaced, reference only |
 
 - Workflows are code: the JSON in `workflows/` is deployed with `tools/n8n-tool`, which validates, scans for
   secrets, backs up the remote version before each update and verifies by reading back. The Consultant workflow
-  is generated from the system prompt and the tool schemas (`python -m consultant.n8n_workflow`); a check fails
-  when the committed file is stale.
+  is generated from the system prompt and the tool schemas (`python -m consultant.n8n_workflow`), the Telegram
+  workflow from `channels/` (`python -m channels.telegram_workflow`); a `--check` fails when a committed file is
+  stale.
 - The MCP endpoint URL carries the execution id (the per-turn cap), the session id and the user message (the
   guard's context). The message is redacted from the service's request log.
-- The Consultant workflow is deployed **inactive**: it is driven from the n8n editor chat and by the evaluation
-  drivers. No public chat channel is attached.
+- The public channel is the Telegram transport (§9). The Consultant workflow is also reachable from the n8n
+  editor chat (`public: false`) and by the evaluation drivers through its Execute Workflow Trigger.
 
 Details: [workflows/README.md](../workflows/README.md).
 
-## 9. Evaluation
+## 9. Channel: Telegram transport
+
+A thin transport in front of the Consultant workflow (Phase 5A). It holds no prompt, model, memory or tool, and
+every catalog fact still comes from the Consultant.
+
+- **Routing** (`channels/telegram_transport.js`, pure functions embedded into the workflow's Code nodes and
+  tested with Node): only private chats with a human sender are answered. A text message becomes
+  `{chatInput, sessionId}`; a command (`/start`, `/help`, …) gets the introduction; a non-text message or one longer
+  than 2 000 characters gets a short notice and never reaches the agent.
+- **Session isolation.** The session id is `tg:<chat id>`. A private chat id is the user's Telegram id, so each
+  user has a separate window memory and a separate guard context. The message text is never part of the id.
+- **Call.** The transport runs the Consultant workflow by id through its Execute Workflow Trigger and waits for the
+  answer. A failed call produces a "service unavailable" reply instead of silence.
+- **Reply.** The agent's light Markdown is rendered to Telegram HTML, split at paragraph, line and character
+  boundaries into parts of at most 3 900 characters. If Telegram rejects the HTML, the same part is sent as plain
+  text. A "typing…" action is shown while the agent works.
+- **Identifiers.** Telegram's webhook secret is derived from the workflow id and the trigger node id. Node ids are
+  committed, so the transport workflow's id stays out of the repository (a git-ignored `.meta.json` and n8n-tool
+  backups). The credential is referenced by id and name only.
+
+The transport is generated by `python -m channels.telegram_workflow` and tested by
+`tests/test_telegram_transport.py`: routing, session identity, rendering and splitting, the workflow structure,
+and the absence of bot tokens and the transport workflow id from the repository.
+
+## 10. Evaluation
 
 Every stage was measured before the next was built, and the evidence is committed
 ([evaluation/README.md](../evaluation/README.md)).
@@ -224,11 +270,12 @@ Every stage was measured before the next was built, and the evidence is committe
 | Product acceptance (4F.1, 4F.2) | 15 multi-turn scenarios, strict rubric, manual review, confirmation run | **HOLD**: 4 of 15 passed |
 | MVP demo (4F.3) | three targeted fixes measured as rates over repeated sessions; 8 demo conversations | **7 of 8** |
 | Hotfix (4F.3A) | reject-and-retry for an invented number, verified live | failed, reverted |
+| Telegram transport (5A) | 45 automated transport tests; live testing by the project owner | accepted |
 
 Reports are generated from committed evidence, and their `--check` commands fail when a generated file is stale.
 Historical results are never edited.
 
-## 10. Deployment and safety
+## 11. Deployment and safety
 
 - **Internal service.** The Consultant runs as one container on the existing Docker network of n8n: no published
   port, no reverse-proxy route, read-only root filesystem, all capabilities dropped, no volumes, no Docker socket.
@@ -254,7 +301,7 @@ Runbook and rollback: [deploy/consultant/README.md](../deploy/consultant/README.
 
 | Document | Phase |
 |---|---|
-| [ADR 001](adr/001-samsung-rag-storage.md), [002](adr/002-rag-document-chunking-design.md), [003](adr/003-embedding-aware-chunk-sync.md), [004](adr/004-agent-runtime-and-tool-boundary.md) | storage, chunking, embedding-aware sync, agent boundary |
+| [ADR 001](adr/001-catalog-rag-storage.md), [002](adr/002-rag-document-chunking-design.md), [003](adr/003-embedding-aware-chunk-sync.md), [004](adr/004-agent-runtime-and-tool-boundary.md) | storage, chunking, embedding-aware sync, agent boundary |
 | [phase-3d-retrieval-evaluation.md](phase-3d-retrieval-evaluation.md) | retrieval evaluation |
 | [PHASE_4A_AI_CONSULTANT_ARCHITECTURE.md](PHASE_4A_AI_CONSULTANT_ARCHITECTURE.md) | the design before implementation; amended by ADR 004 |
 | [PHASE_4B_STRUCTURED_CORE.md](PHASE_4B_STRUCTURED_CORE.md), [PHASE_4C_EVIDENCE_SEMANTIC.md](PHASE_4C_EVIDENCE_SEMANTIC.md) | structured core, evidence and semantic retrieval |
@@ -263,4 +310,5 @@ Runbook and rollback: [deploy/consultant/README.md](../deploy/consultant/README.
 | [MODEL_BAKEOFF.md](MODEL_BAKEOFF.md) | model comparison |
 | [PHASE_4F_PRODUCT_ACCEPTANCE.md](PHASE_4F_PRODUCT_ACCEPTANCE.md) | acceptance design and the 4F.2 result |
 | [PHASE_4F_3_MVP_HARDENING.md](PHASE_4F_3_MVP_HARDENING.md) | MVP hardening, the demo suite, the reverted 4F.3A hotfix |
+| [channels/telegram_workflow.py](../channels/telegram_workflow.py) | Telegram transport (5A); its design notes are in the module docstring |
 | [workflows/legacy/](../workflows/legacy/) | sanitized exports of the two earlier n8n prototypes this project replaced (reference only) |

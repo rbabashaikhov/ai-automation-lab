@@ -1,5 +1,5 @@
-# Samsung Consultant MCP runtime (Phase 4D.2A): the Phase 4D tool facade behind the MCP adapter.
-# Build context: projects/samsung-ai-consultant (see deploy/consultant/README.md).
+# Catalog Consultant MCP runtime (Phase 4D.2A; image name `samsung-consultant` is the deployed identifier): the Phase 4D tool facade behind the MCP adapter.
+# Build context: projects/ai-catalog-consultant (see deploy/consultant/README.md).
 FROM python:3.12-slim-bookworm
 
 ENV PYTHONDONTWRITEBYTECODE=1 \

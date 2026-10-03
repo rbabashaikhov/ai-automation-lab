@@ -8,7 +8,7 @@
 -- typed parameters are self-documenting, let PostgreSQL validate argument
 -- types at call time, and avoid building any dynamic SQL. This is not a
 -- full hybrid search engine (no keyword/BM25 side yet) — see
--- docs/adr/001-samsung-rag-storage.md for what Phase 1 deliberately
+-- docs/adr/001-catalog-rag-storage.md for what Phase 1 deliberately
 -- leaves for a later phase.
 --
 -- Idempotent: safe to re-run (CREATE OR REPLACE).

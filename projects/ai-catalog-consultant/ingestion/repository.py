@@ -2,7 +2,7 @@
 
 Uses the existing `products` / `product_specs` / `ingestion_runs` /
 `ingestion_errors` tables as-is (see
-projects/samsung-ai-consultant/db/migrations/) -- no schema changes.
+projects/ai-catalog-consultant/db/migrations/) -- no schema changes.
 
 ## Upsert / lifecycle
 

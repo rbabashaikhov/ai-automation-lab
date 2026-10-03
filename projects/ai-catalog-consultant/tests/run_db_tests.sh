@@ -9,7 +9,7 @@
 # The container is removed on exit regardless of pass/fail. Nothing here
 # ever touches the VPS or samsung_rag.
 #
-# Usage: projects/samsung-ai-consultant/tests/run_db_tests.sh
+# Usage: projects/ai-catalog-consultant/tests/run_db_tests.sh
 # Requires: docker (set DOCKER_HOST=unix:///var/run/docker.sock if the
 # active context points at a non-running Docker Desktop socket).
 

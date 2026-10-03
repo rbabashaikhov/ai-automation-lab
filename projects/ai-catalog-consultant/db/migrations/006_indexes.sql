@@ -11,7 +11,7 @@
 -- returns exact nearest neighbours, whereas ivfflat/hnsw trade exactness
 -- for speed and need a representative data distribution to tune well.
 -- This is a deliberate decision, not an oversight — revisit once real
--- chunk volume is known (see docs/adr/001-samsung-rag-storage.md).
+-- chunk volume is known (see docs/adr/001-catalog-rag-storage.md).
 --
 -- Idempotent: safe to re-run.
 

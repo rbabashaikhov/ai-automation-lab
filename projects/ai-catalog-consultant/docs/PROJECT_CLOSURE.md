@@ -1,24 +1,31 @@
-# Samsung AI Consultant — Project Closure
+# AI Catalog Consultant — Project Closure
 
-Closed 2026-10-02. This document records the final state of the project: what is deployed, how it was evaluated,
-what is known not to work, and how to roll back. The architecture is in [ARCHITECTURE.md](ARCHITECTURE.md).
+Backend closed 2026-10-02; Telegram transport accepted 2026-10-03 (Phase 5A); released as AI Catalog Consultant on
+2026-10-03 (Phase 4G). This document records the final state of the project: what is deployed, how it was
+evaluated, what is known not to work, and how to roll back. The architecture is in [ARCHITECTURE.md](ARCHITECTURE.md).
+
+The project was built and closed under the name *Samsung AI Consultant*. Phase 4G renamed it in the repository
+(`projects/samsung-ai-consultant/` → `projects/ai-catalog-consultant/`) and nothing else: the deployed resources keep
+their original identifiers (`samsung_rag`, `samsung-consultant`, the `Samsung — …` workflows), and the Samsung TV
+catalog remains the reference dataset. The sections below dated 2026-10-02 are kept as recorded.
 
 ## Final status
 
-**Backend MVP complete.** The backend is frozen.
+**Completed portfolio MVP and reference implementation.** The system is frozen.
 
 | | |
 |---|---|
-| Backend MVP | complete |
-| Portfolio demonstration, controlled client demo, architecture showcase | ready, with the limitation below |
-| Strict production acceptance (Phase 4F) | **HOLD**, not passed |
+| Working MVP, live through Telegram | **accepted** by the project owner after live testing |
+| Portfolio / reference implementation | **complete** |
+| Strict experimental acceptance suite (Phase 4F.2) | not passed (`4F.2 HOLD`, 4 of 15); one known conversational limitation, documented and frozen |
 
-The project is not claimed to be a production-ready retail assistant, and not an error-free autonomous
-recommendation system.
+The project is not claimed to be a production-ready retail assistant, an error-free autonomous recommendation
+system, or a platform for arbitrary catalogs.
 
 ## Accepted production runtime
 
-Verified read-only on 2026-10-02, after the closure cleanup.
+Verified read-only on 2026-10-02, after the closure cleanup. The Telegram transport added since is recorded
+[below](#telegram-transport-phase-5a-2026-10-03).
 
 | Item | Value |
 |---|---|
@@ -47,6 +54,19 @@ Consultant's own read-only role:
 | Products digest | `34f4d64c4ffd0a6af3c18dd68be06637`, equal to the Phase 4F.3 record |
 | Database session | role `samsung_consultant`, `transaction_read_only = on` |
 
+### Telegram transport (Phase 5A, 2026-10-03)
+
+Verified read-only on 2026-10-03, when the transport branch was finalized into `main` (`9458270`).
+
+| Item | Value |
+|---|---|
+| Channel workflow | n8n `TV Consultant — Telegram`, **active**; diff-identical to `workflows/telegram-transport.json` (9 nodes, 9 connections). Its id is kept out of the repository |
+| Consultant workflow | `Samsung — AI Consultant` (`4d8mXFWGpS5P4t1L`), now **active**; diff-identical to `workflows/ai-consultant.json`, last updated 2026-10-01T13:57:50Z (unchanged since the closure) |
+| Contract | Execute Workflow Trigger `{chatInput, sessionId}`; session `tg:<chat id>`, private chats only |
+| Consultant service, model, prompt, guard, catalog | unchanged from the table above |
+| Tests | 938 unit tests (45 new transport tests), 148 database tests, generator `--check` clean |
+| Acceptance | live-tested and accepted by the project owner |
+
 ## Evaluation status
 
 | Gate | Result |
@@ -54,6 +74,7 @@ Consultant's own read-only role:
 | Strict product acceptance (Phase 4F.2) | **`4F.2 HOLD — PRODUCT ACCEPTANCE FAILED`**: 4 of 15 scenarios passed |
 | MVP demo (Phase 4F.3) | **7 of 8** demo conversations pass; the three targeted acceptance defects are fixed |
 | Hotfix 4F.3A (reject-and-retry) | failed live verification, reverted; production returned to `4f3f` |
+| Telegram transport (Phase 5A) | accepted after live testing by the project owner |
 
 The 7 of 8 is a demo result and does not replace the acceptance result. All evidence is kept as recorded:
 retrieval evaluation (3D), agent evaluation (4D), query semantics and the guard (4E), the model bake-off, the
@@ -129,7 +150,8 @@ schema, catalog data, embeddings.
 
 **Optional.** None of these is an incomplete closure task.
 
-- A demo frontend or chat channel.
+- A web demo frontend (the Telegram channel exists since Phase 5A).
+- Generalization to other catalogs: new extractors, section and feature vocabulary, tool schemas. Not implemented.
 - Catalog enrichment from samsung.com.
 - Production-grade answer validation: a check of the generated answer against the evidence.
 - Better semantics for relative preferences («подешевле», «побольше»).

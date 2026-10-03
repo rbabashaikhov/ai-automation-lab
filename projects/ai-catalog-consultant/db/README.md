@@ -1,6 +1,7 @@
-# Samsung RAG — Database Schema
+# Catalog RAG — Database Schema
 
-PostgreSQL + pgvector schema for the Samsung TV AI Consultant v2 rebuild.
+PostgreSQL + pgvector schema for the AI Catalog Consultant (built as the v2 rebuild of a Samsung TV
+consultant; the TV catalog is the reference dataset).
 Targets the `samsung_rag` database on the VPS (`n8n-compose-postgres-1`,
 `pgvector/pgvector:0.8.6-pg16-bookworm`, PostgreSQL 16). This is a
 **separate database** from the pre-existing `finance_tracker` database on
@@ -8,7 +9,7 @@ the same PostgreSQL instance — nothing here ever touches `finance_tracker`,
 and pgvector is enabled only in `samsung_rag`.
 
 This phase (Phase 1) ships schema and migrations only. There is no
-ingestion workflow and no AI Agent yet — see `docs/adr/001-samsung-rag-storage.md`
+ingestion workflow and no AI Agent yet — see [`docs/adr/001-catalog-rag-storage.md`](../docs/adr/001-catalog-rag-storage.md)
 for the architecture decision and what is deliberately deferred.
 
 ## Why not the legacy SuperRAG schema

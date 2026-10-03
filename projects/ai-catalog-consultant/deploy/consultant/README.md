@@ -1,4 +1,8 @@
-# Samsung Consultant runtime — internal Docker service (Phase 4D.2A)
+# Consultant runtime — internal Docker service (Phase 4D.2A)
+
+The names used on the host (`samsung-consultant` for the Compose project, container, image and the
+`/root/samsung-consultant/` directory; `samsung_rag`; `samsung_consultant`) are the deployed identifiers and are
+kept as they are. Local build commands run from `projects/ai-catalog-consultant/`.
 
 The Phase 4D MCP server (`python -m consultant.mcp_server --container`) is deployed as an **internal
 Docker service** on the existing `n8n-compose_default` network. There is **no published port**

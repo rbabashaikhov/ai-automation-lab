@@ -296,7 +296,7 @@ class IndexingRepository:
 class ProductReader:
     """Read-only access to `products` / `product_specs` -- the indexing
     role has no INSERT/UPDATE/DELETE grant on either (see
-    projects/samsung-ai-consultant/README.md "Database access"), so this
+    projects/ai-catalog-consultant/README.md "Database access"), so this
     class only ever issues SELECTs."""
 
     def __init__(self, conn):

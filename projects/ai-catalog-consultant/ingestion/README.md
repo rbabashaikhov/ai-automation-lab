@@ -1,10 +1,12 @@
-# Samsung ingestion pipeline (Phase 2)
+# Catalog ingestion pipeline (Phase 2)
 
 Ingests the GalaxyStore Samsung TV catalog into the Phase 1 PostgreSQL
 schema (`db/migrations/`). See the top-level
 [README.md](../README.md) for project status and
-[docs/adr/001-samsung-rag-storage.md](../docs/adr/001-samsung-rag-storage.md)
-for the schema decision this ingests into.
+[docs/adr/001-catalog-rag-storage.md](../docs/adr/001-catalog-rag-storage.md)
+for the schema decision this ingests into. The extractors below are specific to
+this source; the operator's refresh procedure (ingestion → indexing →
+embeddings) is in the project README, "Updating the catalog".
 
 ## Source
 
